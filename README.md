@@ -114,4 +114,4 @@ The repository includes a comprehensive Playwright test script (`verify-p2.mjs`)
 ---
 
 ## 📄 License
-This project is licensed under the MIT License.
+This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3) - see the [LICENSE](file:///e:/Documents/Practice/xeokit/BIM%20BAM/LICENSE) file for details.
