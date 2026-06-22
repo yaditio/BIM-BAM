@@ -1,0 +1,20 @@
+node_modules/
+
+dist/
+build/
+
+*.log
+
+.env
+.env.*
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+
+# Project-specific ignores
+/uploads/*
+!/uploads/.gitkeep
+/temp-house.xkt

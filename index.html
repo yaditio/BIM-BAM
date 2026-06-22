@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BIM BAM - Premium IFC & XKT Viewer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Pako for XKT loader decompression -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <!-- Pyodide for IfcOpenShell loader -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.28.0a3/full/pyodide.js"></script>
+    
+    <!-- Proj4 for EPSG coordinate transformations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
+    
+    <!-- CesiumJS for 3D globe streaming (unpkg CDN) -->
+    <link href="https://unpkg.com/cesium@1.119.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+    <script>
+        window.CESIUM_BASE_URL = 'https://unpkg.com/cesium@1.119.0/Build/Cesium/';
+    </script>
+    <script src="https://unpkg.com/cesium@1.119.0/Build/Cesium/Cesium.js"></script>
+    
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar: Controls -->
+        <aside class="sidebar control-panel">
+            <div class="brand">
+                <i class="fa-solid fa-cubes brand-icon"></i>
+                <div class="brand-text">
+                    <h2>BIM BAM</h2>
+                    <span>BIM Viewer</span>
+                </div>
+            </div>
+
+            <!-- Upload Zone -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-file-arrow-up"></i> Load Model</h3>
+                <div class="upload-area" id="dropZone">
+                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                    <p>Drag & Drop IFC/XKT here</p>
+                    <span>or click to browse</span>
+                    <input type="file" id="fileInput" accept=".ifc,.xkt">
+                </div>
+                <button class="btn btn-secondary btn-full" id="btnLoadDemo" style="margin-top: 12px;">
+                    <i class="fa-solid fa-play"></i> Load Demo House IFC
+                </button>
+                <div class="file-info-bar" id="fileInfoBar" style="display: none;">
+                    <i class="fa-solid fa-file-code file-icon"></i>
+                    <span id="fileName">No file selected</span>
+                </div>
+            </section>
+
+            <!-- Loading Settings -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-sliders"></i> Loading Options</h3>
+                <div class="form-group">
+                    <label>IFC Parser / Engine</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="ifcEngine" value="web-ifc" checked>
+                            <span>web-ifc (WASM)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="ifcEngine" value="ifcopenshell">
+                            <span>IfcOpenShell (Pyodide)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="convertToXktOpt">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="label-text">Convert IFC to XKT (Backend)</span>
+                </div>
+                <div class="form-group checkbox-group" style="margin-top: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="chkAppendModel">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="label-text">Append model (Keep existing)</span>
+                </div>
+                <button class="btn btn-primary btn-full" id="btnDownloadXkt" disabled>
+                    <i class="fa-solid fa-download"></i> Download converted XKT
+                </button>
+            </section>
+
+            <!-- Model Tree Section -->
+            <section class="panel-section" id="modelTreeSection" style="display: none;">
+                <h3><i class="fa-solid fa-sitemap"></i> Model Tree</h3>
+                <div class="tree-container" id="treeContainer"></div>
+            </section>
+
+            <!-- Cutting Plane Section -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-scissors"></i> Section Cut Planes</h3>
+                <div class="btn-grid">
+                    <button class="btn btn-secondary" id="btnAddPlaneInteractive" title="Click on model surface to place plane">
+                        <i class="fa-solid fa-mouse-pointer"></i> Add Plane (Click)
+                    </button>
+                    <button class="btn btn-secondary" id="btnAddPlaneCenter" title="Add plane at model center">
+                        <i class="fa-solid fa-align-center"></i> Add Plane (Center)
+                    </button>
+                </div>
+                <div class="form-group checkbox-group" style="margin-top: 10px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="chkShowGizmos" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span class="label-text">Show Plane Gizmos</span>
+                </div>
+                <button class="btn btn-danger btn-full" id="btnClearPlanes">
+                    <i class="fa-solid fa-trash-can"></i> Clear All Planes
+                </button>
+            </section>
+
+            <!-- Visibility Controls -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-eye"></i> Visibility Controls</h3>
+                <button class="btn btn-secondary btn-full" id="btnShowAllGlobal">
+                    <i class="fa-solid fa-eye"></i> Show All Objects
+                </button>
+            </section>
+
+            <!-- Property Filter -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-filter"></i> Property Filter</h3>
+                
+                <!-- Quick Search -->
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="propertySearch" placeholder="Quick search name, type...">
+                    <button id="btnClearSearch" class="btn-clear-search" style="display: none;">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Property Query Builder -->
+                <div class="query-builder" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px;">
+                    <div class="form-group">
+                        <label>Property Name</label>
+                        <select id="filterPropName" class="form-input">
+                            <option value="">-- Select Property --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Operator</label>
+                        <select id="filterOperator" class="form-input">
+                            <option value="equals">Equals (=)</option>
+                            <option value="contains">Contains</option>
+                            <option value="gt">Greater Than (&gt;)</option>
+                            <option value="lt">Less Than (&lt;)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Value</label>
+                        <input type="text" id="filterPropVal" class="form-input" placeholder="Property value...">
+                    </div>
+                    <div class="btn-grid">
+                        <button id="btnApplyPropFilter" class="btn btn-primary">Apply</button>
+                        <button id="btnResetPropFilter" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+
+                <div id="filterResultCount" class="result-count" style="margin-top: 10px;"></div>
+            </section>
+
+            <!-- Quantity Take-Off -->
+            <section class="panel-section">
+                <h3><i class="fa-solid fa-calculator"></i> Quantity Take-Off</h3>
+                <button class="btn btn-primary btn-full" id="btnOpenQto">
+                    <i class="fa-solid fa-table"></i> Open Quantity Take-Off
+                </button>
+            </section>
+        </aside>
+
+        <!-- Main Viewer Canvas Area -->
+        <main class="viewer-container">
+            <div id="cesiumContainer"></div>
+            <canvas id="myCanvas"></canvas>
+            <canvas id="myNavCubeCanvas"></canvas>
+
+            <!-- Measurement and Spot Elevation Overlay -->
+            <svg id="measurementOverlay" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3;"></svg>
+            <div id="elevationOverlay" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4;"></div>
+
+            <!-- Measurement Toolbar -->
+            <div class="measurement-toolbar" id="measurementToolbar">
+                <button class="tool-btn" id="btnMeasureDistance" title="Measure Distance">
+                    <i class="fa-solid fa-ruler"></i> Distance
+                </button>
+                <button class="tool-btn" id="btnMeasureMultiline" title="Measure Multiline Distance">
+                    <i class="fa-solid fa-route"></i> Multiline
+                </button>
+                <button class="tool-btn" id="btnMeasureAngle" title="Measure Angle">
+                    <i class="fa-solid fa-angle"></i> Angle
+                </button>
+                <button class="tool-btn" id="btnMeasureArea" title="Measure Area">
+                    <i class="fa-solid fa-draw-polygon"></i> Area
+                </button>
+                <button class="tool-btn" id="btnSpotElevation" title="Inquire Spot Elevation">
+                    <i class="fa-solid fa-location-crosshairs"></i> Spot Elevation
+                </button>
+                <div class="toolbar-divider"></div>
+                <label class="tool-checkbox-label" title="Enable snapping to vertices/edges">
+                    <input type="checkbox" id="chkMeasurementSnap" checked> Snap
+                </label>
+                <div class="toolbar-divider"></div>
+                <button class="tool-btn danger" id="btnClearMeasurements" title="Clear all measurements">
+                    <i class="fa-solid fa-trash-can"></i> Clear
+                </button>
+            </div>
+
+            <!-- Interactive Add Section Plane Warning -->
+            <div id="planePlacementPrompt" class="prompt-alert" style="display: none;">
+                <i class="fa-solid fa-info-circle"></i> Click anywhere on the model to place a section plane.
+            </div>
+
+            <!-- Loader / Progress Dialog -->
+            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                <div class="loading-card">
+                    <div class="spinner-container">
+                        <div class="custom-spinner"></div>
+                        <i class="fa-solid fa-cubes spinner-center-icon"></i>
+                    </div>
+                    <h3 id="loaderTitle">Loading Model...</h3>
+                    <p id="loaderMessage">Initializing viewports and loaders.</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+                    </div>
+                    <span id="progressBarText">0%</span>
+                </div>
+            </div>
+
+            <!-- Status Indicator -->
+            <div class="status-bar" id="statusBar">
+                <span id="statusMessage"><i class="fa-solid fa-circle-info"></i> Ready. Drag an IFC/XKT model or upload to start viewing.</span>
+            </div>
+        </main>
+
+        <!-- Sidebar: Properties Inspector -->
+        <aside class="sidebar properties-panel" id="propertiesPanel">
+            <div class="properties-inspector">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-circle-info"></i> Properties</h3>
+                </div>
+                
+                <!-- Selection Prompt -->
+                <div class="no-selection-prompt" id="noSelectionPrompt">
+                    <i class="fa-solid fa-mouse-pointer"></i>
+                    <p>Click on any object in the viewer to inspect its IFC attributes & property sets.</p>
+                </div>
+
+                <!-- Properties Content -->
+                <div class="properties-content" id="propertiesContent" style="display: none;">
+                    <!-- Header/Quick Info -->
+                    <div class="object-summary-card">
+                        <h4 id="propObjName">Wall Standard Case</h4>
+                        <span id="propObjType" class="badge">IfcWallStandardCase</span>
+                        <span id="propObjId" class="id-badge">ID: --</span>
+                        
+                        <button class="btn btn-secondary btn-full" id="btnSelectSimilar" style="margin-top: 12px;">
+                            <i class="fa-solid fa-clone"></i> Select Similar Type
+                        </button>
+                        <div class="btn-grid" style="margin-top: 8px;">
+                            <button class="btn btn-secondary" id="btnHideObject" title="Hide selected object">
+                                <i class="fa-solid fa-eye-slash"></i> Hide Object
+                            </button>
+                            <button class="btn btn-secondary" id="btnIsolateObject" title="Isolate selected object">
+                                <i class="fa-solid fa-expand"></i> Isolate Object
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs/Accordions of property sets -->
+                    <div class="property-sets-container" id="propertySetsContainer">
+                        <!-- Dynamic property lists go here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Georeference Panel -->
+            <div class="georeference-panel" id="georeferencePanel">
+                <div class="panel-section-header">
+                    <h3><i class="fa-solid fa-earth-americas"></i> Georeferencing</h3>
+                </div>
+                <div class="georeference-status no-geo" id="geoStatusText">No model loaded.</div>
+                <div class="form-group geo-group" id="geoModelSelectGroup" style="display: none; margin-top: 10px;">
+                    <label for="geoModelSelect">Select Model</label>
+                    <select id="geoModelSelect" class="form-input"></select>
+                </div>
+                <div class="georeference-inputs">
+                    <div class="form-group geo-group">
+                        <label for="geoEasting">Easting (X)</label>
+                        <input type="number" step="any" id="geoEasting" class="form-input" placeholder="e.g. 500000.0" disabled>
+                    </div>
+                    <div class="form-group geo-group">
+                        <label for="geoNorthing">Northing (Y)</label>
+                        <input type="number" step="any" id="geoNorthing" class="form-input" placeholder="e.g. 5000000.0" disabled>
+                    </div>
+                    <div class="form-group geo-group">
+                        <label for="geoTrueNorth">True North Angle (°)</label>
+                        <input type="number" step="any" id="geoTrueNorth" class="form-input" placeholder="e.g. 45.0" disabled>
+                    </div>
+                    <div class="form-group geo-group">
+                        <label for="geoEPSG">EPSG Code</label>
+                        <input type="text" id="geoEPSG" class="form-input" placeholder="e.g. EPSG:4326" disabled>
+                    </div>
+                    <div class="form-group geo-group">
+                        <label for="geoVerticalDatum">Vertical Datum</label>
+                        <input type="text" id="geoVerticalDatum" class="form-input" placeholder="e.g. EPSG:5111" disabled>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-full" id="btnEditGeoreference" disabled>
+                    <i class="fa-solid fa-lock"></i> Edit Georeference
+                </button>
+                <button class="btn btn-secondary btn-full" id="btnToggleCesium" disabled style="margin-top: 8px;">
+                    <i class="fa-solid fa-earth-americas"></i> Activate Cesium Globe
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Quantity Take-Off (QTO) Modal Panel -->
+    <div id="qtoModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-table"></i> Quantity Take-Off (QTO)</h3>
+                <button class="btn-close" id="btnCloseQto"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-controls">
+                <div class="search-box" style="flex: 1; margin-right: 12px;">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="qtoSearch" placeholder="Search quantities, types or classes...">
+                </div>
+                <button class="btn btn-primary" id="btnExportCsv">
+                    <i class="fa-solid fa-file-csv"></i> Export CSV
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="qto-table" id="qtoTable">
+                    <thead>
+                        <tr>
+                            <th>IFC Class</th>
+                            <th>Category</th>
+                            <th>Family Object Name</th>
+                            <th>Quantity Name</th>
+                            <th>Value</th>
+                            <th>Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="qtoTableBody">
+                        <!-- Dynamically generated rows -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <span id="qtoSummaryText">Total quantity entries: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Entry Point -->
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
