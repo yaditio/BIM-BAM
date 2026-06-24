@@ -1,6 +1,6 @@
-# BIM BAM - Premium IFC & XKT Viewer
+# BIM BAM - IFC & XKT Viewer
 
-BIM BAM is a modern, high-performance web-based Building Information Modeling (BIM) viewer built with **Xeokit SDK**, **Vite**, and **Express**. It provides advanced features for loading, converting, viewing, and querying IFC models directly in the web browser, with professional tools for estimation, measurements, and georeferencing.
+BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **Xeokit SDK**, **Vite**, and **Express**. It provides features for loading, converting, viewing, and querying IFC models directly in the web browser, with tools for estimation, measurements, and georeferencing.
 
 ---
 
@@ -40,7 +40,8 @@ BIM BAM is a modern, high-performance web-based Building Information Modeling (B
 
 ### 7. Georeferencing & Cesium Globe Integration
 * Georeference your models using **Easting (X)**, **Northing (Y)**, **True North Angle**, **EPSG Coordinate Systems**, and **Vertical Datum**.
-* Project the georeferenced model onto an interactive 3D **Cesium Globe** dynamically to visualize your building in its real-world geographical context.
+* Project the georeferenced model onto an interactive 3D **Cesium Globe** dynamically to visualize your building in its real-world geographical context. use your own **cesium ion token** for streaming terrain and 3d building tiles to make the placement more realistic
+
 
 ---
 
@@ -81,7 +82,7 @@ BIM BAM is a modern, high-performance web-based Building Information Modeling (B
 ### Installation
 1. Clone this repository to your local machine:
    ```bash
-   git clone <your-repository-url>
+   git clone https://github.com/yaditio/BIM-BAM
    cd bim-bam
    ```
 2. Install npm dependencies:

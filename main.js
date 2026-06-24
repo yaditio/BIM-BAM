@@ -126,6 +126,7 @@ const geoNorthing = document.getElementById('geoNorthing');
 const geoTrueNorth = document.getElementById('geoTrueNorth');
 const geoEPSG = document.getElementById('geoEPSG');
 const geoVerticalDatum = document.getElementById('geoVerticalDatum');
+const geoCesiumToken = document.getElementById('geoCesiumToken');
 const geoStatusText = document.getElementById('geoStatusText');
 const btnEditGeoreference = document.getElementById('btnEditGeoreference');
 const btnToggleCesium = document.getElementById('btnToggleCesium');
@@ -813,6 +814,7 @@ function loadGeoreferenceIntoUI(modelId) {
     geoTrueNorth.value = "";
     geoEPSG.value = "";
     geoVerticalDatum.value = "";
+    geoCesiumToken.value = "";
     geoStatusText.innerText = "No model selected.";
     geoStatusText.classList.add('no-geo');
     btnEditGeoreference.disabled = true;
@@ -827,6 +829,7 @@ function loadGeoreferenceIntoUI(modelId) {
   geoTrueNorth.disabled = true;
   geoEPSG.disabled = true;
   geoVerticalDatum.disabled = true;
+  geoCesiumToken.disabled = true;
   
   btnEditGeoreference.disabled = false;
   btnEditGeoreference.innerHTML = '<i class="fa-solid fa-lock"></i> Edit Georeference';
@@ -840,6 +843,7 @@ function loadGeoreferenceIntoUI(modelId) {
     geoTrueNorth.value = activeGeoreference.trueNorth !== null ? activeGeoreference.trueNorth : "";
     geoEPSG.value = activeGeoreference.epsg !== null ? activeGeoreference.epsg : "";
     geoVerticalDatum.value = activeGeoreference.verticalDatum !== null ? activeGeoreference.verticalDatum : "";
+    geoCesiumToken.value = activeGeoreference.cesiumToken !== null ? activeGeoreference.cesiumToken : "";
     geoStatusText.innerText = "Georeference loaded from file.";
     geoStatusText.classList.remove('no-geo');
   } else {
@@ -848,6 +852,7 @@ function loadGeoreferenceIntoUI(modelId) {
     geoTrueNorth.value = "";
     geoEPSG.value = "";
     geoVerticalDatum.value = "";
+    geoCesiumToken.value = "";
     geoStatusText.innerText = "This file is not georeferenced yet.";
     geoStatusText.classList.add('no-geo');
   }
@@ -1424,6 +1429,7 @@ btnEditGeoreference.addEventListener('click', () => {
     geoTrueNorth.disabled = false;
     geoEPSG.disabled = false;
     geoVerticalDatum.disabled = false;
+    geoCesiumToken.disabled = false;
     
     btnEditGeoreference.innerHTML = '<i class="fa-solid fa-check"></i> Apply Georeference';
     btnEditGeoreference.className = 'btn btn-primary btn-full';
@@ -1437,6 +1443,7 @@ btnEditGeoreference.addEventListener('click', () => {
     geoTrueNorth.disabled = true;
     geoEPSG.disabled = true;
     geoVerticalDatum.disabled = true;
+    geoCesiumToken.disabled = true;
     
     btnEditGeoreference.innerHTML = '<i class="fa-solid fa-lock"></i> Edit Georeference';
     btnEditGeoreference.className = 'btn btn-secondary btn-full';
@@ -1446,8 +1453,9 @@ btnEditGeoreference.addEventListener('click', () => {
     const trueNorthVal = geoTrueNorth.value.trim();
     const epsgVal = geoEPSG.value.trim();
     const verticalDatumVal = geoVerticalDatum.value.trim();
+    const cesiumTokenVal = geoCesiumToken.value.trim();
     
-    if (eastingVal === "" && northingVal === "" && trueNorthVal === "" && epsgVal === "" && verticalDatumVal === "") {
+    if (eastingVal === "" && northingVal === "" && trueNorthVal === "" && epsgVal === "" && verticalDatumVal === "" && cesiumTokenVal === "") {
       activeGeoreference = null;
       geoStatusText.innerText = "This file is not georeferenced yet.";
       geoStatusText.classList.add('no-geo');
@@ -1457,7 +1465,8 @@ btnEditGeoreference.addEventListener('click', () => {
         northing: northingVal !== "" ? parseFloat(northingVal) : null,
         trueNorth: trueNorthVal !== "" ? parseFloat(trueNorthVal) : null,
         epsg: epsgVal !== "" ? epsgVal : null,
-        verticalDatum: verticalDatumVal !== "" ? verticalDatumVal : null
+        verticalDatum: verticalDatumVal !== "" ? verticalDatumVal : null,
+        cesiumToken: cesiumTokenVal !== "" ? cesiumTokenVal : null
       };
       geoStatusText.innerText = "Georeferenced manually.";
       geoStatusText.classList.remove('no-geo');
@@ -1471,6 +1480,11 @@ btnEditGeoreference.addEventListener('click', () => {
     
     // If Cesium is active, sync camera using the updated georeference immediately!
     if (isCesiumActive) {
+      const tokenVal = geoCesiumToken.value.trim();
+      initCesiumViewer(tokenVal);
+      if (!cesiumTickUnsubscribe) {
+        cesiumTickUnsubscribe = viewer.scene.on("tick", syncCameras);
+      }
       syncCameras();
     }
     
@@ -1859,6 +1873,31 @@ function convertToLatLon(easting, northing, epsg) {
   return { lat, lon };
 }
 
+let terrainElevation = 0;
+let lastSampledCoords = { lat: null, lon: null };
+
+function updateTerrainElevation(lat, lon) {
+  if (!cesiumViewer || !cesiumViewer._terrainLoaded || !cesiumViewer.terrainProvider) {
+    terrainElevation = 0;
+    return;
+  }
+  if (lastSampledCoords.lat === lat && lastSampledCoords.lon === lon) return;
+  lastSampledCoords = { lat, lon };
+
+  const pos = Cesium.Cartographic.fromDegrees(lon, lat);
+  Cesium.sampleTerrainMostDetailed(cesiumViewer.terrainProvider, [pos]).then((results) => {
+    if (results && results[0] && results[0].height !== undefined) {
+      terrainElevation = results[0].height;
+      console.log("Updated terrain elevation for location:", terrainElevation);
+      if (isCesiumActive) {
+        syncCameras();
+      }
+    }
+  }).catch((err) => {
+    console.error("Failed to sample terrain elevation:", err);
+  });
+}
+
 // --- Real-time synchronization loop ---
 function syncCameras() {
   if (!isCesiumActive || !cesiumViewer || !activeGeoreference) return;
@@ -1867,12 +1906,17 @@ function syncCameras() {
   const northing = activeGeoreference.northing || 0;
   const trueNorthAngle = activeGeoreference.trueNorth || 0;
   const epsg = activeGeoreference.epsg || "";
-  const height = activeGeoreference.verticalDatum ? parseFloat(activeGeoreference.verticalDatum) || 0 : 0;
 
   // Convert coordinate to WGS84 latitude/longitude
   const coords = convertToLatLon(easting, northing, epsg);
   const lat = coords.lat;
   const lon = coords.lon;
+
+  // Trigger async terrain height sampling
+  updateTerrainElevation(lat, lon);
+
+  const localOffset = activeGeoreference.verticalDatum ? parseFloat(activeGeoreference.verticalDatum) || 0 : 0;
+  const height = terrainElevation + localOffset;
 
   // 1. Get local reference frame centered at WGS84 coordinate
   const centerCartographic = Cesium.Cartographic.fromDegrees(lon, lat, height);
@@ -1926,6 +1970,83 @@ function syncCameras() {
   });
 }
 
+// Helper to initialize or recreate Cesium viewer depending on token changes
+function initCesiumViewer(tokenVal) {
+  // Recreate viewer if token changed or viewer doesn't exist
+  if (cesiumViewer && cesiumViewer._loadedToken !== tokenVal) {
+    cesiumViewer.destroy();
+    cesiumViewer = null;
+    if (cesiumTickUnsubscribe) {
+      viewer.scene.off(cesiumTickUnsubscribe);
+      cesiumTickUnsubscribe = null;
+    }
+  }
+
+  if (!cesiumViewer) {
+    if (tokenVal) {
+      Cesium.Ion.defaultAccessToken = tokenVal;
+    }
+
+    cesiumViewer = new Cesium.Viewer('cesiumContainer', {
+      geocoder: false,
+      homeButton: false,
+      sceneModePicker: false,
+      baseLayerPicker: false,
+      navigationHelpButton: false,
+      animation: false,
+      timeline: false,
+      fullscreenButton: false,
+      vrButton: false,
+      infoBox: false,
+      selectionIndicator: false,
+      // Load Esri World Imagery (Satellite) as the base layer
+      baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        maximumLevel: 19,
+        credit: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      }))
+    });
+    
+    cesiumViewer._loadedToken = tokenVal;
+    cesiumViewer._terrainLoaded = false;
+    cesiumViewer._osmBuildingsLoaded = false;
+  }
+
+  // Load terrain and buildings if token is active
+  if (tokenVal) {
+    if (!cesiumViewer._terrainLoaded) {
+      Cesium.createWorldTerrainAsync().then((terrainProvider) => {
+        if (cesiumViewer) {
+          cesiumViewer.terrainProvider = terrainProvider;
+          cesiumViewer._terrainLoaded = true;
+          updateStatus("Cesium 3D World Terrain loaded successfully.");
+        }
+      }).catch((err) => {
+        console.error("Failed to load 3D terrain:", err);
+      });
+    }
+
+    if (!cesiumViewer._osmBuildingsLoaded) {
+      Cesium.createOsmBuildingsAsync().then((osmBuildingsTileset) => {
+        if (cesiumViewer) {
+          cesiumViewer.scene.primitives.add(osmBuildingsTileset);
+          // Style buildings with a beautiful semi-translucent dark slate color that fits our dark theme
+          osmBuildingsTileset.style = new Cesium.Cesium3DTileStyle({
+            color: {
+              conditions: [
+                ["true", "color('rgba(38, 50, 72, 0.75)')"]
+              ]
+            }
+          });
+          cesiumViewer._osmBuildingsLoaded = true;
+        }
+      }).catch((err) => {
+        console.error("Failed to load OSM Buildings:", err);
+      });
+    }
+  }
+}
+
 // Toggle Cesium globe streaming
 btnToggleCesium.addEventListener('click', () => {
   if (loadedModels.length === 0) return;
@@ -1946,29 +2067,8 @@ btnToggleCesium.addEventListener('click', () => {
     // Show container
     cesiumContainer.style.display = "block";
 
-    // Lazy initialize Cesium.Viewer
-    if (!cesiumViewer) {
-      // Clear Ion access token to prevent Ion warnings
-      Cesium.Ion.defaultAccessToken = "";
-      cesiumViewer = new Cesium.Viewer('cesiumContainer', {
-        geocoder: false,
-        homeButton: false,
-        sceneModePicker: false,
-        baseLayerPicker: false,
-        navigationHelpButton: false,
-        animation: false,
-        timeline: false,
-        fullscreenButton: false,
-        vrButton: false,
-        infoBox: false,
-        selectionIndicator: false,
-        // Load Esri World Imagery (Satellite) as the base layer
-        baseLayer: new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
-          url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-          credit: 'Tiles © Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        }))
-      });
-    }
+    const tokenVal = geoCesiumToken.value.trim();
+    initCesiumViewer(tokenVal);
 
     // Bind tick synchronization listener
     if (!cesiumTickUnsubscribe) {
@@ -1980,7 +2080,12 @@ btnToggleCesium.addEventListener('click', () => {
 
     btnToggleCesium.innerHTML = '<i class="fa-solid fa-earth-americas"></i> Deactivate Cesium Globe';
     btnToggleCesium.className = 'btn btn-danger btn-full';
-    updateStatus("Cesium globe background streaming activated.");
+    
+    if (tokenVal) {
+      updateStatus("Cesium 3D Terrain & Buildings active (using Ion token).");
+    } else {
+      updateStatus("Cesium satellite map active. Input a Cesium Ion Token to load 3D terrain & buildings.");
+    }
   } else {
     // Hide container
     cesiumContainer.style.display = "none";
