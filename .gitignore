@@ -18,3 +18,4 @@ Thumbs.db
 /uploads/*
 !/uploads/.gitkeep
 /temp-house.xkt
+dist_desktop/

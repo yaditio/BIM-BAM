@@ -40,7 +40,7 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 
 ### 7. Georeferencing & Cesium Globe Integration
 * Georeference your models using **Easting (X)**, **Northing (Y)**, **True North Angle**, **EPSG Coordinate Systems**, and **Vertical Datum**.
-* Project the georeferenced model onto an interactive 3D **Cesium Globe** dynamically to visualize your building in its real-world geographical context. use your own **cesium ion token** for streaming terrain and 3d building tiles to make the placement more realistic
+* Project the georeferenced model onto an interactive 3D **Cesium World Terrain** dynamically to visualize your building in its real-world geographical context. use your own **cesium ion token** for streaming terrain and 3d building tiles to make the placement more realistic.
 
 
 ---
@@ -63,7 +63,7 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 │   └── inspect-exports.mjs
 ├── index.html                         # Client UI markup structure
 ├── main.js                            # Frontend application coordinator
-├── style.css                          # Premium dark-theme glassmorphism stylesheet
+├── style.css                          # stylesheet
 ├── server.js                          # Express.js backend for XKT conversion
 ├── vite.config.js                     # Vite proxy & server configuration
 ├── verify-p2.mjs                      # Playwright automated integration tests

@@ -1,13 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import multer from 'multer';
-import { exec } from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const multer = require('multer');
+const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = 5000;
@@ -16,7 +12,10 @@ app.use(cors());
 app.use(express.json());
 
 // Ensure uploads directory exists
-const uploadDir = path.join(__dirname, 'uploads');
+let uploadDir = path.join(__dirname, 'uploads');
+if (uploadDir.includes('app.asar') && !uploadDir.includes('app.asar.unpacked')) {
+  uploadDir = uploadDir.replace('app.asar', 'app.asar.unpacked');
+}
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -48,7 +47,11 @@ app.post('/api/convert', upload.single('file'), (req, res) => {
   const outputFilePath = path.join(uploadDir, `${uniqueName}.xkt`);
 
   // Path to convert2xkt.js script
-  const converterScript = path.join(__dirname, 'node_modules', '@xeokit', 'xeokit-convert', 'convert2xkt.js');
+  let converterScript = path.join(__dirname, 'node_modules', '@xeokit', 'xeokit-convert', 'convert2xkt.js');
+  // Support running inside Electron packaged ASAR archive by pointing to the unpacked location
+  if (converterScript.includes('app.asar') && !converterScript.includes('app.asar.unpacked')) {
+    converterScript = converterScript.replace('app.asar', 'app.asar.unpacked');
+  }
 
   const command = `node "${converterScript}" -s "${inputFilePath}" -f ifc -o "${outputFilePath}" -l`;
 
@@ -105,6 +108,17 @@ app.post('/api/convert', upload.single('file'), (req, res) => {
     });
   });
 });
+
+// Serve static frontend assets in production desktop mode if dist folder exists
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+  console.log(`[Server] Serving static files from: ${distPath}`);
+}
 
 app.listen(PORT, () => {
   console.log(`[Server] Express backend running at http://localhost:${PORT}`);
