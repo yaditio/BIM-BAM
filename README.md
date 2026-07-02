@@ -40,8 +40,14 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 
 ### 7. Georeferencing & Cesium Globe Integration
 * Georeference your models using **Easting (X)**, **Northing (Y)**, **True North Angle**, **EPSG Coordinate Systems**, and **Vertical Datum**.
-* Project the georeferenced model onto an interactive 3D **Cesium World Terrain** dynamically to visualize your building in its real-world geographical context. use your own **cesium ion token** for streaming terrain and 3d building tiles to make the placement more realistic.
+* Project the georeferenced model onto an interactive 3D **Cesium World Terrain** dynamically to visualize your building in its real-world geographical context. Use your own **Cesium Ion Token** for terrain streaming to make project sites realistic.
 
+### 8. Python & IfcOpenShell Tools Integration
+* **IFC Diff**: Compare any two loaded IFC models to highlight added (Green), changed (Yellow), and deleted elements.
+* **BCF Reader**: Parse and view BIM Collaboration Format (.bcf) issues, viewpoints, comments, and screenshots.
+* **IFC Clash**: Detect structural geometric collisions between or within loaded models with custom tolerances, select and fly to clashed components, and export results to BCF.
+* **IFC Convert**: Convert loaded IFC models to formats like GLB, OBJ, DAE, STEP, or IGES on the backend.
+* **Dropdown Selection**: Rather than separate file uploads, all three command-line tools (Diff, Clash, Convert) dynamically run directly on the models already loaded in the viewer.
 
 ---
 
@@ -78,6 +84,7 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 ### Prerequisites
 * [Node.js](https://nodejs.org/) (v18 or higher recommended)
 * A modern web browser supporting WebGL2 and WebAssembly (Chrome, Edge, Firefox, or Safari)
+* Python 3.10+ (specifically, a conda environment matching the path configured in `server.cjs` with packages: `ifcopenshell`, `numpy`, `shapely`, `ifcdiff`, `ifcclash`)
 
 ### Installation
 1. Clone this repository to your local machine:
