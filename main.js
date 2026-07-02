@@ -334,6 +334,7 @@ async function loadModel(file, convertToXkt = false) {
     // Destroy all existing models
     loadedModels.forEach(item => item.model.destroy());
     loadedModels.length = 0;
+    updateToolDropdowns();
     clearAllMeasurements();
     
     // Reset Model Tree
@@ -762,10 +763,12 @@ function setupModelLoadedListener(modelId, file) {
       model: activeModel,
       metaModel: metaModel,
       fileName: file.name,
-      georeference: geo
+      georeference: geo,
+      file: file
     });
 
     updateGeoModelDropdown(modelId);
+    updateToolDropdowns();
     buildTree();
   });
 
@@ -773,6 +776,37 @@ function setupModelLoadedListener(modelId, file) {
     hideLoader();
     updateStatus(`Error loading model: ${err}`, true);
   });
+}
+
+function updateToolDropdowns() {
+  const diffOldSelect = document.getElementById('diffOldModelSelect');
+  const diffNewSelect = document.getElementById('diffNewModelSelect');
+  const clashASelect = document.getElementById('clashModelASelect');
+  const clashBSelect = document.getElementById('clashModelBSelect');
+  const convertSelect = document.getElementById('convertModelSelect');
+
+  const ifcModels = loadedModels.filter(m => m.fileName.toLowerCase().endsWith('.ifc'));
+
+  const updateDropdown = (selectEl, options, placeholder) => {
+    if (!selectEl) return;
+    const selectedVal = selectEl.value;
+    selectEl.innerHTML = `<option value="">${placeholder}</option>`;
+    options.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id;
+      opt.innerText = m.fileName;
+      selectEl.appendChild(opt);
+    });
+    if (options.some(m => m.id === selectedVal)) {
+      selectEl.value = selectedVal;
+    }
+  };
+
+  updateDropdown(diffOldSelect, ifcModels, '-- Select Model --');
+  updateDropdown(diffNewSelect, ifcModels, '-- Select Model --');
+  updateDropdown(clashASelect, ifcModels, '-- Select Model A --');
+  updateDropdown(clashBSelect, ifcModels, '-- Select Model B (Optional) --');
+  updateDropdown(convertSelect, ifcModels, '-- Select Model --');
 }
 
 function updateGeoModelDropdown(selectedId) {
@@ -2130,6 +2164,7 @@ function initMeasurementSystem() {
   const btnAngle = document.getElementById("btnMeasureAngle");
   const btnArea = document.getElementById("btnMeasureArea");
   const btnSpot = document.getElementById("btnSpotElevation");
+  const btnClearance = document.getElementById("btnMeasureClearance");
   const btnClear = document.getElementById("btnClearMeasurements");
   const chkSnap = document.getElementById("chkMeasurementSnap");
 
@@ -2138,6 +2173,7 @@ function initMeasurementSystem() {
   if (btnAngle) btnAngle.addEventListener("click", () => setMeasurementMode("angle"));
   if (btnArea) btnArea.addEventListener("click", () => setMeasurementMode("area"));
   if (btnSpot) btnSpot.addEventListener("click", () => setMeasurementMode("spotelev"));
+  if (btnClearance) btnClearance.addEventListener("click", () => setMeasurementMode("clearance"));
   if (btnClear) btnClear.addEventListener("click", clearAllMeasurements);
 
   if (chkSnap) {
@@ -2152,7 +2188,7 @@ function initMeasurementSystem() {
   const canvas = viewer.scene.canvas.canvas;
 
   canvas.addEventListener("mousemove", (e) => {
-    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline") {
+    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline" && activeMeasurementMode !== "clearance") {
       updateSnapPreview(null);
       return;
     }
@@ -2173,10 +2209,49 @@ function initMeasurementSystem() {
       hover3DPos = pickResult.worldPos;
       hoverSnapped = pickResult.snapped;
       updateSnapPreview(pickResult);
+
+      if (activeMeasurementMode === "clearance" && pickResult.worldNormal) {
+        const p1 = pickResult.worldPos;
+        const normal = pickResult.worldNormal;
+        
+        // Raycast slightly offset to avoid self-collision
+        const rayOrigin = [
+          p1[0] + normal[0] * 0.01,
+          p1[1] + normal[1] * 0.01,
+          p1[2] + normal[2] * 0.01
+        ];
+        const rayDir = [
+          normal[0] * 100.0,
+          normal[1] * 100.0,
+          normal[2] * 100.0
+        ];
+        
+        const hitResult = viewer.scene.pick({
+          pickSurface: true,
+          origin: rayOrigin,
+          direction: rayDir
+        });
+
+        // Destroy previous preview
+        if (distanceMeasurements.measurements["clearance_preview"]) {
+          distanceMeasurements.destroyMeasurement("clearance_preview");
+        }
+
+        if (hitResult) {
+          distanceMeasurements.createMeasurement({
+            id: "clearance_preview",
+            origin: p1,
+            target: hitResult.worldPos
+          });
+        }
+      }
     } else {
       hover3DPos = null;
       hoverSnapped = false;
       updateSnapPreview(null);
+      if (activeMeasurementMode === "clearance" && distanceMeasurements.measurements["clearance_preview"]) {
+        distanceMeasurements.destroyMeasurement("clearance_preview");
+      }
     }
 
     if (activeMeasurementMode === "area" && areaPoints.length > 0) {
@@ -2188,12 +2263,32 @@ function initMeasurementSystem() {
 
   canvas.addEventListener("mousedown", (e) => {
     if (e.button !== 0) return; // Left click only
-    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline") return;
+    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline" && activeMeasurementMode !== "clearance") return;
 
     if (!hover3DPos) return;
 
     if (activeMeasurementMode === "spotelev") {
       placeSpotElevation(hover3DPos);
+    } else if (activeMeasurementMode === "clearance") {
+      const preview = distanceMeasurements.measurements["clearance_preview"];
+      if (preview) {
+        const origin = [...preview.origin];
+        const target = [...preview.target];
+        
+        // Destroy preview first to prevent collision
+        distanceMeasurements.destroyMeasurement("clearance_preview");
+
+        // Create permanent measurement
+        const measureId = "clearance_" + Date.now();
+        distanceMeasurements.createMeasurement({
+          id: measureId,
+          origin: origin,
+          target: target
+        });
+        updateStatus("Clearance measurement placed.");
+      } else {
+        updateStatus("No clearance target found.", true);
+      }
     } else if (activeMeasurementMode === "area") {
       // Close polygon if clicking near starting point
       if (areaPoints.length >= 3) {
@@ -2265,6 +2360,10 @@ function setMeasurementMode(mode) {
     angleControl.deactivate();
   }
 
+  if (distanceMeasurements && distanceMeasurements.measurements["clearance_preview"]) {
+    distanceMeasurements.destroyMeasurement("clearance_preview");
+  }
+
   areaPoints = [];
   multilinePoints = [];
   updateAreaOverlay();
@@ -2278,7 +2377,8 @@ function setMeasurementMode(mode) {
     multiline: document.getElementById("btnMeasureMultiline"),
     angle: document.getElementById("btnMeasureAngle"),
     area: document.getElementById("btnMeasureArea"),
-    spotelev: document.getElementById("btnSpotElevation")
+    spotelev: document.getElementById("btnSpotElevation"),
+    clearance: document.getElementById("btnMeasureClearance")
   };
 
   Object.keys(buttons).forEach(k => {
@@ -2302,7 +2402,7 @@ function setMeasurementMode(mode) {
   }
 
   const canvas = viewer.scene.canvas.canvas;
-  if (mode === "area" || mode === "spotelev" || mode === "multiline") {
+  if (mode === "area" || mode === "spotelev" || mode === "multiline" || mode === "clearance") {
     canvas.style.cursor = "crosshair";
   } else {
     canvas.style.cursor = "default";
@@ -2866,7 +2966,473 @@ function clearAllMeasurements() {
 // --- Initialize App ---
 function startApp() {
   initViewer();
+  setupIfcOpenShellTools();
   updateStatus("BIM Viewer initialized. Ready for user files.");
+}
+
+// --- IfcOpenShell Python Tools Integration ---
+function setupIfcOpenShellTools() {
+  console.log("[IfcOpenShell Tools] Initializing frontend tools...");
+
+  // 1. Tab switching logic
+  const tabButtons = document.querySelectorAll('.sidebar-tab');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.dataset.tab;
+      
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.style.display = 'none');
+
+      btn.classList.add('active');
+      const activePane = document.getElementById(targetTab);
+      if (activePane) {
+        activePane.style.display = 'block';
+      }
+    });
+  });
+
+  // 2. IFC Diff Tool
+  const btnRunDiff = document.getElementById('btnRunDiff');
+  const diffOldModelSelect = document.getElementById('diffOldModelSelect');
+  const diffNewModelSelect = document.getElementById('diffNewModelSelect');
+  const diffResults = document.getElementById('diffResults');
+  const diffAddedVal = document.getElementById('diffAddedVal');
+  const diffDeletedVal = document.getElementById('diffDeletedVal');
+  const diffChangedVal = document.getElementById('diffChangedVal');
+  const btnHighlightDiff = document.getElementById('btnHighlightDiff');
+  const btnClearDiff = document.getElementById('btnClearDiff');
+  const diffList = document.getElementById('diffList');
+
+  let latestDiffResult = null;
+
+  btnRunDiff.addEventListener('click', async () => {
+    const oldModel = loadedModels.find(m => m.id === diffOldModelSelect.value);
+    const newModel = loadedModels.find(m => m.id === diffNewModelSelect.value);
+
+    if (!oldModel || !newModel) {
+      alert("Please select both old and new IFC models.");
+      return;
+    }
+
+    const oldFile = oldModel.file;
+    const newFile = newModel.file;
+
+    showLoader("Running IFC Diff", "Comparing IFC models on the server. This may take a moment...", 20);
+    const formData = new FormData();
+    formData.append('oldFile', oldFile);
+    formData.append('newFile', newFile);
+
+    try {
+      const response = await fetch('/api/python/ifcdiff', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Diff failed on backend');
+      }
+
+      const result = await response.json();
+      latestDiffResult = result;
+
+      // Update UI counts
+      diffAddedVal.innerText = result.added ? result.added.length : 0;
+      diffDeletedVal.innerText = result.deleted ? result.deleted.length : 0;
+      diffChangedVal.innerText = result.changed ? result.changed.length : 0;
+
+      // Clear list and render elements
+      diffList.innerHTML = "";
+      
+      const renderItem = (guid, typeClass, label) => {
+        const li = document.createElement('li');
+        li.className = `diff-list-item ${typeClass}`;
+        li.innerHTML = `<span class="el-id">${guid}</span> <span class="badge ${typeClass}" style="font-size:9px; padding:2px 4px; border-radius:3px;">${label}</span>`;
+        li.addEventListener('click', () => {
+          // Clear current selection
+          viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+          viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+          
+          const obj = viewer.scene.objects[guid];
+          if (obj) {
+            obj.selected = true;
+            obj.highlighted = true;
+            viewer.cameraFlight.flyTo(obj);
+          } else {
+            updateStatus(`Element ${guid} not found in currently loaded view.`, true);
+          }
+        });
+        diffList.appendChild(li);
+      };
+
+      if (result.added) result.added.forEach(guid => renderItem(guid, 'added', 'Added'));
+      if (result.changed) result.changed.forEach(guid => renderItem(guid, 'changed', 'Changed'));
+      if (result.deleted) result.deleted.forEach(guid => renderItem(guid, 'deleted', 'Deleted'));
+
+      diffResults.style.display = 'block';
+      hideLoader();
+      updateStatus("IFC Diff completed successfully.");
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Diff failed: ${err.message}`, true);
+      alert(`Error running diff: ${err.message}`);
+    }
+  });
+
+  btnHighlightDiff.addEventListener('click', () => {
+    if (!latestDiffResult) return;
+
+    // Reset current colorization & XRay
+    const allIds = viewer.scene.objectIds;
+    viewer.scene.setObjectsXRayed(allIds, true);
+
+    // Colorize Added -> Green
+    if (latestDiffResult.added) {
+      latestDiffResult.added.forEach(guid => {
+        const obj = viewer.scene.objects[guid];
+        if (obj) {
+          obj.xrayed = false;
+          obj.colorize = [0.0, 0.8, 0.0];
+        }
+      });
+    }
+
+    // Colorize Changed -> Yellow
+    if (latestDiffResult.changed) {
+      latestDiffResult.changed.forEach(guid => {
+        const obj = viewer.scene.objects[guid];
+        if (obj) {
+          obj.xrayed = false;
+          obj.colorize = [0.8, 0.8, 0.0];
+        }
+      });
+    }
+
+    updateStatus("Diff highlighted: Green = Added, Yellow = Changed. Other elements X-Rayed.");
+  });
+
+  btnClearDiff.addEventListener('click', () => {
+    const allIds = viewer.scene.objectIds;
+    viewer.scene.setObjectsXRayed(allIds, false);
+    allIds.forEach(id => {
+      const obj = viewer.scene.objects[id];
+      if (obj) obj.colorize = null;
+    });
+    updateStatus("Visual diff highlights cleared.");
+  });
+
+  // 3. BCF Reader Tool
+  const btnRunBcfReader = document.getElementById('btnRunBcfReader');
+  const bcfFileInput = document.getElementById('bcfFileInput');
+  const bcfResults = document.getElementById('bcfResults');
+  const bcfTopicsList = document.getElementById('bcfTopicsList');
+
+  btnRunBcfReader.addEventListener('click', async () => {
+    const file = bcfFileInput.files[0];
+    if (!file) {
+      alert("Please select a .bcf file.");
+      return;
+    }
+
+    showLoader("Reading BCF", "Uploading BCF archive and parsing issues...", 20);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/api/python/bcf-reader', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'BCF read failed on backend');
+      }
+
+      const result = await response.json();
+      bcfTopicsList.innerHTML = "";
+
+      if (!result.topics || result.topics.length === 0) {
+        bcfTopicsList.innerHTML = `<div style="font-size:11px; color:var(--text-muted); text-align:center;">No topics found in this BCF file.</div>`;
+      } else {
+        result.topics.forEach(topic => {
+          const card = document.createElement('div');
+          card.className = "bcf-topic-card";
+          
+          let snapshotHtml = "";
+          if (topic.snapshot) {
+            snapshotHtml = `
+              <div class="bcf-topic-img-container" style="margin-top: 8px;">
+                <img src="/uploads/bcf_snapshots/${topic.snapshot}" class="bcf-topic-img" alt="Snapshot">
+              </div>
+            `;
+          }
+
+          let commentsHtml = "";
+          if (topic.comments && topic.comments.length > 0) {
+            commentsHtml = `
+              <div class="bcf-comments-list" style="margin-top: 8px;">
+                <div style="font-size:9px; font-weight:bold; color:var(--text-muted); margin-bottom:4px;">Comments:</div>
+                ${topic.comments.map(c => `
+                  <div class="bcf-comment-item">
+                    <div class="bcf-comment-author">${c.author}</div>
+                    <div class="bcf-comment-text">${c.text}</div>
+                    <div class="bcf-comment-date">${c.date ? new Date(c.date).toLocaleString() : ''}</div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="bcf-topic-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <span class="bcf-topic-title" style="font-weight:600; font-size:12px;">${topic.title}</span>
+              <span class="bcf-topic-status open" style="font-size:9px; padding:2px 6px; border-radius:4px; text-transform:uppercase;">${topic.status}</span>
+            </div>
+            ${topic.description ? `<p class="bcf-topic-desc" style="font-size:11px; color:var(--text-muted); margin-top:4px;">${topic.description}</p>` : ''}
+            ${snapshotHtml}
+            ${commentsHtml}
+          `;
+
+          card.addEventListener('click', () => {
+            document.querySelectorAll('.bcf-topic-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+
+            const vp = topic.viewpoint;
+            if (vp && vp.eye && vp.dir && vp.up) {
+              const eye = vp.eye;
+              const dir = vp.dir;
+              const up = vp.up;
+              
+              viewer.cameraFlight.flyTo({
+                eye: [eye.x, eye.y, eye.z],
+                look: [eye.x + dir.x * 10, eye.y + dir.y * 10, eye.z + dir.z * 10],
+                up: [up.x, up.y, up.z],
+                duration: 1.5
+              });
+            }
+
+            if (vp && vp.components && vp.components.length > 0) {
+              const allIds = viewer.scene.objectIds;
+              viewer.scene.setObjectsXRayed(allIds, true);
+              viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+              viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+
+              vp.components.forEach(guid => {
+                const obj = viewer.scene.objects[guid];
+                if (obj) {
+                  obj.xrayed = false;
+                  obj.selected = true;
+                  obj.highlighted = true;
+                }
+              });
+              updateStatus(`Showing issue viewpoint. Highlighted ${vp.components.length} components.`);
+            } else {
+              updateStatus(`Showing viewpoint for issue: "${topic.title}"`);
+            }
+          });
+
+          bcfTopicsList.appendChild(card);
+        });
+      }
+
+      bcfResults.style.display = 'block';
+      hideLoader();
+      updateStatus(`Successfully read BCF with ${result.topics ? result.topics.length : 0} topics.`);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`BCF Read failed: ${err.message}`, true);
+      alert(`Error reading BCF: ${err.message}`);
+    }
+  });
+
+  // 4. IFC Clash Tool
+  const btnRunClash = document.getElementById('btnRunClash');
+  const clashModelASelect = document.getElementById('clashModelASelect');
+  const clashModelBSelect = document.getElementById('clashModelBSelect');
+  const clashToleranceInput = document.getElementById('clashToleranceInput');
+  const clashResults = document.getElementById('clashResults');
+  const clashCountTitle = document.getElementById('clashCountTitle');
+  const btnDownloadClashBcf = document.getElementById('btnDownloadClashBcf');
+  const btnClearClashes = document.getElementById('btnClearClashes');
+  const clashList = document.getElementById('clashList');
+
+  let latestClashes = [];
+
+  btnRunClash.addEventListener('click', async () => {
+    const modelA = loadedModels.find(m => m.id === clashModelASelect.value);
+    const modelB = loadedModels.find(m => m.id === clashModelBSelect.value);
+    const tolerance = clashToleranceInput.value || 0.0;
+
+    if (!modelA) {
+      alert("Please select Model A IFC model.");
+      return;
+    }
+
+    const fileA = modelA.file;
+    const fileB = modelB ? modelB.file : null;
+
+    showLoader("IFC Clash Detection", "Detecting geometric collisions. This may take some time...", 15);
+    const formData = new FormData();
+    formData.append('fileA', fileA);
+    if (fileB) {
+      formData.append('fileB', fileB);
+    }
+    formData.append('tolerance', tolerance);
+
+    try {
+      const response = await fetch('/api/python/ifcclash', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Clash detection failed');
+      }
+
+      const result = await response.json();
+      latestClashes = result.clashes || [];
+
+      clashCountTitle.innerText = `${latestClashes.length} Clashes Found`;
+      clashList.innerHTML = "";
+
+      if (latestClashes.length === 0) {
+        clashList.innerHTML = `<li style="color:var(--text-muted); text-align:center;">No clashes detected.</li>`;
+        btnDownloadClashBcf.removeAttribute('href');
+        btnDownloadClashBcf.style.pointerEvents = 'none';
+        btnDownloadClashBcf.style.opacity = '0.5';
+      } else {
+        btnDownloadClashBcf.style.pointerEvents = 'auto';
+        btnDownloadClashBcf.style.opacity = '1';
+        btnDownloadClashBcf.href = result.downloadUrl;
+
+        latestClashes.forEach((c, idx) => {
+          const li = document.createElement('li');
+          li.className = "clash-list-item";
+          li.innerHTML = `
+            <div>
+              <span style="font-weight:bold; color:var(--danger);">Clash #${idx+1}</span><br>
+              A: <span class="el-id">${c.a_guid}</span> (${c.a_class})<br>
+              B: <span class="el-id">${c.b_guid}</span> (${c.b_class})
+            </div>
+          `;
+
+          li.addEventListener('click', () => {
+            const allIds = viewer.scene.objectIds;
+            allIds.forEach(id => {
+              const obj = viewer.scene.objects[id];
+              if (obj) obj.colorize = null;
+            });
+            viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+            viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+
+            const ids = [c.a_guid, c.b_guid];
+            viewer.scene.setObjectsXRayed(allIds, true);
+            ids.forEach(guid => {
+              const obj = viewer.scene.objects[guid];
+              if (obj) {
+                obj.xrayed = false;
+                obj.selected = true;
+                obj.highlighted = true;
+                obj.colorize = [1.0, 0.0, 0.0];
+              }
+            });
+
+            if (c.point && c.point.length === 3 && (c.point[0] !== 0 || c.point[1] !== 0 || c.point[2] !== 0)) {
+              viewer.cameraFlight.flyTo({
+                look: c.point,
+                fit: true,
+                duration: 1.5
+              });
+            } else {
+              const firstObj = viewer.scene.objects[c.a_guid];
+              if (firstObj) {
+                viewer.cameraFlight.flyTo(firstObj);
+              }
+            }
+            updateStatus(`Viewing clash: ${c.a_class} vs ${c.b_class}`);
+          });
+
+          clashList.appendChild(li);
+        });
+      }
+
+      clashResults.style.display = 'block';
+      hideLoader();
+      updateStatus(`Clash detection completed: ${latestClashes.length} issues found.`);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Clash failed: ${err.message}`, true);
+      alert(`Error running clash detection: ${err.message}`);
+    }
+  });
+
+  btnClearClashes.addEventListener('click', () => {
+    const allIds = viewer.scene.objectIds;
+    viewer.scene.setObjectsXRayed(allIds, false);
+    allIds.forEach(id => {
+      const obj = viewer.scene.objects[id];
+      if (obj) obj.colorize = null;
+    });
+    viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+    viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+    updateStatus("Clash display reset.");
+  });
+
+  // 5. IFC Convert Tool
+  const btnRunConvert = document.getElementById('btnRunConvert');
+  const convertModelSelect = document.getElementById('convertModelSelect');
+  const convertFormatSelect = document.getElementById('convertFormatSelect');
+
+  btnRunConvert.addEventListener('click', async () => {
+    const model = loadedModels.find(m => m.id === convertModelSelect.value);
+    const format = convertFormatSelect.value;
+
+    if (!model) {
+      alert("Please select an IFC model for conversion.");
+      return;
+    }
+
+    const file = model.file;
+
+    showLoader("Converting IFC", `Converting IFC model to .${format} format on backend...`, 30);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('format', format);
+
+    try {
+      const response = await fetch('/api/python/ifcconvert', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Conversion failed on the backend.');
+      }
+
+      updateLoaderProgress(80, "Downloading converted file...");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const origBase = file.name.substring(0, file.name.lastIndexOf('.'));
+      a.download = `${origBase}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      hideLoader();
+      updateStatus(`Model converted to .${format} and downloaded successfully.`);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Conversion failed: ${err.message}`, true);
+      alert(`Error converting model: ${err.message}`);
+    }
+  });
 }
 
 if (document.readyState === "complete" || document.readyState === "interactive") {
