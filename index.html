@@ -347,9 +347,6 @@
                 <button class="tool-btn" id="btnSpotElevation" title="Inquire Spot Elevation">
                     <i class="fa-solid fa-location-crosshairs"></i> Spot Elevation
                 </button>
-                <button class="tool-btn" id="btnMeasureClearance" title="Measure Clearance">
-                    <i class="fa-solid fa-arrows-left-right"></i> Clearance
-                </button>
                 <div class="toolbar-divider"></div>
                 <label class="tool-checkbox-label" title="Enable snapping to vertices/edges">
                     <input type="checkbox" id="chkMeasurementSnap" checked> Snap
@@ -411,12 +408,15 @@
                         <button class="btn btn-secondary btn-full" id="btnSelectSimilar" style="margin-top: 12px;">
                             <i class="fa-solid fa-clone"></i> Select Similar Type
                         </button>
-                        <div class="btn-grid" style="margin-top: 8px;">
+                        <div class="btn-grid" style="margin-top: 8px; grid-template-columns: repeat(3, 1fr);">
                             <button class="btn btn-secondary" id="btnHideObject" title="Hide selected object">
-                                <i class="fa-solid fa-eye-slash"></i> Hide Object
+                                <i class="fa-solid fa-eye-slash"></i> Hide
                             </button>
                             <button class="btn btn-secondary" id="btnIsolateObject" title="Isolate selected object">
-                                <i class="fa-solid fa-expand"></i> Isolate Object
+                                <i class="fa-solid fa-expand"></i> Isolate
+                            </button>
+                            <button class="btn btn-secondary" id="btnXrayObject" title="X-Ray selected object">
+                                <i class="fa-solid fa-x-ray"></i> X-Ray
                             </button>
                         </div>
                     </div>

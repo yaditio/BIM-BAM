@@ -119,6 +119,7 @@ const qtoSummaryText = document.getElementById('qtoSummaryText');
 const btnShowAllGlobal = document.getElementById('btnShowAllGlobal');
 const btnHideObject = document.getElementById('btnHideObject');
 const btnIsolateObject = document.getElementById('btnIsolateObject');
+const btnXrayObject = document.getElementById('btnXrayObject');
 
 // Georeference UI elements
 const geoEasting = document.getElementById('geoEasting');
@@ -1424,7 +1425,8 @@ btnShowAllGlobal.addEventListener('click', () => {
   if (loadedModels.length === 0) return;
   const allIds = viewer.scene.objectIds;
   viewer.scene.setObjectsVisible(allIds, true);
-  updateStatus("Restored visibility of all objects.");
+  viewer.scene.setObjectsXRayed(allIds, false);
+  updateStatus("Restored visibility and cleared X-Ray of all objects.");
   syncTreeCheckboxes();
 });
 
@@ -1448,6 +1450,19 @@ btnIsolateObject.addEventListener('click', () => {
     viewer.scene.setObjectsVisible(selectedIds, true);
     updateStatus(`Isolated ${selectedIds.length} object(s).`);
     syncTreeCheckboxes();
+  }
+});
+
+btnXrayObject.addEventListener('click', () => {
+  const selectedIds = viewer.scene.selectedObjectIds;
+  if (selectedIds.length > 0) {
+    selectedIds.forEach(id => {
+      const obj = viewer.scene.objects[id];
+      if (obj) {
+        obj.xrayed = !obj.xrayed;
+      }
+    });
+    updateStatus(`Toggled X-Ray on ${selectedIds.length} object(s).`);
   }
 });
 
@@ -2164,7 +2179,6 @@ function initMeasurementSystem() {
   const btnAngle = document.getElementById("btnMeasureAngle");
   const btnArea = document.getElementById("btnMeasureArea");
   const btnSpot = document.getElementById("btnSpotElevation");
-  const btnClearance = document.getElementById("btnMeasureClearance");
   const btnClear = document.getElementById("btnClearMeasurements");
   const chkSnap = document.getElementById("chkMeasurementSnap");
 
@@ -2173,7 +2187,6 @@ function initMeasurementSystem() {
   if (btnAngle) btnAngle.addEventListener("click", () => setMeasurementMode("angle"));
   if (btnArea) btnArea.addEventListener("click", () => setMeasurementMode("area"));
   if (btnSpot) btnSpot.addEventListener("click", () => setMeasurementMode("spotelev"));
-  if (btnClearance) btnClearance.addEventListener("click", () => setMeasurementMode("clearance"));
   if (btnClear) btnClear.addEventListener("click", clearAllMeasurements);
 
   if (chkSnap) {
@@ -2188,7 +2201,7 @@ function initMeasurementSystem() {
   const canvas = viewer.scene.canvas.canvas;
 
   canvas.addEventListener("mousemove", (e) => {
-    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline" && activeMeasurementMode !== "clearance") {
+    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline") {
       updateSnapPreview(null);
       return;
     }
@@ -2210,48 +2223,10 @@ function initMeasurementSystem() {
       hoverSnapped = pickResult.snapped;
       updateSnapPreview(pickResult);
 
-      if (activeMeasurementMode === "clearance" && pickResult.worldNormal) {
-        const p1 = pickResult.worldPos;
-        const normal = pickResult.worldNormal;
-        
-        // Raycast slightly offset to avoid self-collision
-        const rayOrigin = [
-          p1[0] + normal[0] * 0.01,
-          p1[1] + normal[1] * 0.01,
-          p1[2] + normal[2] * 0.01
-        ];
-        const rayDir = [
-          normal[0] * 100.0,
-          normal[1] * 100.0,
-          normal[2] * 100.0
-        ];
-        
-        const hitResult = viewer.scene.pick({
-          pickSurface: true,
-          origin: rayOrigin,
-          direction: rayDir
-        });
-
-        // Destroy previous preview
-        if (distanceMeasurements.measurements["clearance_preview"]) {
-          distanceMeasurements.destroyMeasurement("clearance_preview");
-        }
-
-        if (hitResult) {
-          distanceMeasurements.createMeasurement({
-            id: "clearance_preview",
-            origin: p1,
-            target: hitResult.worldPos
-          });
-        }
-      }
     } else {
       hover3DPos = null;
       hoverSnapped = false;
       updateSnapPreview(null);
-      if (activeMeasurementMode === "clearance" && distanceMeasurements.measurements["clearance_preview"]) {
-        distanceMeasurements.destroyMeasurement("clearance_preview");
-      }
     }
 
     if (activeMeasurementMode === "area" && areaPoints.length > 0) {
@@ -2263,32 +2238,12 @@ function initMeasurementSystem() {
 
   canvas.addEventListener("mousedown", (e) => {
     if (e.button !== 0) return; // Left click only
-    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline" && activeMeasurementMode !== "clearance") return;
+    if (activeMeasurementMode !== "area" && activeMeasurementMode !== "spotelev" && activeMeasurementMode !== "multiline") return;
 
     if (!hover3DPos) return;
 
     if (activeMeasurementMode === "spotelev") {
       placeSpotElevation(hover3DPos);
-    } else if (activeMeasurementMode === "clearance") {
-      const preview = distanceMeasurements.measurements["clearance_preview"];
-      if (preview) {
-        const origin = [...preview.origin];
-        const target = [...preview.target];
-        
-        // Destroy preview first to prevent collision
-        distanceMeasurements.destroyMeasurement("clearance_preview");
-
-        // Create permanent measurement
-        const measureId = "clearance_" + Date.now();
-        distanceMeasurements.createMeasurement({
-          id: measureId,
-          origin: origin,
-          target: target
-        });
-        updateStatus("Clearance measurement placed.");
-      } else {
-        updateStatus("No clearance target found.", true);
-      }
     } else if (activeMeasurementMode === "area") {
       // Close polygon if clicking near starting point
       if (areaPoints.length >= 3) {
@@ -2360,10 +2315,6 @@ function setMeasurementMode(mode) {
     angleControl.deactivate();
   }
 
-  if (distanceMeasurements && distanceMeasurements.measurements["clearance_preview"]) {
-    distanceMeasurements.destroyMeasurement("clearance_preview");
-  }
-
   areaPoints = [];
   multilinePoints = [];
   updateAreaOverlay();
@@ -2377,8 +2328,7 @@ function setMeasurementMode(mode) {
     multiline: document.getElementById("btnMeasureMultiline"),
     angle: document.getElementById("btnMeasureAngle"),
     area: document.getElementById("btnMeasureArea"),
-    spotelev: document.getElementById("btnSpotElevation"),
-    clearance: document.getElementById("btnMeasureClearance")
+    spotelev: document.getElementById("btnSpotElevation")
   };
 
   Object.keys(buttons).forEach(k => {
@@ -2402,7 +2352,7 @@ function setMeasurementMode(mode) {
   }
 
   const canvas = viewer.scene.canvas.canvas;
-  if (mode === "area" || mode === "spotelev" || mode === "multiline" || mode === "clearance") {
+  if (mode === "area" || mode === "spotelev" || mode === "multiline") {
     canvas.style.cursor = "crosshair";
   } else {
     canvas.style.cursor = "default";
