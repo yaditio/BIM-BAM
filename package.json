@@ -1,6 +1,6 @@
 {
   "name": "bim-bam",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "BIM Viewer with conversion, property filters, similarity selection, and cutting planes",
   "main": "electron-main.cjs",
   "type": "module",
