@@ -671,51 +671,61 @@ function extractGeoreference(modelId) {
   return null;
 }
 
-function setupModelLoadedListener(modelId, file) {
-  if (!activeModel) return;
-
-  activeModel.on("loaded", () => {
-    hideLoader();
-    viewer.cameraFlight.jumpTo(activeModel);
-    
-    const metaModel = viewer.metaScene.metaModels[modelId];
-    activeMetaModel = metaModel; // keep for single model backward-compatibility
-    
-    console.log("Debug: metaModels keys = ", Object.keys(viewer.metaScene.metaModels));
-    console.log("Debug: metaObjects size = ", Object.keys(viewer.metaScene.metaObjects).length);
-    updateStatus(`Model loaded successfully. Objects: ${activeModel.numEntities}`);
-    
-    // Clear search filter when a new model is loaded
-    propertySearch.value = "";
-    btnClearSearch.style.display = "none";
-    filterResultCount.innerText = "";
-
-    // --- Parse metadata for Properties and Quantities (QTO) ---
-    modelProperties = {};
-    availableQuantities = [];
-    
-    // Clear previous options in filterPropName dropdown
-    filterPropName.innerHTML = '<option value="">-- Select Property --</option>';
-    
-    const metaObjects = viewer.metaScene.metaObjects;
-    Object.values(metaObjects).forEach((metaObj) => {
-      // 1. Gather all unique property names for Advanced Filtering
-      if (metaObj.propertySets) {
-        metaObj.propertySets.forEach((pset) => {
-          if (pset.properties) {
-            pset.properties.forEach((prop) => {
-              if (prop.name) {
-                if (!modelProperties[prop.name]) {
-                  modelProperties[prop.name] = new Set();
-                }
-                modelProperties[prop.name].add(prop.value);
+// --- Unified metadata and properties fetch helper ---
+function getElementMetadata(id, modelId) {
+  // Try Revit metadata map first
+  const revitMeta = revitMetadataMap[modelId];
+  if (revitMeta && revitMeta.Elements) {
+    const element = revitMeta.Elements.find(e => String(e.Id) === String(id));
+    if (element) {
+      const props = [];
+      if (element.class) {
+        props.push({ name: "Revit Class", value: element.class });
+      }
+      if (element.Name) {
+        props.push({ name: "Revit Name", value: element.Name });
+      }
+      if (element.ParameterGroups) {
+        element.ParameterGroups.forEach((gIdx) => {
+          const group = revitMeta.ParameterGroups[gIdx];
+          if (group && group.Parameters) {
+            group.Parameters.forEach((pIdx) => {
+              const param = revitMeta.Parameters[pIdx];
+              if (param && param.Name) {
+                props.push({ name: param.Name, value: param.Value });
               }
             });
           }
         });
       }
-      
-      // 2. Extract quantities for Quantity Take-Off
+      return {
+        name: element.Name || `Revit Element ${element.Id}`,
+        type: element.class || "Revit Element",
+        category: element.class || "Revit Element",
+        props: props
+      };
+    }
+  }
+
+  // Try standard IFC metadata next
+  if (viewer.metaScene) {
+    const metaObj = viewer.metaScene.metaObjects[id];
+    if (metaObj) {
+      // Extract properties
+      const props = [];
+      if (metaObj.propertySets) {
+        metaObj.propertySets.forEach((pset) => {
+          if (pset.properties) {
+            pset.properties.forEach((prop) => {
+              if (prop.name) {
+                props.push({ name: prop.name, value: prop.value });
+              }
+            });
+          }
+        });
+      }
+
+      // Determine category (using existing heuristics)
       const ifcClass = metaObj.type || "IfcObject";
       let category = "";
       
@@ -760,58 +770,107 @@ function setupModelLoadedListener(modelId, file) {
         let cleanType = rawType.startsWith("Ifc") ? rawType.substring(3) : rawType;
         category = cleanType.replace(/([A-Z])/g, ' $1').trim();
       }
-      
-      if (metaObj.propertySets) {
-        metaObj.propertySets.forEach((pset) => {
-          const isQtoSet = pset.name && pset.name.startsWith("Qto_");
-          if (pset.properties) {
-            pset.properties.forEach((prop) => {
-              const nameLower = prop.name ? prop.name.toLowerCase() : "";
-              const isQuantityName = nameLower.includes("area") || 
-                                     nameLower.includes("volume") || 
-                                     nameLower.includes("length") || 
-                                     nameLower.includes("width") || 
-                                     nameLower.includes("height") || 
-                                     nameLower.includes("thickness") || 
-                                     nameLower.includes("depth") || 
-                                     nameLower.includes("perimeter");
-              
-              if (isQtoSet || isQuantityName) {
-                const valStr = String(prop.value).trim();
-                const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
-                if (matchNum) {
-                  const numValue = parseFloat(matchNum[0]);
-                  let unit = "ea";
-                  const remainingStr = valStr.substring(matchNum[0].length).trim().toLowerCase();
-                  if (remainingStr) {
-                    unit = remainingStr;
-                  } else {
-                    if (nameLower.includes("volume")) {
-                      unit = "m³";
-                    } else if (nameLower.includes("area")) {
-                      unit = "m²";
-                    } else if (nameLower.includes("length") || nameLower.includes("width") || nameLower.includes("height") || nameLower.includes("thickness") || nameLower.includes("depth") || nameLower.includes("perimeter")) {
-                      unit = "m";
-                    } else if (nameLower.includes("mass") || nameLower.includes("weight")) {
-                      unit = "kg";
-                    }
-                  }
-                  
-                  availableQuantities.push({
-                    id: metaObj.id,
-                    name: metaObj.name || "Unnamed Object",
-                    ifcClass: ifcClass,
-                    category: category,
-                    quantityName: prop.name,
-                    value: numValue,
-                    unit: unit
-                  });
-                }
+
+      return {
+        name: metaObj.name || "Unnamed Object",
+        type: ifcClass,
+        category: category,
+        props: props
+      };
+    }
+  }
+
+  return null;
+}
+
+function setupModelLoadedListener(modelId, file) {
+  if (!activeModel) return;
+
+  activeModel.on("loaded", () => {
+    hideLoader();
+    viewer.cameraFlight.jumpTo(activeModel);
+    
+    const metaModel = viewer.metaScene.metaModels[modelId];
+    activeMetaModel = metaModel; // keep for single model backward-compatibility
+    
+    console.log("Debug: metaModels keys = ", Object.keys(viewer.metaScene.metaModels));
+    console.log("Debug: metaObjects size = ", Object.keys(viewer.metaScene.metaObjects).length);
+    updateStatus(`Model loaded successfully. Objects: ${activeModel.numEntities}`);
+    
+    // Clear search filter when a new model is loaded
+    propertySearch.value = "";
+    btnClearSearch.style.display = "none";
+    filterResultCount.innerText = "";
+
+    // --- Parse metadata for Properties and Quantities (QTO) ---
+    modelProperties = {};
+    availableQuantities = [];
+    
+    // Clear previous options in filterPropName dropdown
+    filterPropName.innerHTML = '<option value="">-- Select Property --</option>';
+    
+    // Gather all model object IDs (both IFC and Revit models populate viewer.scene.objects)
+    const modelObjectIds = Object.values(viewer.scene.objects)
+      .filter(obj => obj.model && obj.model.id === modelId)
+      .map(obj => obj.id);
+
+    modelObjectIds.forEach((id) => {
+      const meta = getElementMetadata(id, modelId);
+      if (!meta) return;
+
+      // 1. Gather properties for Advanced Filtering
+      meta.props.forEach((prop) => {
+        if (!modelProperties[prop.name]) {
+          modelProperties[prop.name] = new Set();
+        }
+        modelProperties[prop.name].add(prop.value);
+      });
+
+      // 2. Extract quantities for Quantity Take-Off
+      meta.props.forEach((prop) => {
+        const nameLower = prop.name ? prop.name.toLowerCase() : "";
+        const isQuantityName = nameLower.includes("area") || 
+                               nameLower.includes("volume") || 
+                               nameLower.includes("length") || 
+                               nameLower.includes("width") || 
+                               nameLower.includes("height") || 
+                               nameLower.includes("thickness") || 
+                               nameLower.includes("depth") || 
+                               nameLower.includes("perimeter");
+                               
+        if (isQuantityName) {
+          const valStr = String(prop.value).trim();
+          const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
+          if (matchNum) {
+            const numValue = parseFloat(matchNum[0]);
+            let unit = "ea";
+            const remainingStr = valStr.substring(matchNum[0].length).trim().toLowerCase();
+            if (remainingStr) {
+              unit = remainingStr;
+            } else {
+              if (nameLower.includes("volume")) {
+                unit = "m³";
+              } else if (nameLower.includes("area")) {
+                unit = "m²";
+              } else if (nameLower.includes("length") || nameLower.includes("width") || nameLower.includes("height") || nameLower.includes("thickness") || nameLower.includes("depth") || nameLower.includes("perimeter")) {
+                unit = "m";
+              } else if (nameLower.includes("mass") || nameLower.includes("weight")) {
+                unit = "kg";
               }
+            }
+
+            availableQuantities.push({
+              id: id,
+              name: meta.name,
+              ifcClass: meta.type,
+              category: meta.category,
+              quantityName: prop.name,
+              value: numValue,
+              unit: unit
             });
           }
-        });
-      }
+        }
+      });
     });
     
     const sortedPropNames = Object.keys(modelProperties).sort((a, b) => a.localeCompare(b));
@@ -1490,32 +1549,30 @@ btnApplyPropFilter.addEventListener('click', () => {
   const matchedIds = [];
   
   allObjectIds.forEach((id) => {
-    const metaObj = viewer.metaScene.metaObjects[id];
-    if (!metaObj || !metaObj.propertySets) return;
+    const entity = viewer.scene.objects[id];
+    if (!entity || !entity.model) return;
+    const modelId = entity.model.id;
+    const meta = getElementMetadata(id, modelId);
+    if (!meta) return;
     
     let isMatch = false;
-    for (const pset of metaObj.propertySets) {
-      if (pset.properties) {
-        for (const prop of pset.properties) {
-          if (prop.name === propName) {
-            const propValStr = String(prop.value).toLowerCase();
-            const propValNum = parseFloat(prop.value);
-            const queryValNum = parseFloat(valQuery);
-            
-            if (operator === 'equals') {
-              isMatch = propValStr === valQuery;
-            } else if (operator === 'contains') {
-              isMatch = propValStr.includes(valQuery);
-            } else if (operator === 'gt' && !isNaN(propValNum) && !isNaN(queryValNum)) {
-              isMatch = propValNum > queryValNum;
-            } else if (operator === 'lt' && !isNaN(propValNum) && !isNaN(queryValNum)) {
-              isMatch = propValNum < queryValNum;
-            }
-            break;
-          }
+    for (const prop of meta.props) {
+      if (prop.name === propName) {
+        const propValStr = String(prop.value).toLowerCase();
+        const propValNum = parseFloat(prop.value);
+        const queryValNum = parseFloat(valQuery);
+        
+        if (operator === 'equals') {
+          isMatch = propValStr === valQuery;
+        } else if (operator === 'contains') {
+          isMatch = propValStr.includes(valQuery);
+        } else if (operator === 'gt' && !isNaN(propValNum) && !isNaN(queryValNum)) {
+          isMatch = propValNum > queryValNum;
+        } else if (operator === 'lt' && !isNaN(propValNum) && !isNaN(queryValNum)) {
+          isMatch = propValNum < queryValNum;
         }
+        break;
       }
-      if (isMatch) break;
     }
     
     if (isMatch) {
