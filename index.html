@@ -50,13 +50,9 @@
                 <h3><i class="fa-solid fa-file-arrow-up"></i> Load Model</h3>
                 <div class="upload-area" id="dropZone">
                     <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                    <p>Drag & Drop IFC/XKT/LAS/GLTF here</p>
+                    <p>Drag & Drop files here</p>
                     <span>or click to browse</span>
-                    <input type="file" id="fileInput" accept=".ifc,.xkt,.las,.laz,.gltf,.glb">
-                </div>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label for="geoJsonFileInput" style="font-size: 11px; color: var(--text-muted);">Companion Georeference JSON (Optional)</label>
-                    <input type="file" id="geoJsonFileInput" accept=".json" class="form-input" style="font-size: 11px; padding: 4px;">
+                    <input type="file" id="fileInput" accept=".ifc,.xkt,.las,.laz,.gltf,.glb,.json" multiple>
                 </div>
                 <button class="btn btn-secondary btn-full" id="btnLoadDemo" style="margin-top: 8px;">
                     <i class="fa-solid fa-play"></i> Load Demo House IFC

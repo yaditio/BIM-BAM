@@ -800,10 +800,6 @@ function setupModelLoadedListener(modelId, file) {
     // Extract georeference specifically for this model
     const geo = pendingGeoreference || extractGeoreference(modelId);
     pendingGeoreference = null;
-    const geoJsonFileInput = document.getElementById('geoJsonFileInput');
-    if (geoJsonFileInput) {
-      geoJsonFileInput.value = "";
-    }
 
     // Save model metadata
     loadedModels.push({
@@ -1297,7 +1293,7 @@ dropZone.addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', (e) => {
   if (e.target.files.length > 0) {
-    handleFileSelected(e.target.files[0]);
+    handleMultipleFiles(Array.from(e.target.files));
   }
 });
 
@@ -1314,18 +1310,25 @@ dropZone.addEventListener('drop', (e) => {
   e.preventDefault();
   dropZone.classList.remove('dragover');
   if (e.dataTransfer.files.length > 0) {
-    handleFileSelected(e.dataTransfer.files[0]);
+    handleMultipleFiles(Array.from(e.dataTransfer.files));
   }
 });
 
-const geoJsonFileInput = document.getElementById('geoJsonFileInput');
-if (geoJsonFileInput) {
-  geoJsonFileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) {
-      pendingGeoreference = null;
-      return;
-    }
+function handleMultipleFiles(files) {
+  // Find if there is a json file containing georeference data
+  const jsonFile = files.find(f => f.name.toLowerCase().endsWith('.json'));
+  const modelFile = files.find(f => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    return ext === 'ifc' || ext === 'xkt' || ext === 'las' || ext === 'laz' || ext === 'gltf' || ext === 'glb';
+  });
+
+  if (!modelFile) {
+    updateStatus("No valid model file selected! Please select a .ifc, .xkt, .las, .laz, .gltf, or .glb file.", true);
+    return;
+  }
+
+  if (jsonFile) {
+    // Read georeference data first
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
@@ -1337,16 +1340,27 @@ if (geoJsonFileInput) {
         const verticalDatum = json.verticalDatum || json.elevation || json.z || json.altitude || null;
         const cesiumToken = json.cesiumToken || json.cesiumIonToken || null;
         
-        pendingGeoreference = { easting, northing, trueNorth, epsg, verticalDatum: verticalDatum !== null ? String(verticalDatum) : null, cesiumToken };
-        updateStatus(`Loaded georeference metadata from JSON: Easting=${easting}, Northing=${northing}`);
+        pendingGeoreference = { 
+          easting, 
+          northing, 
+          trueNorth, 
+          epsg, 
+          verticalDatum: verticalDatum !== null ? String(verticalDatum) : null, 
+          cesiumToken 
+        };
+        updateStatus(`Loaded companion georeference JSON: Easting=${easting}, Northing=${northing}`);
       } catch (err) {
         updateStatus(`Failed to parse georeference JSON: ${err.message}`, true);
-        geoJsonFileInput.value = "";
         pendingGeoreference = null;
       }
+      // Load model file after trying to parse JSON
+      handleFileSelected(modelFile);
     };
-    reader.readAsText(file);
-  });
+    reader.readAsText(jsonFile);
+  } else {
+    pendingGeoreference = null;
+    handleFileSelected(modelFile);
+  }
 }
 
 function handleFileSelected(file) {
