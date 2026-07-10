@@ -187,6 +187,11 @@ function initViewer() {
     }
   });
 
+  viewer.cameraControl.on("pickedNothing", () => {
+    if (activeMeasurementMode) return; // Prevent deselection when measuring
+    handleObjectDeselected();
+  });
+
   // Bind double-click listener to toggle highlight (Feature 6)
   viewer.scene.input.on("dblclick", (canvasCoords) => {
     if (activeMeasurementMode) return; // Prevent highlight when measuring
