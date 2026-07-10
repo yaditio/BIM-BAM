@@ -531,9 +531,13 @@ async function loadModel(file, convertToXkt = false) {
         const arrayBuffer = e.target.result;
         localFileBufferMap[modelId] = arrayBuffer;
         
+        const skipInput = document.getElementById('pointSkip');
+        const skipValue = skipInput ? parseInt(skipInput.value) || 5 : 5;
+        
         activeModel = lasLoader.load({
           id: modelId,
-          src: modelId + (fileExt === 'laz' ? '.laz' : '.las')
+          src: modelId + (fileExt === 'laz' ? '.laz' : '.las'),
+          skip: skipValue
         });
         setupModelLoadedListener(modelId, file);
       } catch (err) {
