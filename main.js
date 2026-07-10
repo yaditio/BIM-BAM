@@ -698,10 +698,16 @@ function getElementMetadata(id, modelId) {
           }
         });
       }
+      let foundCategory = element.class || "Revit Element";
+      const catProp = props.find(p => p.name && p.name.toLowerCase() === "category");
+      if (catProp && catProp.value && String(catProp.value).trim() !== "") {
+        foundCategory = String(catProp.value).trim();
+      }
+
       return {
         name: element.Name || `Revit Element ${element.Id}`,
         type: element.class || "Revit Element",
-        category: element.class || "Revit Element",
+        category: foundCategory,
         props: props
       };
     }
