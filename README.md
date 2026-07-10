@@ -16,21 +16,32 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 ### 2. High-Performance Conversion API
 * An integrated **Express backend** processes uploaded `.ifc` files, converts them to `.xkt` on the fly using `@xeokit/xeokit-convert`, and streams the optimized file back to the browser for instant visualization.
 
-### 3. Model Explorer & Properties Panel
+### 3. Revit (.rvt) Converter & Viewer
+* **Revit to XKT Conversion**: Convert native Revit `.rvt` files into web-optimized `.xkt` models using the **Creoox Xeokit Data Engine API** (requires `XDES_API_URL`, `XDES_API_CLIENT_ID`, and `XDES_API_CLIENT_SECRET` inputs).
+* **Custom Revit tree hierarchy**:
+  * 📋 **Instances**: flat alphabetical list of elements.
+  * 🗂️ **Families**: Category → Family → Type → Instance hierarchy.
+  * 🏢 **Levels**: Level nodes sorted by elevation containing nested families.
+* **Revit Parameter Inspector**: Clicking on Revit objects queries their properties directly from the Data Engine's `.json` metadata, rendering rich ParameterGroups with units.
+
+### 4. Interactive Sidebar Expanders
+* All side panel sections (Load Model, RVT Converter, Model Tree, Visibility, Property Filter, BCF Reader, etc.) are converted into **collapsible expander accordions** with smooth slide transitions and toggle chevons for clean, scroll-free layout navigation.
+
+### 5. Model Explorer & Properties Panel
 * **Model Tree**: Structural spatial hierarchy panel with checkboxes to toggle element visibility, synchronized dynamically with 3D model clicks.
 * **Properties Inspector**: Detailed overview of attributes, properties, and custom quantities grouped by IFC Property Sets.
 * **Similar Selection**: Select all objects matching the selected component's IFC Type (e.g. all columns or standard wall cases) with one click.
 
-### 4. Real-time Analysis & Sections
+### 6. Real-time Analysis & Sections
 * **Interactive Section Planes**: Slice models using 3D cut planes. Add planes by clicking directly on surfaces or centering them automatically, and manipulate them using built-in translation gizmos.
 * **Visibility Controls**: Hide, isolate, or show all elements instantly.
 
-### 5. Quantity Take-Off (QTO)
+### 7. Quantity Take-Off (QTO)
 * Scan model properties to harvest structural quantities (Volume, Area, Count, etc.).
-* Review materials and sizes in a searchable, filterable spreadsheet-like modal interface.
+* Review materials and sizes in a spreadsheet-like interface.
 * **Export to CSV** for integration with external estimators and spreadsheet software.
 
-### 6. Measurement Toolbar
+### 8. Measurement Toolbar
 * **Distance**: Measure direct 3D vertex-to-vertex distances.
 * **Multiline**: Measure accumulated chain lengths.
 * **Angle**: Calculate angles between surfaces or vectors.
@@ -38,16 +49,17 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 * **Spot Elevation**: Query exact XYZ coordinates and heights of point-selections.
 * **Vertex Snapping**: Active snapping for precise architectural measurements.
 
-### 7. Georeferencing & Cesium Globe Integration
+### 9. Georeferencing & Cesium Globe Integration
 * Georeference your models using **Easting (X)**, **Northing (Y)**, **True North Angle**, **EPSG Coordinate Systems**, and **Vertical Datum**.
 * Project the georeferenced model onto an interactive 3D **Cesium World Terrain** dynamically to visualize your building in its real-world geographical context. Use your own **Cesium Ion Token** for terrain streaming to make project sites realistic.
 
-### 8. Python & IfcOpenShell Tools Integration
+### 10. Python & IfcOpenShell Tools Integration
 * **IFC Diff**: Compare any two loaded IFC models to highlight added (Green), changed (Yellow), and deleted elements.
 * **BCF Reader**: Parse and view BIM Collaboration Format (.bcf) issues, viewpoints, comments, and screenshots.
 * **IFC Clash**: Detect structural geometric collisions between or within loaded models with custom tolerances, select and fly to clashed components, and export results to BCF.
 * **IFC Convert**: Convert loaded IFC models to formats like GLB, OBJ, DAE, STEP, or IGES on the backend.
-* **Dropdown Selection**: Rather than separate file uploads, all three command-line tools (Diff, Clash, Convert) dynamically run directly on the models already loaded in the viewer.
+* **IFC CSV (ifccsv)**: Extract selected IFC attributes and properties into a custom downloadable CSV. Choose a class filter, select parameters from a dropdown, add them to columns, and download structured IFC spreadsheets.
+* **Dropdown Selection**: Rather than separate file uploads, all command-line tools (Diff, Clash, Convert) dynamically run directly on the models already loaded in the viewer.
 
 ---
 
