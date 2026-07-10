@@ -24,24 +24,22 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
   * 🏢 **Levels**: Level nodes sorted by elevation containing nested families.
 * **Revit Parameter Inspector**: Clicking on Revit objects queries their properties directly from the Data Engine's `.json` metadata, rendering rich ParameterGroups with units.
 
-### 4. Interactive Sidebar Expanders
-* All side panel sections (Load Model, RVT Converter, Model Tree, Visibility, Property Filter, BCF Reader, etc.) are converted into **collapsible expander accordions** with smooth slide transitions and toggle chevons for clean, scroll-free layout navigation.
 
-### 5. Model Explorer & Properties Panel
+### 4. Model Explorer & Properties Panel
 * **Model Tree**: Structural spatial hierarchy panel with checkboxes to toggle element visibility, synchronized dynamically with 3D model clicks.
 * **Properties Inspector**: Detailed overview of attributes, properties, and custom quantities grouped by IFC Property Sets.
 * **Similar Selection**: Select all objects matching the selected component's IFC Type (e.g. all columns or standard wall cases) with one click.
 
-### 6. Real-time Analysis & Sections
+### 5. Real-time Analysis & Sections
 * **Interactive Section Planes**: Slice models using 3D cut planes. Add planes by clicking directly on surfaces or centering them automatically, and manipulate them using built-in translation gizmos.
 * **Visibility Controls**: Hide, isolate, or show all elements instantly.
 
-### 7. Quantity Take-Off (QTO)
+### 6. Quantity Take-Off (QTO)
 * Scan model properties to harvest structural quantities (Volume, Area, Count, etc.).
 * Review materials and sizes in a spreadsheet-like interface.
 * **Export to CSV** for integration with external estimators and spreadsheet software.
 
-### 8. Measurement Toolbar
+### 7. Measurement Toolbar
 * **Distance**: Measure direct 3D vertex-to-vertex distances.
 * **Multiline**: Measure accumulated chain lengths.
 * **Angle**: Calculate angles between surfaces or vectors.
@@ -49,11 +47,11 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 * **Spot Elevation**: Query exact XYZ coordinates and heights of point-selections.
 * **Vertex Snapping**: Active snapping for precise architectural measurements.
 
-### 9. Georeferencing & Cesium Globe Integration
+### 8. Georeferencing & Cesium Globe Integration
 * Georeference your models using **Easting (X)**, **Northing (Y)**, **True North Angle**, **EPSG Coordinate Systems**, and **Vertical Datum**.
 * Project the georeferenced model onto an interactive 3D **Cesium World Terrain** dynamically to visualize your building in its real-world geographical context. Use your own **Cesium Ion Token** for terrain streaming to make project sites realistic.
 
-### 10. Python & IfcOpenShell Tools Integration
+### 9. Python & IfcOpenShell Tools Integration
 * **IFC Diff**: Compare any two loaded IFC models to highlight added (Green), changed (Yellow), and deleted elements.
 * **BCF Reader**: Parse and view BIM Collaboration Format (.bcf) issues, viewpoints, comments, and screenshots.
 * **IFC Clash**: Detect structural geometric collisions between or within loaded models with custom tolerances, select and fly to clashed components, and export results to BCF.
