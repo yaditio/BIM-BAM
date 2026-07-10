@@ -826,51 +826,155 @@ function setupModelLoadedListener(modelId, file) {
         modelProperties[prop.name].add(prop.value);
       });
 
-      // 2. Extract quantities for Quantity Take-Off
-      meta.props.forEach((prop) => {
-        const nameLower = prop.name ? prop.name.toLowerCase() : "";
-        const isQuantityName = nameLower.includes("area") || 
-                               nameLower.includes("volume") || 
-                               nameLower.includes("length") || 
-                               nameLower.includes("width") || 
-                               nameLower.includes("height") || 
-                               nameLower.includes("thickness") || 
-                               nameLower.includes("depth") || 
-                               nameLower.includes("perimeter");
-                               
-        if (isQuantityName) {
-          const valStr = String(prop.value).trim();
-          const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
-          if (matchNum) {
-            const numValue = parseFloat(matchNum[0]);
-            let unit = "ea";
-            const remainingStr = valStr.substring(matchNum[0].length).trim().toLowerCase();
-            if (remainingStr) {
-              unit = remainingStr;
-            } else {
-              if (nameLower.includes("volume")) {
-                unit = "m³";
-              } else if (nameLower.includes("area")) {
-                unit = "m²";
-              } else if (nameLower.includes("length") || nameLower.includes("width") || nameLower.includes("height") || nameLower.includes("thickness") || nameLower.includes("depth") || nameLower.includes("perimeter")) {
-                unit = "m";
-              } else if (nameLower.includes("mass") || nameLower.includes("weight")) {
-                unit = "kg";
-              }
-            }
+      // 2. Extract quantities for Quantity Take-Off according to user classification rules
+      let qtoAdded = false;
 
-            availableQuantities.push({
-              id: id,
-              name: meta.name,
-              ifcClass: meta.type,
-              category: meta.category,
-              quantityName: prop.name,
-              value: numValue,
-              unit: unit
-            });
+      const tL = (meta.type || "").toLowerCase();
+      const nL = (meta.name || "").toLowerCase();
+      const cL = (meta.category || "").toLowerCase();
+
+      // Check classification categories
+      const isStair = tL.includes("stair") || cL.includes("stair") || nL.includes("stair");
+      const isConcrete = tL.includes("beam") || tL.includes("column") || tL.includes("slab") || 
+                         tL.includes("footing") || tL.includes("foundation") || 
+                         cL.includes("beam") || cL.includes("column") || cL.includes("slab") || 
+                         cL.includes("footing") || cL.includes("foundation") || 
+                         nL.includes("concrete");
+      const isLinear = tL.includes("railing") || tL.includes("fence") || tL.includes("flowsegment") || 
+                       tL.includes("pipe") || tL.includes("duct") || tL.includes("cable") || 
+                       cL.includes("railing") || cL.includes("fence") || cL.includes("pipe") || cL.includes("duct");
+      const isAreaBased = tL.includes("wall") || tL.includes("roof") || tL.includes("covering") || 
+                          tL.includes("partition") || tL.includes("plate") || 
+                          cL.includes("wall") || cL.includes("roof") || cL.includes("covering") || cL.includes("partition");
+
+      const getParamVal = (names) => {
+        for (const p of meta.props) {
+          if (!p.name) continue;
+          const pNameLower = p.name.toLowerCase();
+          if (names.some(n => pNameLower === n || pNameLower.includes(n))) {
+            const valStr = String(p.value).trim();
+            const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
+            if (matchNum) {
+              return { rawName: p.name, numValue: parseFloat(matchNum[0]) };
+            }
           }
         }
-      });
+        return null;
+      };
+
+      if (isStair) {
+        const match = getParamVal(["risers", "riser count", "riser_count", "riser", "step"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Number of Risers",
+            value: match.numValue,
+            unit: "risers"
+          });
+          qtoAdded = true;
+        }
+      } else if (isConcrete) {
+        const match = getParamVal(["volume", "vol", "netvolume", "grossvolume"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Volume",
+            value: match.numValue,
+            unit: "m³"
+          });
+          qtoAdded = true;
+        }
+      } else if (isLinear) {
+        const match = getParamVal(["length", "len", "netlength", "grosslength", "perimeter"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Length",
+            value: match.numValue,
+            unit: "m"
+          });
+          qtoAdded = true;
+        }
+      } else if (isAreaBased) {
+        const match = getParamVal(["area", "netarea", "grossarea"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Area",
+            value: match.numValue,
+            unit: "m²"
+          });
+          qtoAdded = true;
+        }
+      }
+
+      // Generic Fallback: if classified as stair/concrete/linear/area but target property was not found,
+      // search for ANY generic quantity property (volume, area, length) as a secondary backup!
+      if (!qtoAdded) {
+        const volMatch = getParamVal(["volume", "vol"]);
+        const areaMatch = getParamVal(["area"]);
+        const lenMatch = getParamVal(["length", "len", "perimeter"]);
+        
+        if (volMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Volume",
+            value: volMatch.numValue,
+            unit: "m³"
+          });
+          qtoAdded = true;
+        } else if (areaMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Area",
+            value: areaMatch.numValue,
+            unit: "m²"
+          });
+          qtoAdded = true;
+        } else if (lenMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Length",
+            value: lenMatch.numValue,
+            unit: "m"
+          });
+          qtoAdded = true;
+        }
+      }
+
+      // Ultimate Fallback: door, windows, furniture or any object without geometric props
+      if (!qtoAdded) {
+        availableQuantities.push({
+          id: id,
+          name: meta.name,
+          ifcClass: meta.type,
+          category: meta.category,
+          quantityName: "Count",
+          value: 1,
+          unit: "No.s"
+        });
+      }
     });
     
     const sortedPropNames = Object.keys(modelProperties).sort((a, b) => a.localeCompare(b));
