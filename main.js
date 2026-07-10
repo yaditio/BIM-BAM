@@ -30,6 +30,7 @@ let activeModel = null;
 let activeMetaModel = null;
 let activeMetaObject = null;
 let activeElementId = null;
+const localFileBufferMap = {};
 
 // Multi-model support variables
 let loadedModels = [];
@@ -180,7 +181,20 @@ function initViewer() {
 
   // Setup loaders
   xktLoader = new XKTLoaderPlugin(viewer);
-  lasLoader = new LASLoaderPlugin(viewer);
+  lasLoader = new LASLoaderPlugin(viewer, {
+    dataSource: {
+      getLAS: function (src, ok, error) {
+        const key = src.split('.')[0];
+        const buffer = localFileBufferMap[key];
+        if (buffer) {
+          ok(buffer);
+          delete localFileBufferMap[key];
+        } else {
+          error(`File buffer not found for source: ${src}`);
+        }
+      }
+    }
+  });
   gltfLoader = new GLTFLoaderPlugin(viewer);
   sectionPlanes = new SectionPlanesPlugin(viewer);
 
@@ -510,24 +524,31 @@ async function loadModel(file, convertToXkt = false) {
     }
   } else if (fileExt === 'las' || fileExt === 'laz') {
     showLoader("Loading Point Cloud", "Reading LAS/LAZ file into memory...", 10);
-    try {
-      const blobUrl = URL.createObjectURL(file);
-      activeModel = lasLoader.load({
-        id: modelId,
-        src: blobUrl
-      });
-      setupModelLoadedListener(modelId, file);
-    } catch (err) {
-      hideLoader();
-      updateStatus(`Failed to load LAS/LAZ point cloud: ${err.message}`, true);
-    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      updateLoaderProgress(50, "Parsing LiDAR coordinates...");
+      try {
+        const arrayBuffer = e.target.result;
+        localFileBufferMap[modelId] = arrayBuffer;
+        
+        activeModel = lasLoader.load({
+          id: modelId,
+          src: modelId + (fileExt === 'laz' ? '.laz' : '.las')
+        });
+        setupModelLoadedListener(modelId, file);
+      } catch (err) {
+        hideLoader();
+        updateStatus(`Failed to load LAS/LAZ point cloud: ${err.message}`, true);
+      }
+    };
+    reader.readAsArrayBuffer(file);
   } else if (fileExt === 'gltf' || fileExt === 'glb') {
     showLoader("Loading glTF Model", "Reading glTF file into memory...", 10);
     try {
       const blobUrl = URL.createObjectURL(file);
       activeModel = gltfLoader.load({
         id: modelId,
-        src: blobUrl
+        src: blobUrl + "#" + file.name
       });
       setupModelLoadedListener(modelId, file);
     } catch (err) {
