@@ -834,6 +834,7 @@ function setupModelLoadedListener(modelId, file) {
       const cL = (meta.category || "").toLowerCase();
 
       // Check classification categories
+      const isFamilyInstance = tL === "familyinstance" || cL === "familyinstance";
       const isStair = tL.includes("stair") || cL.includes("stair") || nL.includes("stair");
       const isConcrete = tL.includes("beam") || tL.includes("column") || tL.includes("slab") || 
                          tL.includes("footing") || tL.includes("foundation") || 
@@ -862,7 +863,18 @@ function setupModelLoadedListener(modelId, file) {
         return null;
       };
 
-      if (isStair) {
+      if (isFamilyInstance) {
+        availableQuantities.push({
+          id: id,
+          name: meta.name,
+          ifcClass: meta.type,
+          category: meta.category,
+          quantityName: "pcs",
+          value: 1,
+          unit: "pcs"
+        });
+        qtoAdded = true;
+      } else if (isStair) {
         const match = getParamVal(["risers", "riser count", "riser_count", "riser", "step"]);
         if (match) {
           availableQuantities.push({
@@ -1728,7 +1740,7 @@ function renderQtoTable(filterText = "") {
       tr.innerHTML = `
         <td>${item.ifcClass}</td>
         <td>${item.category}</td>
-        <td>${item.name}</td>
+        <td><span class="qto-object-link" data-id="${item.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${item.name}</span></td>
         <td>${item.quantityName}</td>
         <td>${item.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
         <td>${item.unit}</td>
@@ -1740,6 +1752,36 @@ function renderQtoTable(filterText = "") {
   
   qtoSummaryText.innerText = `Total items shown: ${rowCount} of ${availableQuantities.length}`;
 }
+
+// Click listener to fly to object from QTO table links
+qtoTableBody.addEventListener('click', (e) => {
+  const link = e.target.closest('.qto-object-link');
+  if (link) {
+    e.preventDefault();
+    const objectId = link.dataset.id;
+    if (objectId) {
+      // 1. Close QTO modal
+      qtoModal.style.display = 'none';
+      updateStatus(`Zooming to object #${objectId} from QTO.`);
+      
+      // 2. Select & Highlight
+      viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+      viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+      
+      const entity = viewer.scene.objects[objectId];
+      if (entity) {
+        entity.selected = true;
+        entity.highlighted = true;
+        
+        // 3. Populate Properties panel
+        handleObjectSelected(entity);
+        
+        // 4. Zoom to it
+        viewer.cameraFlight.flyTo(entity);
+      }
+    }
+  }
+});
 
 btnOpenQto.addEventListener('click', () => {
   renderQtoTable(qtoSearch.value);
