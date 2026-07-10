@@ -91,6 +91,10 @@ const statusMessage = document.getElementById('statusMessage');
 let modelProperties = {};
 let availableQuantities = [];
 
+// --- Revit (xeoRvt) metadata storage ---
+// Maps modelId -> xeoRvt metadata JSON { Elements, ParameterGroups, Parameters, Units }
+const revitMetadataMap = {};
+
 // --- Georeference Variables & State ---
 let activeGeoreference = null;
 let isEditingGeoreference = false;
@@ -785,6 +789,7 @@ function updateToolDropdowns() {
   const clashASelect = document.getElementById('clashModelASelect');
   const clashBSelect = document.getElementById('clashModelBSelect');
   const convertSelect = document.getElementById('convertModelSelect');
+  const csvModelSelectEl = document.getElementById('csvModelSelect');
 
   const ifcModels = loadedModels.filter(m => m.fileName.toLowerCase().endsWith('.ifc'));
 
@@ -800,6 +805,8 @@ function updateToolDropdowns() {
     });
     if (options.some(m => m.id === selectedVal)) {
       selectEl.value = selectedVal;
+    } else if (options.length > 0) {
+      selectEl.value = options[0].id;
     }
   };
 
@@ -808,6 +815,10 @@ function updateToolDropdowns() {
   updateDropdown(clashASelect, ifcModels, '-- Select Model A --');
   updateDropdown(clashBSelect, ifcModels, '-- Select Model B (Optional) --');
   updateDropdown(convertSelect, ifcModels, '-- Select Model --');
+  updateDropdown(csvModelSelectEl, ifcModels, '-- Select Model --');
+
+  // Notify CSV tool to refresh its property/class lists
+  window.dispatchEvent(new CustomEvent('ifcModelsUpdated'));
 }
 
 function updateGeoModelDropdown(selectedId) {
@@ -960,15 +971,98 @@ function updateSelectionUI() {
       propertiesContent.style.display = "flex";
       updateStatus(`Selected element: ${metaObj.name || metaObj.id}`);
     } else {
-      // If no metadata, show basic entity details
-      activeMetaObject = null;
-      noSelectionPrompt.style.display = "none";
-      propObjId.innerText = `ID: ${singleId}`;
-      propObjName.innerText = "Generic Mesh Object";
-      propObjType.innerText = "IfcProduct";
-      propertySetsContainer.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 20px;">No metadata is available for this object.</p>`;
-      propertiesContent.style.display = "flex";
-      updateStatus(`Selected generic mesh: ${singleId}`);
+      // Check if element belongs to a Revit model with xeoRvt metadata
+      let revitElement = null;
+      let revitMeta = null;
+      const entity = viewer.scene.objects[singleId];
+      // Try matching by model ID first
+      if (entity && entity.model) {
+        revitMeta = revitMetadataMap[entity.model.id];
+        if (revitMeta && revitMeta.Elements) {
+          // Use loose equality (==) to handle string/number ID mismatch
+          revitElement = revitMeta.Elements.find(e => String(e.Id) === String(singleId));
+        }
+      }
+      
+      // Fallback: search all Revit models for this element ID
+      if (!revitElement) {
+        for (const [modelId, meta] of Object.entries(revitMetadataMap)) {
+          if (meta && meta.Elements) {
+            const found = meta.Elements.find(e => String(e.Id) === String(singleId));
+            if (found) {
+              revitElement = found;
+              revitMeta = meta;
+              break;
+            }
+          }
+        }
+      }
+
+      if (revitElement && revitMeta) {
+        activeMetaObject = null;
+        noSelectionPrompt.style.display = "none";
+        
+        propObjId.innerText = `ID: ${revitElement.Id}`;
+        propObjName.innerText = revitElement.Name || `[${revitElement.class} #${revitElement.Id}]`;
+        propObjType.innerText = revitElement.class || "Revit Element";
+        
+        propertySetsContainer.innerHTML = "";
+        
+        if (revitElement.ParameterGroups && revitElement.ParameterGroups.length > 0) {
+          revitElement.ParameterGroups.forEach((gIdx) => {
+            const group = revitMeta.ParameterGroups[gIdx];
+            if (!group) return;
+            
+            const card = document.createElement('div');
+            card.className = "property-set-card";
+
+            const header = document.createElement('div');
+            header.className = "property-set-header";
+            header.innerHTML = `<strong>${group.Name}</strong> <span>Revit Parameters</span>`;
+            card.appendChild(header);
+
+            const list = document.createElement('div');
+            list.className = "property-list";
+
+            if (group.Parameters && group.Parameters.length > 0) {
+              group.Parameters.forEach((pIdx) => {
+                const param = revitMeta.Parameters[pIdx];
+                if (!param) return;
+                const unitStr = ("Unit" in param && revitMeta.Units && revitMeta.Units[param.Unit])
+                  ? ` [${revitMeta.Units[param.Unit].Name}]` : "";
+                const row = document.createElement('div');
+                row.className = "property-row";
+                row.innerHTML = `<span class="property-name">${param.Name}</span><span class="property-value">${param.Value}${unitStr}</span>`;
+                list.appendChild(row);
+              });
+            } else {
+              list.innerHTML = `<div class="property-row"><span class="property-name" style="font-style: italic;">No parameters</span></div>`;
+            }
+
+            header.addEventListener('click', () => {
+              list.style.display = list.style.display === 'none' ? 'block' : 'none';
+            });
+
+            card.appendChild(list);
+            propertySetsContainer.appendChild(card);
+          });
+        } else {
+          propertySetsContainer.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 20px;">No parameter groups available for this Revit element.</p>`;
+        }
+        
+        propertiesContent.style.display = "flex";
+        updateStatus(`Selected Revit element: ${revitElement.Name || revitElement.Id}`);
+      } else {
+        // No metadata at all
+        activeMetaObject = null;
+        noSelectionPrompt.style.display = "none";
+        propObjId.innerText = `ID: ${singleId}`;
+        propObjName.innerText = "Generic Mesh Object";
+        propObjType.innerText = "IfcProduct";
+        propertySetsContainer.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 20px;">No metadata is available for this object.</p>`;
+        propertiesContent.style.display = "flex";
+        updateStatus(`Selected generic mesh: ${singleId}`);
+      }
     }
   } else {
     // Multiple elements selected
@@ -1601,22 +1695,28 @@ function buildTree() {
 
     modelLi.appendChild(content);
 
-    // Nested spatial roots
+    // Nested spatial roots or Revit custom tree
     const childrenUl = document.createElement("ul");
     childrenUl.className = "tree-children";
 
-    let roots = [];
-    if (modelInfo.metaModel && modelInfo.metaModel.rootMetaObject) {
-      roots = [modelInfo.metaModel.rootMetaObject];
-    } else if (modelInfo.metaModel) {
-      roots = Object.values(viewer.metaScene.metaObjects).filter(metaObj => {
-        return metaObj.metaModel && metaObj.metaModel.id === modelInfo.id && !metaObj.parent;
+    if (revitMetadataMap[modelInfo.id]) {
+      // Use custom Revit tree hierarchy (Instances, Families, Levels)
+      buildRevitTreeNodes(modelInfo, childrenUl);
+    } else {
+      // Standard IFC spatial tree
+      let roots = [];
+      if (modelInfo.metaModel && modelInfo.metaModel.rootMetaObject) {
+        roots = [modelInfo.metaModel.rootMetaObject];
+      } else if (modelInfo.metaModel) {
+        roots = Object.values(viewer.metaScene.metaObjects).filter(metaObj => {
+          return metaObj.metaModel && metaObj.metaModel.id === modelInfo.id && !metaObj.parent;
+        });
+      }
+
+      roots.forEach(root => {
+        childrenUl.appendChild(createTreeNodeElement(root));
       });
     }
-
-    roots.forEach(root => {
-      childrenUl.appendChild(createTreeNodeElement(root));
-    });
     modelLi.appendChild(childrenUl);
 
     // Bind collapse/expand
@@ -1800,6 +1900,282 @@ function createTreeNodeElement(metaObj) {
         viewer.scene.setObjectsSelected(leafIds, true);
         updateSelectionUI();
         
+        const aabb = viewer.scene.getAABB(leafIds);
+        viewer.cameraFlight.flyTo(aabb);
+      }
+    }
+  });
+
+  return li;
+}
+
+// --- Revit (xeoRvt) Custom Tree Builder ---
+// Builds Instances, Families, and Levels hierarchy from xeoRvt metadata
+function buildRevitTreeNodes(modelInfo, parentUl) {
+  const metadata = revitMetadataMap[modelInfo.id];
+  if (!metadata || !metadata.Elements) return;
+
+  const Elements = metadata.Elements;
+  const model = viewer.scene.models[modelInfo.id];
+
+  // Helper: check if an Element has a drawable entity in the scene
+  const getDrawable = (e) => {
+    if (!e || e.Id == null) return null;
+    return viewer.scene.objects[String(e.Id)] || null;
+  };
+
+  // Helper: build tree node data from an Element
+  const elementTreenode = (e, children) => ({
+    name: e.Name || `[${e.class} #${e.Id}]`,
+    children: children || [],
+    elementId: e.Id != null ? String(e.Id) : null,
+    elementClass: e.class,
+    elementIdx: Elements.indexOf(e),
+    drawable: getDrawable(e)
+  });
+
+  // Build type hierarchy: Category -> Family -> Type -> Instance
+  const typeHierarchy = (filter) => {
+    const roots = new Map();
+    Elements.forEach((e, idx) => {
+      if (getDrawable(e) && filter(e)) {
+        (function rec(e, idx) {
+          const typeParentIdx = e.Type ?? e.Family ?? e.Category ?? null;
+          const parentMap = ((typeParentIdx !== null)
+                             ? rec(Elements[typeParentIdx], typeParentIdx)
+                             : roots);
+          if (!parentMap.has(idx)) {
+            parentMap.set(idx, new Map());
+          }
+          return parentMap.get(idx);
+        })(e, idx);
+      }
+    });
+    return (function rec(map) {
+      return [...map.entries()].map(
+        ([idx, childrenMap]) => elementTreenode(Elements[idx], rec(childrenMap))
+      ).sort((a, b) => a.name.localeCompare(b.name));
+    })(roots);
+  };
+
+  // --- Build Instances folder ---
+  const instancesData = Elements.filter(getDrawable).map(
+    e => elementTreenode(e)
+  ).sort((a, b) => a.name.localeCompare(b.name));
+
+  // --- Build Families folder ---
+  const familiesData = typeHierarchy(e => true);
+
+  // --- Build Levels folder ---
+  const levelsData = Elements.map((e, idx) => (e.class === "Level") && {
+    elevation: e.Elevation ?? -Infinity,
+    node: elementTreenode(e, typeHierarchy(el => el.Level === idx))
+  }).filter(v => v).sort(
+    (a, b) => b.elevation - a.elevation
+  ).map(e => e.node).concat({
+    name: "(none)",
+    children: typeHierarchy(e => typeof e.Level !== "number"),
+    elementId: null,
+    drawable: null
+  });
+
+  // Create the three folder DOM nodes
+  const folders = [
+    { name: "Instances", icon: "fa-solid fa-list", children: instancesData, collapsed: true },
+    { name: "Families", icon: "fa-solid fa-layer-group", children: familiesData, collapsed: true },
+    { name: "Levels", icon: "fa-solid fa-building", children: levelsData, collapsed: true }
+  ];
+
+  folders.forEach(folder => {
+    const folderLi = document.createElement("li");
+    folderLi.className = "tree-node";
+
+    const content = document.createElement("div");
+    content.className = "tree-node-content rvt-folder-node";
+
+    // Toggle
+    const toggleSpan = document.createElement("span");
+    toggleSpan.className = "tree-toggle" + (folder.collapsed ? " collapsed" : "");
+    toggleSpan.innerHTML = folder.collapsed
+      ? '<i class="fa-solid fa-chevron-right"></i>'
+      : '<i class="fa-solid fa-chevron-down"></i>';
+    content.appendChild(toggleSpan);
+
+    // Folder icon
+    const icon = document.createElement("i");
+    icon.className = folder.icon;
+    icon.style.marginRight = "5px";
+    icon.style.color = "var(--accent)";
+    icon.style.fontSize = "11px";
+    content.appendChild(icon);
+
+    // Label
+    const label = document.createElement("span");
+    label.className = "tree-label";
+    label.innerText = folder.name;
+    label.style.fontWeight = "600";
+    content.appendChild(label);
+
+    // Count badge
+    const badge = document.createElement("span");
+    badge.className = "tree-type";
+    badge.innerText = `${folder.children.length}`;
+    content.appendChild(badge);
+
+    folderLi.appendChild(content);
+
+    // Children container
+    const childrenUl = document.createElement("ul");
+    childrenUl.className = "tree-children" + (folder.collapsed ? " collapsed" : "");
+
+    folder.children.forEach(childNode => {
+      childrenUl.appendChild(createRevitTreeNode(childNode, modelInfo.id));
+    });
+    folderLi.appendChild(childrenUl);
+
+    // Toggle expand/collapse
+    toggleSpan.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isCollapsed = childrenUl.classList.toggle('collapsed');
+      toggleSpan.classList.toggle('collapsed', isCollapsed);
+      toggleSpan.innerHTML = isCollapsed
+        ? '<i class="fa-solid fa-chevron-right"></i>'
+        : '<i class="fa-solid fa-chevron-down"></i>';
+    });
+
+    parentUl.appendChild(folderLi);
+  });
+}
+
+// Create a single Revit tree node DOM element (recursive)
+function createRevitTreeNode(nodeData, modelId) {
+  const li = document.createElement("li");
+  li.className = "tree-node";
+  if (nodeData.elementId) {
+    li.dataset.id = nodeData.elementId;
+  }
+
+  const content = document.createElement("div");
+  content.className = "tree-node-content";
+  if (nodeData.elementId) {
+    content.dataset.id = nodeData.elementId;
+  }
+
+  const hasChildren = nodeData.children && nodeData.children.length > 0;
+
+  // Toggle
+  const toggleSpan = document.createElement("span");
+  toggleSpan.className = "tree-toggle";
+  if (hasChildren) {
+    toggleSpan.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+    toggleSpan.classList.add('collapsed');
+  } else {
+    toggleSpan.innerHTML = '';
+  }
+  content.appendChild(toggleSpan);
+
+  // Checkbox for visibility (only if drawable or has drawable children)
+  const hasDrawableDescendant = nodeData.drawable || (hasChildren && nodeData.children.some(function hasAny(c) {
+    return c.drawable || (c.children && c.children.some(hasAny));
+  }));
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "tree-checkbox";
+  if (hasDrawableDescendant) {
+    checkbox.checked = nodeData.drawable ? nodeData.drawable.visible : true;
+  } else {
+    checkbox.checked = true;
+  }
+  content.appendChild(checkbox);
+
+  // Label
+  const label = document.createElement("span");
+  label.className = "tree-label";
+  label.innerText = nodeData.name;
+  content.appendChild(label);
+
+  // Type badge (class)
+  if (nodeData.elementClass) {
+    const typeSpan = document.createElement("span");
+    typeSpan.className = "tree-type";
+    typeSpan.innerText = nodeData.elementClass;
+    content.appendChild(typeSpan);
+  }
+
+  li.appendChild(content);
+
+  // Build children
+  let childrenUl = null;
+  if (hasChildren) {
+    childrenUl = document.createElement("ul");
+    childrenUl.className = "tree-children collapsed";
+
+    const sortedChildren = [...nodeData.children].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    sortedChildren.forEach(childData => {
+      childrenUl.appendChild(createRevitTreeNode(childData, modelId));
+    });
+    li.appendChild(childrenUl);
+  }
+
+  // Toggle expand/collapse
+  if (hasChildren) {
+    toggleSpan.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isCollapsed = childrenUl.classList.toggle('collapsed');
+      toggleSpan.classList.toggle('collapsed', isCollapsed);
+      toggleSpan.innerHTML = isCollapsed
+        ? '<i class="fa-solid fa-chevron-right"></i>'
+        : '<i class="fa-solid fa-chevron-down"></i>';
+    });
+  }
+
+  // Checkbox visibility toggle
+  checkbox.addEventListener('change', (e) => {
+    e.stopPropagation();
+    const visible = checkbox.checked;
+
+    const collectDrawableIds = (nd) => {
+      let ids = [];
+      if (nd.drawable) ids.push(nd.elementId);
+      if (nd.children) nd.children.forEach(c => { ids = ids.concat(collectDrawableIds(c)); });
+      return ids;
+    };
+
+    const leafIds = collectDrawableIds(nodeData);
+    if (leafIds.length > 0) {
+      viewer.scene.setObjectsVisible(leafIds, visible);
+      updateStatus(`${visible ? "Shown" : "Hidden"} ${leafIds.length} elements.`);
+    }
+
+    if (childrenUl) {
+      childrenUl.querySelectorAll('.tree-checkbox').forEach(cb => { cb.checked = visible; });
+    }
+    syncTreeCheckboxes();
+  });
+
+  // Click to select + fly-to
+  content.addEventListener('click', (e) => {
+    if (e.target.closest('.tree-checkbox') || e.target.closest('.tree-toggle')) return;
+
+    if (nodeData.drawable) {
+      handleObjectSelected(nodeData.drawable);
+      viewer.cameraFlight.flyTo(nodeData.drawable);
+    } else if (hasChildren) {
+      // Select all drawable children and fly to bounding box
+      const collectDrawableIds = (nd) => {
+        let ids = [];
+        if (nd.drawable) ids.push(nd.elementId);
+        if (nd.children) nd.children.forEach(c => { ids = ids.concat(collectDrawableIds(c)); });
+        return ids;
+      };
+      const leafIds = collectDrawableIds(nodeData);
+      if (leafIds.length > 0) {
+        viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+        viewer.scene.setObjectsSelected(leafIds, true);
+        updateSelectionUI();
         const aabb = viewer.scene.getAABB(leafIds);
         viewer.cameraFlight.flyTo(aabb);
       }
@@ -2913,8 +3289,68 @@ function clearAllMeasurements() {
   updateStatus("All measurements and spot elevations cleared.");
 }
 
+// --- Collapsible Side Panels ---
+function initCollapsiblePanels() {
+  document.querySelectorAll('.panel-section').forEach(section => {
+    // Skip if already processed or has no h3 header
+    if (section.querySelector('.panel-header') || section.id === 'noSelectionPrompt') return;
+    const title = section.querySelector('h3');
+    if (!title) return;
+
+    // Create header container
+    const header = document.createElement('div');
+    header.className = 'panel-header';
+
+    // Move title into header
+    title.parentNode.insertBefore(header, title);
+    header.appendChild(title);
+
+    // Create toggle chevron icon
+    const toggleIcon = document.createElement('i');
+    toggleIcon.className = 'fa-solid fa-chevron-down toggle-icon';
+    header.appendChild(toggleIcon);
+
+    // Create content wrapper
+    const content = document.createElement('div');
+    content.className = 'panel-content';
+
+    // Move all remaining elements into content wrapper
+    const children = Array.from(section.childNodes);
+    children.forEach(child => {
+      if (child !== header) {
+        content.appendChild(child);
+      }
+    });
+    
+    // Clean up empty text nodes and append content wrapper
+    section.innerHTML = '';
+    section.appendChild(header);
+    section.appendChild(content);
+
+    // Decide initial state
+    const titleText = title.textContent.trim().toLowerCase();
+    const shouldStartExpanded = 
+      titleText.includes('load model') || 
+      titleText.includes('rvt to xkt') || 
+      titleText.includes('model tree') || 
+      titleText.includes('ifc diff');
+
+    if (!shouldStartExpanded) {
+      header.classList.add('collapsed');
+      content.classList.add('collapsed');
+    }
+
+    // Bind click toggle action
+    header.addEventListener('click', () => {
+      const isCollapsed = header.classList.toggle('collapsed');
+      content.classList.toggle('collapsed', isCollapsed);
+    });
+  });
+}
+
 // --- Initialize App ---
 function startApp() {
+  initCollapsiblePanels();
   initViewer();
   setupIfcOpenShellTools();
   updateStatus("BIM Viewer initialized. Ready for user files.");
@@ -3383,7 +3819,474 @@ function setupIfcOpenShellTools() {
       alert(`Error converting model: ${err.message}`);
     }
   });
+
+  // 6. IFC CSV Export Tool
+  setupIfcCsvTool();
+
+  // 7. RVT to IFC Converter Tool
+  setupRvtConverter();
 }
+
+// --- RVT to IFC Converter Tool ---
+function setupRvtConverter() {
+  const btnConvertRvt = document.getElementById('btnConvertRvt');
+  const rvtFileInput = document.getElementById('rvtFileInput');
+  const xdesApiUrlInput = document.getElementById('xdesApiUrl');
+  const xdesClientIdInput = document.getElementById('xdesClientId');
+  const xdesClientSecretInput = document.getElementById('xdesClientSecret');
+
+  if (!btnConvertRvt) return;
+
+  // Restore saved settings from localStorage
+  if (localStorage.getItem('xdes_api_url')) {
+    xdesApiUrlInput.value = localStorage.getItem('xdes_api_url');
+  }
+  if (localStorage.getItem('xdes_client_id')) {
+    xdesClientIdInput.value = localStorage.getItem('xdes_client_id');
+  }
+  if (localStorage.getItem('xdes_client_secret')) {
+    xdesClientSecretInput.value = localStorage.getItem('xdes_client_secret');
+  }
+
+  btnConvertRvt.addEventListener('click', async () => {
+    const file = rvtFileInput.files[0];
+    if (!file) {
+      alert("Please select a Revit (.rvt) file to convert.");
+      return;
+    }
+
+    const apiUrl = xdesApiUrlInput.value.trim();
+    const clientId = xdesClientIdInput.value.trim();
+    const clientSecret = xdesClientSecretInput.value.trim();
+
+    if (!clientId || !clientSecret) {
+      alert("Please enter both your Client ID and Client Secret.");
+      return;
+    }
+
+    // Save configuration settings
+    localStorage.setItem('xdes_api_url', apiUrl);
+    localStorage.setItem('xdes_client_id', clientId);
+    localStorage.setItem('xdes_client_secret', clientSecret);
+
+    showLoader("Converting RVT to XKT", "Uploading file & initiating Data Engine job...", 10);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('apiUrl', apiUrl);
+    formData.append('clientId', clientId);
+    formData.append('clientSecret', clientSecret);
+
+    try {
+      const response = await fetch('/api/convert-rvt', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        const msg = errData.details ? `${errData.error}: ${errData.details}` : (errData.error || 'Conversion failed');
+        throw new Error(msg);
+      }
+
+      updateLoaderProgress(80, "Downloading converted model data...");
+      const data = await response.json();
+
+      updateLoaderProgress(90, "Decoding XKT model...");
+      // Decode base64 XKT to ArrayBuffer
+      const binaryStr = atob(data.xkt);
+      const len = binaryStr.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
+      const xktArrayBuffer = bytes.buffer;
+
+      const modelId = "model-" + Date.now();
+
+      // Store Revit metadata if available
+      if (data.metadata) {
+        console.log(`[RVT] Metadata keys: ${Object.keys(data.metadata).join(', ')}`);
+        
+        if (data.metadata.Elements) {
+          // xeoRvt native format — store for custom tree & properties
+          revitMetadataMap[modelId] = data.metadata;
+          console.log(`[RVT] Stored xeoRvt metadata for model ${modelId}: ${data.metadata.Elements.length} elements`);
+        } else if (data.metadata.metaObjects) {
+          // xeokit-convert MetaModel format — store for custom tree adaptation
+          revitMetadataMap[modelId] = data.metadata;
+          console.log(`[RVT] Stored xeokit MetaModel metadata for model ${modelId}: ${data.metadata.metaObjects.length} metaObjects`);
+        }
+      }
+
+      // Cache for download
+      convertedXktBuffer = xktArrayBuffer;
+      convertedXktName = data.filename || file.name.replace(/\.rvt$/i, '.xkt');
+      btnDownloadXkt.disabled = false;
+
+      updateLoaderProgress(95, "Loading converted XKT model into viewer...");
+      
+      // Build loader options
+      const loadOptions = {
+        id: modelId,
+        xkt: xktArrayBuffer,
+        edges: true,
+        dtxEnabled: true
+      };
+      
+      // If we have xeokit MetaModel metadata, load it alongside the XKT
+      if (data.metadata && data.metadata.metaObjects) {
+        // Create a Blob URL for the metadata JSON so we can pass it as metaModelSrc
+        const metaBlob = new Blob([JSON.stringify(data.metadata)], { type: 'application/json' });
+        const metaUrl = URL.createObjectURL(metaBlob);
+        loadOptions.metaModelSrc = metaUrl;
+        console.log(`[RVT] Loading XKT with MetaModel metadata`);
+      }
+
+      activeModel = xktLoader.load(loadOptions);
+
+      const xktFilename = data.filename || file.name.replace(/\.rvt$/i, '.xkt');
+      setupModelLoadedListener(modelId, { name: xktFilename });
+      hideLoader();
+      updateStatus(`Revit model converted and loaded successfully.`);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`RVT Conversion failed: ${err.message}`, true);
+      alert(`Error converting Revit model:\n${err.message}`);
+    }
+  });
+}
+
+// --- IFC CSV Export Tool ---
+function setupIfcCsvTool() {
+  const csvModelSelect = document.getElementById('csvModelSelect');
+  const csvIfcClassFilter = document.getElementById('csvIfcClassFilter');
+  const csvParamRows = document.getElementById('csvParamRows');
+  const csvParamSelect0 = document.getElementById('csvParamSelect0');
+  const csvBtnAdd0 = document.getElementById('csvBtnAdd0');
+  const csvSelectedCols = document.getElementById('csvSelectedCols');
+  const csvColChips = document.getElementById('csvColChips');
+  const csvPreviewCount = document.getElementById('csvPreviewCount');
+  const btnExportIfcCsv = document.getElementById('btnExportIfcCsv');
+  const csvColName = document.getElementById('csvColName');
+  const csvColType = document.getElementById('csvColType');
+  const csvColId = document.getElementById('csvColId');
+
+  // Track selected property columns in order
+  let selectedColumns = []; // array of property name strings
+  let allPropertyNames = []; // master list of all property names from model
+  let dynamicRowCount = 0; // counter for unique IDs of added rows
+
+  // Helper: get all property names from the selected model (or all models)
+  function gatherPropertyNames(modelId) {
+    const names = new Set();
+    if (!viewer || !viewer.metaScene) return [];
+    const metaObjects = viewer.metaScene.metaObjects;
+    for (const metaObj of Object.values(metaObjects)) {
+      // Filter by model if specified
+      if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
+      if (metaObj.propertySets) {
+        for (const pset of metaObj.propertySets) {
+          if (pset.properties) {
+            for (const prop of pset.properties) {
+              if (prop.name && prop.name.trim()) {
+                names.add(prop.name.trim());
+              }
+            }
+          }
+        }
+      }
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }
+
+  // Helper: get all IFC classes from the selected model
+  function gatherIfcClasses(modelId) {
+    const classes = new Set();
+    if (!viewer || !viewer.metaScene) return [];
+    const metaObjects = viewer.metaScene.metaObjects;
+    for (const metaObj of Object.values(metaObjects)) {
+      if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
+      if (metaObj.type && metaObj.type.trim()) {
+        classes.add(metaObj.type.trim());
+      }
+    }
+    return Array.from(classes).sort((a, b) => a.localeCompare(b));
+  }
+
+  // Populate a <select> dropdown with property names
+  function populateParamSelect(selectEl) {
+    const currentVal = selectEl.value;
+    selectEl.innerHTML = '<option value="">-- Select Property --</option>';
+    allPropertyNames.forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      selectEl.appendChild(opt);
+    });
+    // Restore previous selection if still valid
+    if (currentVal && allPropertyNames.includes(currentVal)) {
+      selectEl.value = currentVal;
+    }
+  }
+
+  // Refresh all selects when model changes
+  function refreshCsvUi() {
+    const modelId = csvModelSelect.value || null;
+    allPropertyNames = gatherPropertyNames(modelId);
+
+    // Populate first select
+    populateParamSelect(csvParamSelect0);
+
+    // Populate all dynamic selects
+    csvParamRows.querySelectorAll('.csv-param-select').forEach(sel => {
+      populateParamSelect(sel);
+    });
+
+    // Populate IFC class filter
+    const classes = gatherIfcClasses(modelId);
+    csvIfcClassFilter.innerHTML = '<option value="">-- All Classes --</option>';
+    classes.forEach(cls => {
+      const opt = document.createElement('option');
+      opt.value = cls;
+      opt.textContent = cls;
+      csvIfcClassFilter.appendChild(opt);
+    });
+
+    // Recount preview
+    updatePreviewCount();
+  }
+
+  // Update the column chips display
+  function renderChips() {
+    csvColChips.innerHTML = '';
+    selectedColumns.forEach((colName, idx) => {
+      const chip = document.createElement('span');
+      chip.className = 'csv-col-chip';
+
+      const order = document.createElement('span');
+      order.className = 'csv-col-chip-order';
+      order.textContent = idx + 1;
+
+      const label = document.createTextNode(colName);
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'csv-col-chip-remove';
+      removeBtn.title = 'Remove column';
+      removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      removeBtn.addEventListener('click', () => {
+        selectedColumns.splice(idx, 1);
+        renderChips();
+        updatePreviewCount();
+      });
+
+      chip.appendChild(order);
+      chip.appendChild(label);
+      chip.appendChild(removeBtn);
+      csvColChips.appendChild(chip);
+    });
+
+    if (selectedColumns.length > 0) {
+      csvSelectedCols.style.display = 'block';
+    } else {
+      csvSelectedCols.style.display = 'none';
+    }
+  }
+
+  // Count how many rows would be exported
+  function updatePreviewCount() {
+    if (!viewer || !viewer.metaScene) {
+      csvPreviewCount.style.display = 'none';
+      return;
+    }
+    const modelId = csvModelSelect.value || null;
+    const classFilter = csvIfcClassFilter.value || null;
+    let count = 0;
+    const metaObjects = viewer.metaScene.metaObjects;
+    for (const metaObj of Object.values(metaObjects)) {
+      if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
+      if (classFilter && metaObj.type !== classFilter) continue;
+      // Skip non-leaf types like IfcProject, IfcSite, IfcBuilding
+      if (!metaObj.type || ['IfcProject', 'IfcSite', 'IfcBuilding', 'IfcBuildingStorey'].includes(metaObj.type)) continue;
+      count++;
+    }
+    csvPreviewCount.textContent = `${count} object${count !== 1 ? 's' : ''} will be exported`;
+    csvPreviewCount.style.display = 'block';
+  }
+
+  // Add a new dynamic dropdown row after clicking "+"
+  function addParamRow(selectedPropName) {
+    if (!selectedPropName) return;
+
+    // Prevent duplicates
+    if (selectedColumns.includes(selectedPropName)) {
+      // Flash the existing chip briefly
+      const chips = csvColChips.querySelectorAll('.csv-col-chip');
+      chips.forEach(chip => {
+        const idx = selectedColumns.indexOf(selectedPropName);
+        if (parseInt(chip.querySelector('.csv-col-chip-order').textContent) === idx + 1) {
+          chip.style.border = '1px solid var(--accent)';
+          setTimeout(() => { chip.style.border = ''; }, 800);
+        }
+      });
+      return;
+    }
+
+    // Add to selected columns
+    selectedColumns.push(selectedPropName);
+    renderChips();
+    updatePreviewCount();
+
+    // Create a new dropdown row
+    dynamicRowCount++;
+    const rowId = `csvDynRow${dynamicRowCount}`;
+    const selectId = `csvParamSelect${dynamicRowCount}`;
+
+    const row = document.createElement('div');
+    row.className = 'csv-param-row';
+    row.id = rowId;
+
+    const newSelect = document.createElement('select');
+    newSelect.id = selectId;
+    newSelect.className = 'form-input csv-param-select';
+    populateParamSelect(newSelect);
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'btn-csv-add';
+    addBtn.title = 'Add this column';
+    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    addBtn.addEventListener('click', () => {
+      addParamRow(newSelect.value);
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-csv-remove';
+    removeBtn.title = 'Remove this row';
+    removeBtn.innerHTML = '<i class="fa-solid fa-minus"></i>';
+    removeBtn.addEventListener('click', () => {
+      row.remove();
+    });
+
+    row.appendChild(newSelect);
+    row.appendChild(addBtn);
+    row.appendChild(removeBtn);
+    csvParamRows.appendChild(row);
+  }
+
+  // Wire up the first (static) "+" button
+  csvBtnAdd0.addEventListener('click', () => {
+    addParamRow(csvParamSelect0.value);
+  });
+
+  // Refresh on model select change
+  csvModelSelect.addEventListener('change', refreshCsvUi);
+  csvIfcClassFilter.addEventListener('change', updatePreviewCount);
+
+  // Listen for model load events to refresh CSV property/class dropdowns
+  window.addEventListener('ifcModelsUpdated', () => {
+    refreshCsvUi();
+  });
+
+  // CSV Generation and Download
+  btnExportIfcCsv.addEventListener('click', () => {
+    if (!viewer || !viewer.metaScene) {
+      alert('No model loaded. Please load an IFC model first.');
+      return;
+    }
+
+    const modelId = csvModelSelect.value || null;
+    const classFilter = csvIfcClassFilter.value || null;
+
+    // Determine what columns to include
+    const includeBuiltinName = csvColName.checked;
+    const includeBuiltinType = csvColType.checked;
+    const includeBuiltinId = csvColId.checked;
+
+    if (!includeBuiltinName && !includeBuiltinType && !includeBuiltinId && selectedColumns.length === 0) {
+      alert('Please select at least one column to export.');
+      return;
+    }
+
+    // Build CSV headers
+    const headers = [];
+    if (includeBuiltinName) headers.push('Name');
+    if (includeBuiltinType) headers.push('IFC Class');
+    if (includeBuiltinId) headers.push('GlobalId');
+    selectedColumns.forEach(col => headers.push(col));
+
+    // Build CSV rows
+    const rows = [];
+    const metaObjects = viewer.metaScene.metaObjects;
+
+    for (const metaObj of Object.values(metaObjects)) {
+      // Filter by model
+      if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
+      // Filter by class
+      if (classFilter && metaObj.type !== classFilter) continue;
+      // Skip project/site/building containers
+      if (!metaObj.type || ['IfcProject', 'IfcSite', 'IfcBuilding', 'IfcBuildingStorey'].includes(metaObj.type)) continue;
+
+      // Build a flat map of all properties for this object
+      const propMap = {};
+      if (metaObj.propertySets) {
+        for (const pset of metaObj.propertySets) {
+          if (pset.properties) {
+            for (const prop of pset.properties) {
+              if (prop.name) {
+                propMap[prop.name.trim()] = prop.value !== undefined && prop.value !== null ? String(prop.value) : '';
+              }
+            }
+          }
+        }
+      }
+
+      const row = [];
+      if (includeBuiltinName) row.push(metaObj.name || '');
+      if (includeBuiltinType) row.push(metaObj.type || '');
+      if (includeBuiltinId) row.push(metaObj.id || '');
+      selectedColumns.forEach(colName => {
+        row.push(propMap[colName] !== undefined ? propMap[colName] : '');
+      });
+
+      rows.push(row);
+    }
+
+    if (rows.length === 0) {
+      alert('No objects found matching the current filter criteria.');
+      return;
+    }
+
+    // Escape CSV cell values
+    const escapeCell = (val) => {
+      const str = String(val);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const csvContent = [
+      headers.map(escapeCell).join(','),
+      ...rows.map(row => row.map(escapeCell).join(','))
+    ].join('\r\n');
+
+    // Trigger download
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const modelInfo = loadedModels.find(m => m.id === modelId);
+    const baseName = modelInfo ? modelInfo.fileName.replace(/\.[^.]+$/, '') : 'ifc_export';
+    const classLabel = classFilter ? `_${classFilter}` : '';
+    a.download = `${baseName}${classLabel}_export.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    updateStatus(`CSV exported: ${rows.length} objects, ${headers.length} columns.`);
+  });
+} // end setupIfcCsvTool
 
 if (document.readyState === "complete" || document.readyState === "interactive") {
   startApp();

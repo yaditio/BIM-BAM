@@ -63,6 +63,36 @@
                 </div>
             </section>
 
+            <!-- RVT to XKT Converter Tool -->
+            <section class="panel-section" id="rvtConverterSection">
+                <h3><i class="fa-solid fa-cloud-arrow-up"></i> RVT to XKT Converter</h3>
+                <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Convert Revit (.rvt) files to xeokit-optimized format (.xkt) using Creoox Xeokit Data Engine.</p>
+                
+                <div class="form-group">
+                    <label for="xdesApiUrl">XDES API URL</label>
+                    <input type="text" id="xdesApiUrl" class="form-input" value="https://jobs.xeo.vision" placeholder="e.g. https://jobs.xeo.vision">
+                </div>
+                
+                <div class="form-group">
+                    <label for="xdesClientId">XDES Client ID</label>
+                    <input type="text" id="xdesClientId" class="form-input" placeholder="Client ID...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="xdesClientSecret">XDES Client Secret</label>
+                    <input type="password" id="xdesClientSecret" class="form-input" placeholder="Client Secret...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="rvtFileInput">Revit (.rvt) File</label>
+                    <input type="file" id="rvtFileInput" accept=".rvt" class="form-input">
+                </div>
+                
+                <button class="btn btn-primary btn-full" id="btnConvertRvt">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Convert &amp; Load Model
+                </button>
+            </section>
+
             <!-- Loading Settings -->
             <section class="panel-section">
                 <h3><i class="fa-solid fa-sliders"></i> Loading Options</h3>
@@ -317,6 +347,74 @@
                         <i class="fa-solid fa-file-export"></i> Convert & Download
                     </button>
                 </section>
+
+                <!-- IFC CSV Export Tool -->
+                <section class="panel-section" id="ifcCsvSection">
+                    <h3><i class="fa-solid fa-file-csv"></i> IFC CSV Export</h3>
+                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Extract IFC object properties to a downloadable CSV table. Select columns from available parameters.</p>
+
+                    <div class="form-group">
+                        <label for="csvModelSelect">IFC Model</label>
+                        <select id="csvModelSelect" class="form-input">
+                            <option value="">-- Select Model --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="csvIfcClassFilter">IFC Class Filter</label>
+                        <select id="csvIfcClassFilter" class="form-input">
+                            <option value="">-- All Classes --</option>
+                        </select>
+                    </div>
+
+                    <!-- Built-in columns toggles -->
+                    <div class="csv-builtin-cols">
+                        <label class="csv-builtin-label">Always include:</label>
+                        <div class="csv-builtin-checks">
+                            <label class="csv-check-item">
+                                <input type="checkbox" id="csvColName" checked> Name
+                            </label>
+                            <label class="csv-check-item">
+                                <input type="checkbox" id="csvColType" checked> IFC Class
+                            </label>
+                            <label class="csv-check-item">
+                                <input type="checkbox" id="csvColId"> GlobalId
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Parameter selector area -->
+                    <div class="csv-param-section">
+                        <label class="csv-param-label">
+                            <i class="fa-solid fa-table-columns"></i> Add Property Columns
+                        </label>
+                        <div id="csvParamRows" class="csv-param-rows">
+                            <!-- Dynamic parameter rows inserted here -->
+                        </div>
+                        <!-- First row template (always visible) -->
+                        <div class="csv-param-row" id="csvFirstParamRow">
+                            <select id="csvParamSelect0" class="form-input csv-param-select">
+                                <option value="">-- Select Property --</option>
+                            </select>
+                            <button class="btn-csv-add" id="csvBtnAdd0" title="Add this column">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selected columns chips -->
+                    <div id="csvSelectedCols" class="csv-selected-cols" style="display:none;">
+                        <label class="csv-param-label"><i class="fa-solid fa-list-check"></i> Selected Columns:</label>
+                        <div id="csvColChips" class="csv-col-chips"></div>
+                    </div>
+
+                    <!-- Preview count -->
+                    <div id="csvPreviewCount" class="csv-preview-count" style="display:none;"></div>
+
+                    <button class="btn btn-primary btn-full" id="btnExportIfcCsv" style="margin-top: 12px;">
+                        <i class="fa-solid fa-download"></i> Export & Download CSV
+                    </button>
+                 </section>
             </div> <!-- End of ifcopenshell-tab -->
         </aside>
 
