@@ -3,6 +3,8 @@ import {
   XKTLoaderPlugin, 
   WebIFCLoaderPlugin, 
   IFCOpenShellLoaderPlugin, 
+  LASLoaderPlugin,
+  GLTFLoaderPlugin,
   NavCubePlugin, 
   SectionPlanesPlugin, 
   DistanceMeasurementsPlugin,
@@ -18,6 +20,9 @@ import * as WebIFC from "https://cdn.jsdelivr.net/npm/web-ifc@0.0.51/web-ifc-api
 // --- Global UI State ---
 let viewer;
 let xktLoader;
+let lasLoader = null;
+let gltfLoader = null;
+let pendingGeoreference = null;
 let webIfcLoader = null;
 let ifcOpenShellLoader = null;
 let sectionPlanes = null;
@@ -175,6 +180,8 @@ function initViewer() {
 
   // Setup loaders
   xktLoader = new XKTLoaderPlugin(viewer);
+  lasLoader = new LASLoaderPlugin(viewer);
+  gltfLoader = new GLTFLoaderPlugin(viewer);
   sectionPlanes = new SectionPlanesPlugin(viewer);
 
   // Bind click listener for single-click selection
@@ -501,6 +508,32 @@ async function loadModel(file, convertToXkt = false) {
         reader.readAsText(file);
       }
     }
+  } else if (fileExt === 'las' || fileExt === 'laz') {
+    showLoader("Loading Point Cloud", "Reading LAS/LAZ file into memory...", 10);
+    try {
+      const blobUrl = URL.createObjectURL(file);
+      activeModel = lasLoader.load({
+        id: modelId,
+        src: blobUrl
+      });
+      setupModelLoadedListener(modelId, file);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Failed to load LAS/LAZ point cloud: ${err.message}`, true);
+    }
+  } else if (fileExt === 'gltf' || fileExt === 'glb') {
+    showLoader("Loading glTF Model", "Reading glTF file into memory...", 10);
+    try {
+      const blobUrl = URL.createObjectURL(file);
+      activeModel = gltfLoader.load({
+        id: modelId,
+        src: blobUrl
+      });
+      setupModelLoadedListener(modelId, file);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Failed to load glTF model: ${err.message}`, true);
+    }
   }
 }
 
@@ -765,7 +798,12 @@ function setupModelLoadedListener(modelId, file) {
     });
 
     // Extract georeference specifically for this model
-    const geo = extractGeoreference(modelId);
+    const geo = pendingGeoreference || extractGeoreference(modelId);
+    pendingGeoreference = null;
+    const geoJsonFileInput = document.getElementById('geoJsonFileInput');
+    if (geoJsonFileInput) {
+      geoJsonFileInput.value = "";
+    }
 
     // Save model metadata
     loadedModels.push({
@@ -1280,6 +1318,37 @@ dropZone.addEventListener('drop', (e) => {
   }
 });
 
+const geoJsonFileInput = document.getElementById('geoJsonFileInput');
+if (geoJsonFileInput) {
+  geoJsonFileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      pendingGeoreference = null;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const json = JSON.parse(evt.target.result);
+        const easting = json.easting !== undefined ? parseFloat(json.easting) : (json.x !== undefined ? parseFloat(json.x) : null);
+        const northing = json.northing !== undefined ? parseFloat(json.northing) : (json.y !== undefined ? parseFloat(json.y) : null);
+        const trueNorth = json.trueNorth !== undefined ? parseFloat(json.trueNorth) : (json.rotation !== undefined ? parseFloat(json.rotation) : (json.trueNorthAngle !== undefined ? parseFloat(json.trueNorthAngle) : null));
+        const epsg = json.epsg || json.crs || null;
+        const verticalDatum = json.verticalDatum || json.elevation || json.z || json.altitude || null;
+        const cesiumToken = json.cesiumToken || json.cesiumIonToken || null;
+        
+        pendingGeoreference = { easting, northing, trueNorth, epsg, verticalDatum: verticalDatum !== null ? String(verticalDatum) : null, cesiumToken };
+        updateStatus(`Loaded georeference metadata from JSON: Easting=${easting}, Northing=${northing}`);
+      } catch (err) {
+        updateStatus(`Failed to parse georeference JSON: ${err.message}`, true);
+        geoJsonFileInput.value = "";
+        pendingGeoreference = null;
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
 function handleFileSelected(file) {
   // Clear previous conversion buffer
   convertedXktBuffer = null;
@@ -1305,8 +1374,15 @@ function handleFileSelected(file) {
     
     // Auto-trigger load
     loadModel(file, false);
+  } else if (fileExt === 'las' || fileExt === 'laz' || fileExt === 'gltf' || fileExt === 'glb') {
+    // Disable IFC configs since it's point cloud/glTF
+    convertToXktOpt.disabled = true;
+    document.querySelectorAll('input[name="ifcEngine"]').forEach(r => r.disabled = true);
+    
+    // Auto-trigger load
+    loadModel(file, false);
   } else {
-    updateStatus("Unsupported file type! Only .ifc and .xkt files are supported.", true);
+    updateStatus("Unsupported file type! Only .ifc, .xkt, .las, .laz, .gltf, and .glb files are supported.", true);
   }
 }
 
@@ -1761,6 +1837,9 @@ function buildTree() {
       if (allLeafIds.length > 0) {
         viewer.scene.setObjectsVisible(allLeafIds, visible);
         updateStatus(`${visible ? "Shown" : "Hidden"} all elements of model ${modelInfo.fileName}.`);
+      } else if (modelInfo.model) {
+        modelInfo.model.visible = visible;
+        updateStatus(`${visible ? "Shown" : "Hidden"} model ${modelInfo.fileName}.`);
       }
 
       childrenUl.querySelectorAll('.tree-checkbox').forEach(cb => {
