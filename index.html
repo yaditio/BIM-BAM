@@ -25,6 +25,9 @@
     </script>
     <script src="https://unpkg.com/cesium@1.119.0/Build/Cesium/Cesium.js"></script>
     
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -593,22 +596,40 @@
                     <i class="fa-solid fa-file-csv"></i> Export CSV
                 </button>
             </div>
-            <div class="table-container">
-                <table class="qto-table" id="qtoTable">
-                    <thead>
-                        <tr>
-                            <th>IFC Class</th>
-                            <th>Category</th>
-                            <th>Family Object Name</th>
-                            <th>Quantity Name</th>
-                            <th>Value</th>
-                            <th>Unit</th>
-                        </tr>
-                    </thead>
-                    <tbody id="qtoTableBody">
-                        <!-- Dynamically generated rows -->
-                    </tbody>
-                </table>
+            <div class="qto-split-container">
+                <div class="table-container">
+                    <table class="qto-table" id="qtoTable">
+                        <thead>
+                            <tr>
+                                <th>IFC Class</th>
+                                <th>Category</th>
+                                <th>Family Object Name</th>
+                                <th>Quantity Name</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="qtoTableBody">
+                            <!-- Dynamically generated rows -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="qto-charts-container">
+                    <div class="qto-chart-wrapper">
+                        <h4>Budget Distribution by Category</h4>
+                        <div class="qto-chart-canvas-holder">
+                            <canvas id="qtoPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="qto-chart-wrapper">
+                        <h4>Accumulated Price by Category</h4>
+                        <div class="qto-chart-canvas-holder">
+                            <canvas id="qtoBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <span id="qtoSummaryText">Total quantity entries: 0</span>

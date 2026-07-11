@@ -840,7 +840,8 @@ function setupModelLoadedListener(modelId, file) {
       const cL = (meta.category || "").toLowerCase();
 
       // Check classification categories
-      const isFamilyInstance = tL === "familyinstance" || cL === "familyinstance";
+      const isFamilyInstance = (tL === "familyinstance" || cL === "familyinstance") && 
+                               !(tL.includes("railing") || cL.includes("railing") || nL.includes("railing"));
       const isStair = tL.includes("stair") || cL.includes("stair") || nL.includes("stair");
       const isConcrete = tL.includes("beam") || tL.includes("column") || tL.includes("slab") || 
                          tL.includes("footing") || tL.includes("foundation") || 
@@ -911,14 +912,15 @@ function setupModelLoadedListener(modelId, file) {
       } else if (isLinear) {
         const match = getParamVal(["length", "len", "netlength", "grosslength", "perimeter"]);
         if (match) {
+          const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
           availableQuantities.push({
             id: id,
             name: meta.name,
             ifcClass: meta.type,
-            category: meta.category,
+            category: isRailing ? "Railings" : meta.category,
             quantityName: "Length",
             value: match.numValue,
-            unit: "m"
+            unit: isRailing ? "mm" : "m"
           });
           qtoAdded = true;
         }
@@ -968,14 +970,15 @@ function setupModelLoadedListener(modelId, file) {
           });
           qtoAdded = true;
         } else if (lenMatch) {
+          const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
           availableQuantities.push({
             id: id,
             name: meta.name,
             ifcClass: meta.type,
-            category: meta.category,
+            category: isRailing ? "Railings" : meta.category,
             quantityName: "Length",
             value: lenMatch.numValue,
-            unit: "m"
+            unit: isRailing ? "mm" : "m"
           });
           qtoAdded = true;
         }
@@ -983,16 +986,23 @@ function setupModelLoadedListener(modelId, file) {
 
       // Ultimate Fallback: door, windows, furniture or any object without geometric props
       if (!qtoAdded) {
+        const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
         availableQuantities.push({
           id: id,
           name: meta.name,
           ifcClass: meta.type,
-          category: meta.category,
+          category: isRailing ? "Railings" : meta.category,
           quantityName: "Count",
           value: 1,
-          unit: "No.s"
+          unit: isRailing ? "pcs" : "No.s"
         });
       }
+    });
+
+    // Post-process quantities to compute default prices
+    availableQuantities.forEach((item) => {
+      item.unitPrice = getDefaultUnitPrice(item);
+      item.totalPrice = item.value * item.unitPrice;
     });
     
     const sortedPropNames = Object.keys(modelProperties).sort((a, b) => a.localeCompare(b));
@@ -1729,10 +1739,250 @@ btnResetPropFilter.addEventListener('click', () => {
 });
 
 // --- Quantity Take-Off (QTO) Modal Interface ---
-function renderQtoTable(filterText = "") {
-  qtoTableBody.innerHTML = "";
-  const query = filterText.toLowerCase().trim();
+let qtoPieChart = null;
+let qtoBarChart = null;
+
+// Format price to IDR format
+function formatIDR(value) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+// Clean up category strings for display/grouping
+function getCleanCategory(item) {
+  let cat = item.category || item.ifcClass || "Other";
+  if (cat.startsWith("Ifc")) {
+    cat = cat.substring(3);
+  }
+  return cat.charAt(0).toUpperCase() + cat.slice(1);
+}
+
+// Get default Indonesian market unit prices based on category and unit
+function getDefaultUnitPrice(item) {
+  const cls = (item.ifcClass || "").toLowerCase();
+  const cat = (item.category || "").toLowerCase();
+  const unit = (item.unit || "").toLowerCase();
   
+  if (cls.includes("door") || cat.includes("door")) return 2500000;
+  if (cls.includes("window") || cat.includes("window")) return 1500000;
+  
+  if (cls.includes("column") || cat.includes("column")) {
+    return unit.includes("3") ? 5000000 : 800000;
+  }
+  if (cls.includes("beam") || cat.includes("beam")) {
+    return unit.includes("3") ? 4500000 : 700000;
+  }
+  if (cls.includes("slab") || cat.includes("slab") || cls.includes("floor") || cat.includes("floor")) {
+    return unit.includes("3") ? 4000000 : 350000;
+  }
+  if (cls.includes("footing") || cat.includes("footing") || cls.includes("foundation") || cat.includes("foundation")) {
+    return 3500000;
+  }
+  
+  if (cls.includes("wall") || cat.includes("wall")) return 250000;
+  if (cls.includes("roof") || cat.includes("roof")) return 400000;
+  if (cls.includes("covering") || cat.includes("covering") || cls.includes("ceiling") || cat.includes("ceiling")) return 120000;
+  
+  if (cls.includes("railing") || cat.includes("railing")) {
+    if (unit.includes("mm") && !unit.includes("2") && !unit.includes("²")) {
+      return 600; // Rp 600 per mm (equivalent to Rp 600,000 per m)
+    }
+    return 600000;
+  }
+  if (cls.includes("pipe") || cat.includes("pipe") || cls.includes("duct") || cat.includes("duct") || cls.includes("flowsegment") || cat.includes("flowsegment")) return 150000;
+  
+  if (cls.includes("stair") || cat.includes("stair")) {
+    if (unit.includes("riser")) return 200000;
+    return 5000000;
+  }
+  
+  if (cls.includes("furniture") || cat.includes("furniture")) return 1500000;
+  
+  if (unit.includes("3") || unit.includes("m3")) return 3000000;
+  if (unit.includes("2") || unit.includes("m2")) return 250000;
+  if (unit === "m" || unit === "meter") return 200000;
+  
+  return 500000;
+}
+
+// Update or initialize Pie and Bar charts using Chart.js
+function updateQtoCharts() {
+  if (typeof Chart === 'undefined') {
+    console.warn("Chart.js is not loaded yet.");
+    return;
+  }
+  
+  const categoryTotals = {};
+  availableQuantities.forEach((item) => {
+    const category = getCleanCategory(item);
+    if (!categoryTotals[category]) {
+      categoryTotals[category] = 0;
+    }
+    categoryTotals[category] += item.totalPrice || 0;
+  });
+  
+  const labels = Object.keys(categoryTotals);
+  const data = Object.values(categoryTotals);
+  
+  const backgroundColors = [
+    'rgba(79, 70, 229, 0.75)',  // var(--primary) - Indigo
+    'rgba(6, 182, 212, 0.75)',  // var(--accent) - Cyan
+    'rgba(16, 185, 129, 0.75)', // var(--success) - Emerald
+    'rgba(239, 68, 68, 0.75)',  // var(--danger) - Rose
+    'rgba(245, 158, 11, 0.75)',  // Orange
+    'rgba(139, 92, 246, 0.75)', // Violet
+    'rgba(236, 72, 153, 0.75)', // Pink
+    'rgba(107, 114, 128, 0.75)' // Gray
+  ];
+  
+  const borderColors = [
+    '#4f46e5',
+    '#06b6d4',
+    '#10b981',
+    '#ef4444',
+    '#f59e0b',
+    '#8b5cf6',
+    '#ec4899',
+    '#6b7280'
+  ];
+  
+  // Pie Chart
+  const pieCanvas = document.getElementById('qtoPieChart');
+  if (pieCanvas) {
+    if (qtoPieChart) {
+      qtoPieChart.data.labels = labels;
+      qtoPieChart.data.datasets[0].data = data;
+      qtoPieChart.data.datasets[0].backgroundColor = backgroundColors.slice(0, labels.length);
+      qtoPieChart.data.datasets[0].borderColor = borderColors.slice(0, labels.length);
+      qtoPieChart.update();
+    } else {
+      qtoPieChart = new Chart(pieCanvas, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: backgroundColors.slice(0, labels.length),
+            borderColor: borderColors.slice(0, labels.length),
+            borderWidth: 1.5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: '#f3f4f6',
+                font: {
+                  family: 'Inter',
+                  size: 11
+                }
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  return ` ${context.label}: ${formatIDR(val)}`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+  
+  // Bar Chart
+  const barCanvas = document.getElementById('qtoBarChart');
+  if (barCanvas) {
+    if (qtoBarChart) {
+      qtoBarChart.data.labels = labels;
+      qtoBarChart.data.datasets[0].data = data;
+      qtoBarChart.data.datasets[0].backgroundColor = backgroundColors.slice(0, labels.length);
+      qtoBarChart.data.datasets[0].borderColor = borderColors.slice(0, labels.length);
+      qtoBarChart.update();
+    } else {
+      qtoBarChart = new Chart(barCanvas, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Accumulated Price (IDR)',
+            data: data,
+            backgroundColor: backgroundColors.slice(0, labels.length),
+            borderColor: borderColors.slice(0, labels.length),
+            borderWidth: 1.5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  return ` Price: ${formatIDR(val)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#9ca3af',
+                font: {
+                  family: 'Inter',
+                  size: 10
+                }
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.05)'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#9ca3af',
+                font: {
+                  family: 'Inter',
+                  size: 10
+                },
+                callback: function(value) {
+                  if (value >= 1e9) return 'Rp ' + (value / 1e9).toFixed(1) + ' M';
+                  if (value >= 1e6) return 'Rp ' + (value / 1e6).toFixed(1) + ' jt';
+                  if (value >= 1e3) return 'Rp ' + (value / 1e3).toFixed(0) + ' rb';
+                  return 'Rp ' + value;
+                }
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.05)'
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+}
+
+// Update summary text and trigger chart re-renders
+function updateQtoSummaryAndCharts() {
+  let totalBudget = 0;
+  availableQuantities.forEach((item) => {
+    totalBudget += item.totalPrice || 0;
+  });
+  
+  const query = qtoSearch.value.toLowerCase().trim();
   let rowCount = 0;
   availableQuantities.forEach((item) => {
     const match = query === "" || 
@@ -1740,23 +1990,61 @@ function renderQtoTable(filterText = "") {
                   item.category.toLowerCase().includes(query) || 
                   item.quantityName.toLowerCase().includes(query) || 
                   item.name.toLowerCase().includes(query);
+    if (match) {
+      rowCount++;
+    }
+  });
+  
+  qtoSummaryText.style.display = 'flex';
+  qtoSummaryText.style.width = '100%';
+  qtoSummaryText.style.justifyContent = 'space-between';
+  qtoSummaryText.innerHTML = `
+    <span>Total items shown: <strong>${rowCount}</strong> of <strong>${availableQuantities.length}</strong></span>
+    <span style="color: var(--accent); font-weight: 600;">Total Project Budget: <span style="font-family: monospace; font-size: 13px;">${formatIDR(totalBudget)}</span></span>
+  `;
+  
+  updateQtoCharts();
+}
+
+function renderQtoTable(filterText = "") {
+  qtoTableBody.innerHTML = "";
+  const query = filterText.toLowerCase().trim();
+  
+  let rowCount = 0;
+  availableQuantities.forEach((item) => {
+    const match = query === "" || 
+                  (item.ifcClass || "").toLowerCase().includes(query) || 
+                  (item.category || "").toLowerCase().includes(query) || 
+                  (item.quantityName || "").toLowerCase().includes(query) || 
+                  (item.name || "").toLowerCase().includes(query);
     
     if (match) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${item.ifcClass}</td>
-        <td>${item.category}</td>
-        <td><span class="qto-object-link" data-id="${item.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${item.name}</span></td>
-        <td>${item.quantityName}</td>
-        <td>${item.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
-        <td>${item.unit}</td>
+        <td>${item.ifcClass || ""}</td>
+        <td>${item.category || ""}</td>
+        <td><span class="qto-object-link" data-id="${item.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${item.name || ""}</span></td>
+        <td>${item.quantityName || ""}</td>
+        <td>${(item.value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
+        <td>${item.unit || ""}</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 4px;">
+            <span style="font-size: 11px; color: var(--text-muted);">Rp</span>
+            <input type="number" class="qto-price-input" data-id="${item.id}" value="${item.unitPrice || 0}">
+          </div>
+        </td>
+        <td>
+          <span class="qto-total-price" data-id="${item.id}" style="font-family: monospace; font-weight: 600; color: var(--accent);">
+            ${formatIDR(item.totalPrice || 0)}
+          </span>
+        </td>
       `;
       qtoTableBody.appendChild(tr);
       rowCount++;
     }
   });
   
-  qtoSummaryText.innerText = `Total items shown: ${rowCount} of ${availableQuantities.length}`;
+  updateQtoSummaryAndCharts();
 }
 
 // Click listener to fly to object from QTO table links
@@ -1789,6 +2077,32 @@ qtoTableBody.addEventListener('click', (e) => {
   }
 });
 
+// Input listener to update manual prices and recalculate totals
+qtoTableBody.addEventListener('input', (e) => {
+  if (e.target.classList.contains('qto-price-input')) {
+    const objectId = e.target.dataset.id;
+    const newPrice = parseFloat(e.target.value) || 0;
+    
+    const item = availableQuantities.find(q => String(q.id) === String(objectId));
+    if (item) {
+      item.unitPrice = newPrice;
+      item.totalPrice = item.value * newPrice;
+      
+      // Update the total price cell in the row
+      const row = e.target.closest('tr');
+      if (row) {
+        const totalSpan = row.querySelector('.qto-total-price');
+        if (totalSpan) {
+          totalSpan.innerText = formatIDR(item.totalPrice);
+        }
+      }
+      
+      // Recalculate and update summary and charts
+      updateQtoSummaryAndCharts();
+    }
+  }
+});
+
 btnOpenQto.addEventListener('click', () => {
   renderQtoTable(qtoSearch.value);
   qtoModal.style.display = 'flex';
@@ -1817,7 +2131,7 @@ btnExportCsv.addEventListener('click', () => {
     return;
   }
   
-  let csvContent = "IFC Class,Category,Quantity Name,Value,Unit,Object Name,Object ID\n";
+  let csvContent = "IFC Class,Category,Quantity Name,Value,Unit,Unit Price (IDR),Total Price (IDR),Object Name,Object ID\n";
   
   const escapeCsv = (str) => {
     if (str === null || str === undefined) return "";
@@ -1828,7 +2142,7 @@ btnExportCsv.addEventListener('click', () => {
   };
   
   availableQuantities.forEach((item) => {
-    csvContent += `${escapeCsv(item.ifcClass)},${escapeCsv(item.category)},${escapeCsv(item.quantityName)},${item.value},${escapeCsv(item.unit)},${escapeCsv(item.name)},${escapeCsv(item.id)}\n`;
+    csvContent += `${escapeCsv(item.ifcClass)},${escapeCsv(item.category)},${escapeCsv(item.quantityName)},${item.value},${escapeCsv(item.unit)},${item.unitPrice || 0},${item.totalPrice || 0},${escapeCsv(item.name)},${escapeCsv(item.id)}\n`;
   });
   
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

@@ -10,7 +10,6 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 * **Multi-Format Support**: Load standard industry `.ifc` models, web-optimized `.xkt` files, LiDAR point cloud `.las`/`.laz` files, and `.gltf`/`.glb` 3D assets.
 * **Point Cloud (LiDAR) Viewer**: Direct client-side rendering of point cloud models using Xeokit's native `LASLoaderPlugin` and `GLTFLoaderPlugin`.
 * **Density / Performance Optimization**: Configurable **Point Cloud Load Step (Skip)** controls to load every N-th point, reducing memory footprint and allowing large `.laz` files to parse in seconds.
-* **Auto-paired Georeferencing**: Select or drag-and-drop any point cloud file alongside its companion `.json` georeference metadata file together. The app automatically extracts coordinates and projects the point cloud on the Cesium globe.
 * **Dual Client-side Engines**:
   * **Web-IFC**: Ultra-fast WebAssembly-based parsing.
   * **IfcOpenShell (via Pyodide)**: Run Python-based IFC parsing directly in your browser.
