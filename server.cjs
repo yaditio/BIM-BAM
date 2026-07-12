@@ -593,6 +593,220 @@ if (fs.existsSync(distPath)) {
   console.log(`[Server] Serving static files from: ${distPath}`);
 }
 
+
+// --- AI Agent Chat Endpoint ---
+app.post('/api/ai/chat', async (req, res) => {
+  const { provider, apiKey, messages, tools } = req.body;
+
+  if (!apiKey) {
+    return res.status(400).json({ error: 'API key is required' });
+  }
+
+  try {
+    if (provider === 'gemini') {
+      const { GoogleGenAI } = require('@google/genai');
+      const ai = new GoogleGenAI({ apiKey });
+
+      const contents = messages.map(msg => {
+        const role = msg.role === 'assistant' ? 'model' : msg.role;
+        
+        if (msg.tool_calls) {
+          return {
+            role: 'model',
+            parts: msg.tool_calls.map(tc => ({
+              functionCall: {
+                name: tc.function.name,
+                args: JSON.parse(tc.function.arguments)
+              }
+            }))
+          };
+        }
+        
+        if (msg.role === 'tool') {
+          return {
+            role: 'user',
+            parts: [{
+              functionResponse: {
+                name: msg.name,
+                response: { result: msg.content }
+              }
+            }]
+          };
+        }
+
+        return {
+          role,
+          parts: [{ text: msg.content || '' }]
+        };
+      });
+
+      const functionDeclarations = tools.map(t => ({
+        name: t.name,
+        description: t.description,
+        parameters: t.parameters
+      }));
+
+      const config = {};
+      if (functionDeclarations.length > 0) {
+        config.tools = [{ functionDeclarations }];
+      }
+
+      console.log(`[Server] Requesting Gemini with ${contents.length} messages`);
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents,
+        config
+      });
+
+      const candidate = response.candidates?.[0];
+      const part = candidate?.content?.parts?.[0];
+
+      if (part && part.functionCall) {
+        return res.json({
+          tool_calls: [{
+            id: 'call_' + Date.now(),
+            type: 'function',
+            function: {
+              name: part.functionCall.name,
+              arguments: JSON.stringify(part.functionCall.args)
+            }
+          }]
+        });
+      }
+
+      return res.json({
+        content: response.text || ''
+      });
+
+    } else if (provider === 'openai') {
+      const { OpenAI } = require('openai');
+      const openai = new OpenAI({ apiKey });
+
+      const formattedMessages = messages.map(msg => {
+        const formatted = { role: msg.role, content: msg.content };
+        if (msg.tool_calls) formatted.tool_calls = msg.tool_calls;
+        if (msg.tool_call_id) formatted.tool_call_id = msg.tool_call_id;
+        if (msg.name) formatted.name = msg.name;
+        return formatted;
+      });
+
+      const formattedTools = tools.map(t => ({
+        type: 'function',
+        function: {
+          name: t.name,
+          description: t.description,
+          parameters: t.parameters
+        }
+      }));
+
+      console.log(`[Server] Requesting OpenAI with ${formattedMessages.length} messages`);
+      const chatCompletion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: formattedMessages,
+        tools: formattedTools.length > 0 ? formattedTools : undefined
+      });
+
+      const choice = chatCompletion.choices[0];
+      return res.json({
+        content: choice.message.content || '',
+        tool_calls: choice.message.tool_calls || null
+      });
+
+    } else if (provider === 'anthropic') {
+      const { Anthropic } = require('@anthropic-ai/sdk');
+      const anthropic = new Anthropic({ apiKey });
+
+      let systemMessage = '';
+      const formattedMessages = [];
+
+      messages.forEach(msg => {
+        if (msg.role === 'system') {
+          systemMessage = msg.content;
+          return;
+        }
+
+        if (msg.role === 'assistant' && msg.tool_calls) {
+          formattedMessages.push({
+            role: 'assistant',
+            content: [
+              ...(msg.content ? [{ type: 'text', text: msg.content }] : []),
+              ...msg.tool_calls.map(tc => ({
+                type: 'tool_use',
+                id: tc.id,
+                name: tc.function.name,
+                input: JSON.parse(tc.function.arguments)
+              }))
+            ]
+          });
+          return;
+        }
+
+        if (msg.role === 'tool') {
+          formattedMessages.push({
+            role: 'user',
+            content: [{
+              type: 'tool_result',
+              tool_use_id: msg.tool_call_id,
+              content: msg.content
+            }]
+          });
+          return;
+        }
+
+        formattedMessages.push({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content || ''
+        });
+      });
+
+      const formattedTools = tools.map(t => ({
+        name: t.name,
+        description: t.description,
+        input_schema: t.parameters
+      }));
+
+      console.log(`[Server] Requesting Anthropic with ${formattedMessages.length} messages`);
+      const response = await anthropic.messages.create({
+        model: 'claude-3-5-haiku-20241022',
+        max_tokens: 1024,
+        system: systemMessage || undefined,
+        messages: formattedMessages,
+        tools: formattedTools.length > 0 ? formattedTools : undefined
+      });
+
+      let textContent = '';
+      const toolCalls = [];
+
+      response.content.forEach(part => {
+        if (part.type === 'text') {
+          textContent += part.text;
+        } else if (part.type === 'tool_use') {
+          toolCalls.push({
+            id: part.id,
+            type: 'function',
+            function: {
+              name: part.name,
+              arguments: JSON.stringify(part.input)
+            }
+          });
+        }
+      });
+
+      return res.json({
+        content: textContent,
+        tool_calls: toolCalls.length > 0 ? toolCalls : null
+      });
+
+    } else {
+      return res.status(400).json({ error: 'Unsupported provider: ' + provider });
+    }
+  } catch (err) {
+    console.error('[Server] AI Chat failed:', err);
+    res.status(500).json({ error: err.message || 'AI Chat failed' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`[Server] Express backend running at http://localhost:${PORT}`);
 });
+

@@ -223,6 +223,7 @@
                     <i class="fa-solid fa-table"></i> Open Quantity Take-Off
                 </button>
             </section>
+
             </div> <!-- End of viewer-tab -->
 
             <div id="ifcopenshell-tab" class="tab-pane" style="display: none;">
@@ -481,6 +482,52 @@
                         <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
                     </div>
                     <span id="progressBarText">0%</span>
+                </div>
+            </div>
+
+            <!-- AI Agent Bottom Chatbox -->
+            <div id="aiAgentChatContainer" class="ai-agent-chat-container collapsed">
+                <div id="aiAgentChatHeader" class="ai-agent-chat-header">
+                    <h3><i class="fa-solid fa-robot"></i> AI Agent Chatbox</h3>
+                    <i id="aiAgentChatToggle" class="fa-solid fa-chevron-up toggle-icon"></i>
+                </div>
+                <div class="ai-agent-chat-body">
+                    <!-- Config Column -->
+                    <div class="ai-agent-chat-config">
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label for="aiProviderSelect" style="margin-bottom: 6px;">AI Provider</label>
+                            <select id="aiProviderSelect" class="form-input" style="width: 100%;">
+                                <option value="gemini">Google Gemini</option>
+                                <option value="openai">OpenAI (GPT)</option>
+                                <option value="anthropic">Anthropic Claude</option>
+                            </select>
+                        </div>
+                        <!-- API Key Inputs -->
+                        <div class="form-group" id="geminiKeyGroup" style="margin-bottom: 0;">
+                            <label for="geminiApiKey" style="margin-bottom: 6px;">Gemini API Key</label>
+                            <input type="password" id="geminiApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
+                        </div>
+                        <div class="form-group" id="openaiKeyGroup" style="display: none; margin-bottom: 0;">
+                            <label for="openaiApiKey" style="margin-bottom: 6px;">OpenAI API Key</label>
+                            <input type="password" id="openaiApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
+                        </div>
+                        <div class="form-group" id="anthropicKeyGroup" style="display: none; margin-bottom: 0;">
+                            <label for="anthropicApiKey" style="margin-bottom: 6px;">Anthropic API Key</label>
+                            <input type="password" id="anthropicApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
+                        </div>
+                    </div>
+                    <!-- Chat Interface Column -->
+                    <div class="ai-chatbox-main" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between; flex: 1; min-width: 0;">
+                        <div id="aiChatHistory" class="ai-chat-history">
+                            <div class="ai-message system">
+                                Enter your API key on the left and ask the AI Agent to control the viewer.
+                            </div>
+                        </div>
+                        <div class="ai-chat-input-wrapper">
+                            <input type="text" id="aiChatInput" class="form-input" placeholder="Ask agent to control model...">
+                            <button id="btnSendAiChat" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

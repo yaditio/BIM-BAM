@@ -16,6 +16,7 @@ import {
 } from "./lib/xeokit/xeokit-sdk.min.es.js";
 
 import * as WebIFC from "https://cdn.jsdelivr.net/npm/web-ifc@0.0.51/web-ifc-api.js";
+import { setupAiAgent } from "./ai-agent.js";
 
 // --- Global UI State ---
 let viewer;
@@ -1038,6 +1039,198 @@ function setupModelLoadedListener(modelId, file) {
   });
 }
 
+function recalculateAvailableQuantities() {
+  const priceMap = {};
+  availableQuantities.forEach((item) => {
+    priceMap[item.id + "_" + item.quantityName] = item.unitPrice;
+  });
+
+  availableQuantities = [];
+
+  loadedModels.forEach((loadedModel) => {
+    const modelId = loadedModel.id;
+    const modelObjectIds = Object.values(viewer.scene.objects)
+      .filter(obj => obj.model && obj.model.id === modelId)
+      .map(obj => obj.id);
+
+    modelObjectIds.forEach((id) => {
+      const meta = getElementMetadata(id, modelId);
+      if (!meta) return;
+
+      let qtoAdded = false;
+
+      const tL = (meta.type || "").toLowerCase();
+      const nL = (meta.name || "").toLowerCase();
+      const cL = (meta.category || "").toLowerCase();
+
+      const isFamilyInstance = (tL === "familyinstance" || cL === "familyinstance") && 
+                               !(tL.includes("railing") || cL.includes("railing") || nL.includes("railing"));
+      const isStair = tL.includes("stair") || cL.includes("stair") || nL.includes("stair");
+      const isConcrete = tL.includes("beam") || tL.includes("column") || tL.includes("slab") || 
+                         tL.includes("footing") || tL.includes("foundation") || 
+                         cL.includes("beam") || cL.includes("column") || cL.includes("slab") || 
+                         cL.includes("footing") || cL.includes("foundation") || 
+                         nL.includes("concrete");
+      const isLinear = tL.includes("railing") || tL.includes("fence") || tL.includes("flowsegment") || 
+                       tL.includes("pipe") || tL.includes("duct") || tL.includes("cable") || 
+                       cL.includes("railing") || cL.includes("fence") || cL.includes("pipe") || cL.includes("duct");
+      const isAreaBased = tL.includes("wall") || tL.includes("roof") || tL.includes("covering") || 
+                          tL.includes("partition") || tL.includes("plate") || 
+                          cL.includes("wall") || cL.includes("roof") || cL.includes("covering") || cL.includes("partition");
+
+      const getParamVal = (names) => {
+        for (const p of meta.props) {
+          if (!p.name) continue;
+          const pNameLower = p.name.toLowerCase();
+          if (names.some(n => pNameLower === n || pNameLower.includes(n))) {
+            const valStr = String(p.value).trim();
+            const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
+            if (matchNum) {
+              return { rawName: p.name, numValue: parseFloat(matchNum[0]) };
+            }
+          }
+        }
+        return null;
+      };
+
+      if (isFamilyInstance) {
+        availableQuantities.push({
+          id: id,
+          name: meta.name,
+          ifcClass: meta.type,
+          category: meta.category,
+          quantityName: "pcs",
+          value: 1,
+          unit: "pcs"
+        });
+        qtoAdded = true;
+      } else if (isStair) {
+        const match = getParamVal(["risers", "riser count", "riser_count", "riser", "step"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Number of Risers",
+            value: match.numValue,
+            unit: "risers"
+          });
+          qtoAdded = true;
+        }
+      } else if (isConcrete) {
+        const match = getParamVal(["volume", "vol", "netvolume", "grossvolume"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Volume",
+            value: match.numValue,
+            unit: "m³"
+          });
+          qtoAdded = true;
+        }
+      } else if (isLinear) {
+        const match = getParamVal(["length", "len", "netlength", "grosslength", "perimeter"]);
+        if (match) {
+          const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: isRailing ? "Railings" : meta.category,
+            quantityName: "Length",
+            value: match.numValue,
+            unit: isRailing ? "mm" : "m"
+          });
+          qtoAdded = true;
+        }
+      } else if (isAreaBased) {
+        const match = getParamVal(["area", "netarea", "grossarea"]);
+        if (match) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Area",
+            value: match.numValue,
+            unit: "m²"
+          });
+          qtoAdded = true;
+        }
+      }
+
+      if (!qtoAdded) {
+        const volMatch = getParamVal(["volume", "vol"]);
+        const areaMatch = getParamVal(["area"]);
+        const lenMatch = getParamVal(["length", "len", "perimeter"]);
+        
+        if (volMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Volume",
+            value: volMatch.numValue,
+            unit: "m³"
+          });
+          qtoAdded = true;
+        } else if (areaMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Area",
+            value: areaMatch.numValue,
+            unit: "m²"
+          });
+          qtoAdded = true;
+        } else if (lenMatch) {
+          const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: isRailing ? "Railings" : meta.category,
+            quantityName: "Length",
+            value: lenMatch.numValue,
+            unit: isRailing ? "mm" : "m"
+          });
+          qtoAdded = true;
+        }
+      }
+
+      if (!qtoAdded) {
+        const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
+        availableQuantities.push({
+          id: id,
+          name: meta.name,
+          ifcClass: meta.type,
+          category: isRailing ? "Railings" : meta.category,
+          quantityName: "Count",
+          value: 1,
+          unit: isRailing ? "pcs" : "No.s"
+        });
+      }
+    });
+  });
+
+  availableQuantities.forEach((item) => {
+    const cachedPrice = priceMap[item.id + "_" + item.quantityName];
+    item.unitPrice = cachedPrice !== undefined ? cachedPrice : getDefaultUnitPrice(item);
+    item.totalPrice = item.value * item.unitPrice;
+  });
+
+  if (qtoModal && window.getComputedStyle(qtoModal).display === 'flex') {
+    renderQtoTable(qtoSearch.value);
+  }
+}
+
 function updateToolDropdowns() {
   const diffOldSelect = document.getElementById('diffOldModelSelect');
   const diffNewSelect = document.getElementById('diffNewModelSelect');
@@ -1181,7 +1374,88 @@ function updateSelectionUI() {
       
       // Fill basic properties
       propObjId.innerText = `ID: ${metaObj.id}`;
-      propObjName.innerText = metaObj.name || "Unnamed Object";
+      
+      propObjName.innerHTML = "";
+      const nameText = document.createTextNode(metaObj.name || "Unnamed Object");
+      propObjName.appendChild(nameText);
+      
+      const nameEditBtn = document.createElement('button');
+      nameEditBtn.className = "btn-prop-action edit";
+      nameEditBtn.style.opacity = "0.7";
+      nameEditBtn.style.marginLeft = "8px";
+      nameEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+      nameEditBtn.title = "Edit object name";
+      propObjName.appendChild(nameEditBtn);
+      
+      let isNameEditing = false;
+      nameEditBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!isNameEditing) {
+          isNameEditing = true;
+          const nameInput = document.createElement('input');
+          nameInput.type = "text";
+          nameInput.className = "property-edit-input";
+          nameInput.value = metaObj.name || "";
+          nameInput.style.textAlign = "left";
+          nameInput.style.maxWidth = "200px";
+          nameInput.style.fontSize = "14px";
+          
+          nameText.textContent = "";
+          propObjName.insertBefore(nameInput, nameEditBtn);
+          nameInput.focus();
+          
+          nameEditBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+          nameEditBtn.style.color = "var(--accent-color, #4CAF50)";
+          
+          const nameCancelBtn = document.createElement('button');
+          nameCancelBtn.className = "btn-prop-action cancel";
+          nameCancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+          nameCancelBtn.style.color = "#f44336";
+          propObjName.appendChild(nameCancelBtn);
+          
+          const closeNameEdit = () => {
+            if (nameInput.parentNode) propObjName.removeChild(nameInput);
+            if (nameCancelBtn.parentNode) propObjName.removeChild(nameCancelBtn);
+            nameText.textContent = metaObj.name || "Unnamed Object";
+            nameEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+            nameEditBtn.style.color = "";
+            isNameEditing = false;
+          };
+          
+          nameCancelBtn.addEventListener('click', (ce) => {
+            ce.stopPropagation();
+            closeNameEdit();
+          });
+          
+          nameInput.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Enter') {
+              const newVal = nameInput.value;
+              metaObj.name = newVal;
+              closeNameEdit();
+              recalculateAvailableQuantities();
+              updateStatus(`Updated object name to "${newVal}"`);
+            } else if (evt.key === 'Escape') {
+              closeNameEdit();
+            }
+          });
+        } else {
+          const nameInput = propObjName.querySelector('.property-edit-input');
+          const newVal = nameInput.value;
+          metaObj.name = newVal;
+          
+          const nameCancelBtn = propObjName.querySelector('.cancel');
+          if (nameInput.parentNode) propObjName.removeChild(nameInput);
+          if (nameCancelBtn.parentNode) propObjName.removeChild(nameCancelBtn);
+          nameText.textContent = newVal || "Unnamed Object";
+          nameEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+          nameEditBtn.style.color = "";
+          isNameEditing = false;
+          
+          recalculateAvailableQuantities();
+          updateStatus(`Updated object name to "${newVal}"`);
+        }
+      });
+      
       propObjType.innerText = metaObj.type || "IfcObject";
       
       // Build property sets list
@@ -1204,8 +1478,101 @@ function updateSelectionUI() {
             pset.properties.forEach((prop) => {
               const row = document.createElement('div');
               row.className = "property-row";
-              row.innerHTML = `<span class="property-name">${prop.name}</span><span class="property-value">${prop.value}</span>`;
+              
+              const nameSpan = document.createElement('span');
+              nameSpan.className = "property-name";
+              nameSpan.innerText = prop.name;
+              
+              const valueContainer = document.createElement('div');
+              valueContainer.className = "property-value-container";
+              
+              const valueSpan = document.createElement('span');
+              valueSpan.className = "property-value";
+              valueSpan.innerText = prop.value;
+              
+              const editBtn = document.createElement('button');
+              editBtn.className = "btn-prop-action edit";
+              editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+              editBtn.title = "Edit property value";
+              
+              valueContainer.appendChild(valueSpan);
+              valueContainer.appendChild(editBtn);
+              row.appendChild(nameSpan);
+              row.appendChild(valueContainer);
               list.appendChild(row);
+
+              let isEditing = false;
+              let input = null;
+              let cancelBtn = null;
+
+              editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!isEditing) {
+                  isEditing = true;
+                  input = document.createElement('input');
+                  input.type = "text";
+                  input.className = "property-edit-input";
+                  input.value = prop.value;
+                  
+                  valueSpan.style.display = "none";
+                  valueContainer.insertBefore(input, editBtn);
+                  input.focus();
+                  
+                  editBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                  editBtn.title = "Save";
+                  editBtn.style.color = "var(--accent-color, #4CAF50)";
+                  
+                  cancelBtn = document.createElement('button');
+                  cancelBtn.className = "btn-prop-action cancel";
+                  cancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                  cancelBtn.title = "Cancel";
+                  cancelBtn.style.color = "#f44336";
+                  valueContainer.appendChild(cancelBtn);
+                  
+                  const closeEdit = () => {
+                    if (input && input.parentNode) valueContainer.removeChild(input);
+                    if (cancelBtn && cancelBtn.parentNode) valueContainer.removeChild(cancelBtn);
+                    valueSpan.style.display = "";
+                    editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                    editBtn.title = "Edit property value";
+                    editBtn.style.color = "";
+                    isEditing = false;
+                  };
+
+                  cancelBtn.addEventListener('click', (ce) => {
+                    ce.stopPropagation();
+                    closeEdit();
+                  });
+
+                  input.addEventListener('keydown', (evt) => {
+                    if (evt.key === 'Enter') {
+                      const newVal = input.value;
+                      prop.value = newVal;
+                      valueSpan.innerText = newVal;
+                      closeEdit();
+                      recalculateAvailableQuantities();
+                      updateStatus(`Updated property "${prop.name}" to "${newVal}"`);
+                    } else if (evt.key === 'Escape') {
+                      closeEdit();
+                    }
+                  });
+                } else {
+                  const newVal = input.value;
+                  prop.value = newVal;
+                  valueSpan.innerText = newVal;
+                  
+                  if (input && input.parentNode) valueContainer.removeChild(input);
+                  if (cancelBtn && cancelBtn.parentNode) valueContainer.removeChild(cancelBtn);
+                  valueSpan.style.display = "";
+                  editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                  editBtn.title = "Edit property value";
+                  editBtn.style.color = "";
+                  isEditing = false;
+                  
+                  recalculateAvailableQuantities();
+                  updateStatus(`Updated property "${prop.name}" to "${newVal}"`);
+                }
+              });
             });
           } else {
             list.innerHTML = `<div class="property-row"><span class="property-name" style="font-style: italic;">No properties found</span></div>`;
@@ -1258,7 +1625,88 @@ function updateSelectionUI() {
         noSelectionPrompt.style.display = "none";
         
         propObjId.innerText = `ID: ${revitElement.Id}`;
-        propObjName.innerText = revitElement.Name || `[${revitElement.class} #${revitElement.Id}]`;
+        
+        propObjName.innerHTML = "";
+        const nameText = document.createTextNode(revitElement.Name || `[${revitElement.class} #${revitElement.Id}]`);
+        propObjName.appendChild(nameText);
+        
+        const nameEditBtn = document.createElement('button');
+        nameEditBtn.className = "btn-prop-action edit";
+        nameEditBtn.style.opacity = "0.7";
+        nameEditBtn.style.marginLeft = "8px";
+        nameEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+        nameEditBtn.title = "Edit Revit element name";
+        propObjName.appendChild(nameEditBtn);
+        
+        let isNameEditing = false;
+        nameEditBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!isNameEditing) {
+            isNameEditing = true;
+            const nameInput = document.createElement('input');
+            nameInput.type = "text";
+            nameInput.className = "property-edit-input";
+            nameInput.value = revitElement.Name || "";
+            nameInput.style.textAlign = "left";
+            nameInput.style.maxWidth = "200px";
+            nameInput.style.fontSize = "14px";
+            
+            nameText.textContent = "";
+            propObjName.insertBefore(nameInput, nameEditBtn);
+            nameInput.focus();
+            
+            nameEditBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            nameEditBtn.style.color = "var(--accent-color, #4CAF50)";
+            
+            const nameCancelBtn = document.createElement('button');
+            nameCancelBtn.className = "btn-prop-action cancel";
+            nameCancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            nameCancelBtn.style.color = "#f44336";
+            propObjName.appendChild(nameCancelBtn);
+            
+            const closeNameEdit = () => {
+              if (nameInput.parentNode) propObjName.removeChild(nameInput);
+              if (nameCancelBtn.parentNode) propObjName.removeChild(nameCancelBtn);
+              nameText.textContent = revitElement.Name || `[${revitElement.class} #${revitElement.Id}]`;
+              nameEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+              nameEditBtn.style.color = "";
+              isNameEditing = false;
+            };
+            
+            nameCancelBtn.addEventListener('click', (ce) => {
+              ce.stopPropagation();
+              closeNameEdit();
+            });
+            
+            nameInput.addEventListener('keydown', (evt) => {
+              if (evt.key === 'Enter') {
+                const newVal = nameInput.value;
+                revitElement.Name = newVal;
+                closeNameEdit();
+                recalculateAvailableQuantities();
+                updateStatus(`Updated Revit element name to "${newVal}"`);
+              } else if (evt.key === 'Escape') {
+                closeNameEdit();
+              }
+            });
+          } else {
+            const nameInput = propObjName.querySelector('.property-edit-input');
+            const newVal = nameInput.value;
+            revitElement.Name = newVal;
+            
+            const nameCancelBtn = propObjName.querySelector('.cancel');
+            if (nameInput.parentNode) propObjName.removeChild(nameInput);
+            if (nameCancelBtn.parentNode) propObjName.removeChild(nameCancelBtn);
+            nameText.textContent = newVal || `[${revitElement.class} #${revitElement.Id}]`;
+            nameEditBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+            nameEditBtn.style.color = "";
+            isNameEditing = false;
+            
+            recalculateAvailableQuantities();
+            updateStatus(`Updated Revit element name to "${newVal}"`);
+          }
+        });
+        
         propObjType.innerText = revitElement.class || "Revit Element";
         
         propertySetsContainer.innerHTML = "";
@@ -1285,10 +1733,104 @@ function updateSelectionUI() {
                 if (!param) return;
                 const unitStr = ("Unit" in param && revitMeta.Units && revitMeta.Units[param.Unit])
                   ? ` [${revitMeta.Units[param.Unit].Name}]` : "";
+                
                 const row = document.createElement('div');
                 row.className = "property-row";
-                row.innerHTML = `<span class="property-name">${param.Name}</span><span class="property-value">${param.Value}${unitStr}</span>`;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = "property-name";
+                nameSpan.innerText = param.Name;
+                
+                const valueContainer = document.createElement('div');
+                valueContainer.className = "property-value-container";
+                
+                const valueSpan = document.createElement('span');
+                valueSpan.className = "property-value";
+                valueSpan.innerText = `${param.Value}${unitStr}`;
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = "btn-prop-action edit";
+                editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                editBtn.title = "Edit Revit parameter value";
+                
+                valueContainer.appendChild(valueSpan);
+                valueContainer.appendChild(editBtn);
+                row.appendChild(nameSpan);
+                row.appendChild(valueContainer);
                 list.appendChild(row);
+
+                let isEditing = false;
+                let input = null;
+                let cancelBtn = null;
+
+                editBtn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  if (!isEditing) {
+                    isEditing = true;
+                    input = document.createElement('input');
+                    input.type = "text";
+                    input.className = "property-edit-input";
+                    input.value = param.Value;
+                    
+                    valueSpan.style.display = "none";
+                    valueContainer.insertBefore(input, editBtn);
+                    input.focus();
+                    
+                    editBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    editBtn.title = "Save";
+                    editBtn.style.color = "var(--accent-color, #4CAF50)";
+                    
+                    cancelBtn = document.createElement('button');
+                    cancelBtn.className = "btn-prop-action cancel";
+                    cancelBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    cancelBtn.title = "Cancel";
+                    cancelBtn.style.color = "#f44336";
+                    valueContainer.appendChild(cancelBtn);
+                    
+                    const closeEdit = () => {
+                      if (input && input.parentNode) valueContainer.removeChild(input);
+                      if (cancelBtn && cancelBtn.parentNode) valueContainer.removeChild(cancelBtn);
+                      valueSpan.style.display = "";
+                      editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                      editBtn.title = "Edit Revit parameter value";
+                      editBtn.style.color = "";
+                      isEditing = false;
+                    };
+
+                    cancelBtn.addEventListener('click', (ce) => {
+                      ce.stopPropagation();
+                      closeEdit();
+                    });
+
+                    input.addEventListener('keydown', (evt) => {
+                      if (evt.key === 'Enter') {
+                        const newVal = input.value;
+                        param.Value = newVal;
+                        valueSpan.innerText = `${newVal}${unitStr}`;
+                        closeEdit();
+                        recalculateAvailableQuantities();
+                        updateStatus(`Updated Revit parameter "${param.Name}" to "${newVal}"`);
+                      } else if (evt.key === 'Escape') {
+                        closeEdit();
+                      }
+                    });
+                  } else {
+                    const newVal = input.value;
+                    param.Value = newVal;
+                    valueSpan.innerText = `${newVal}${unitStr}`;
+                    
+                    if (input && input.parentNode) valueContainer.removeChild(input);
+                    if (cancelBtn && cancelBtn.parentNode) valueContainer.removeChild(cancelBtn);
+                    valueSpan.style.display = "";
+                    editBtn.innerHTML = '<i class="fa-solid fa-pen"></i>';
+                    editBtn.title = "Edit Revit parameter value";
+                    editBtn.style.color = "";
+                    isEditing = false;
+                    
+                    recalculateAvailableQuantities();
+                    updateStatus(`Updated Revit parameter "${param.Name}" to "${newVal}"`);
+                  }
+                });
               });
             } else {
               list.innerHTML = `<div class="property-row"><span class="property-name" style="font-style: italic;">No parameters</span></div>`;
@@ -3979,7 +4521,13 @@ function initCollapsiblePanels() {
       titleText.includes('load model') || 
       titleText.includes('rvt to xkt') || 
       titleText.includes('model tree') || 
-      titleText.includes('ifc diff');
+      titleText.includes('ifc diff') ||
+      titleText.includes('filter') ||
+      titleText.includes('quantity') ||
+      titleText.includes('visibility') ||
+      titleText.includes('georeferencing') ||
+      titleText.includes('options') ||
+      titleText.includes('clash');
 
     if (!shouldStartExpanded) {
       header.classList.add('collapsed');
@@ -3999,6 +4547,244 @@ function startApp() {
   initCollapsiblePanels();
   initViewer();
   setupIfcOpenShellTools();
+
+  // Register AI agent control APIs
+  window.bimBamApi = {
+    getAllObjects: () => {
+      if (!viewer || !viewer.metaScene) return { success: false, error: "No metaScene available." };
+      const objs = [];
+      Object.entries(viewer.metaScene.metaObjects).forEach(([id, meta]) => {
+        objs.push({ id, name: meta.name || '', type: meta.type || '' });
+      });
+      return { success: true, objects: objs };
+    },
+    getObjectMetadata: (id) => {
+      const entity = viewer.scene.objects[id];
+      const modelId = entity && entity.model ? entity.model.id : null;
+      const meta = getElementMetadata(id, modelId);
+      return { success: !!meta, metadata: meta };
+    },
+    selectObjects: (ids) => {
+      viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+      if (ids && ids.length > 0) {
+        viewer.scene.setObjectsSelected(ids, true);
+        updateSelectionUI();
+      } else {
+        handleObjectDeselected();
+      }
+      return { success: true, message: `Selected ${ids ? ids.length : 0} objects.` };
+    },
+    hideObjects: (ids) => {
+      if (ids && ids.length > 0) {
+        viewer.scene.setObjectsVisible(ids, false);
+        return { success: true, message: `Hid ${ids.length} objects.` };
+      }
+      return { success: false, error: "No IDs provided." };
+    },
+    showAllObjects: () => {
+      const allObjectIds = viewer.scene.objectIds;
+      viewer.scene.setObjectsVisible(allObjectIds, true);
+      return { success: true, message: "Showed all objects." };
+    },
+    isolateObjects: (ids) => {
+      const allObjectIds = viewer.scene.objectIds;
+      viewer.scene.setObjectsVisible(allObjectIds, false);
+      if (ids && ids.length > 0) {
+        viewer.scene.setObjectsVisible(ids, true);
+      }
+      return { success: true, message: `Isolated ${ids ? ids.length : 0} objects.` };
+    },
+    highlightObjects: (ids, highlight) => {
+      if (ids && ids.length > 0) {
+        viewer.scene.setObjectsHighlighted(ids, !!highlight);
+        return { success: true, message: `Set highlight ${highlight} for ${ids.length} objects.` };
+      }
+      return { success: false, error: "No IDs provided." };
+    },
+    xrayObjects: (ids, xray) => {
+      if (ids && ids.length > 0) {
+        viewer.scene.setObjectsXRayed(ids, !!xray);
+        return { success: true, message: `Set X-Ray ${xray} for ${ids.length} objects.` };
+      }
+      return { success: false, error: "No IDs provided." };
+    },
+    flyToObjects: (ids) => {
+      if (ids && ids.length > 0) {
+        const aabb = viewer.scene.getAABB(ids);
+        viewer.cameraFlight.flyTo(aabb);
+        return { success: true, message: "Flew to bounding box of specified objects." };
+      } else {
+        viewer.cameraFlight.flyTo(activeModel || viewer.scene);
+        return { success: true, message: "Flew to fit entire view." };
+      }
+    },
+    applyPropertyFilter: (propName, operator, valQuery) => {
+      valQuery = String(valQuery).trim().toLowerCase();
+      const allObjectIds = viewer.scene.objectIds;
+      const matchedIds = [];
+      
+      allObjectIds.forEach((id) => {
+        const entity = viewer.scene.objects[id];
+        if (!entity || !entity.model) return;
+        const modelId = entity.model.id;
+        const meta = getElementMetadata(id, modelId);
+        if (!meta) return;
+        
+        let isMatch = false;
+        for (const prop of meta.props) {
+          if (prop.name === propName) {
+            const propValStr = String(prop.value).toLowerCase();
+            const propValNum = parseFloat(prop.value);
+            const queryValNum = parseFloat(valQuery);
+            
+            if (operator === 'equals') {
+              isMatch = propValStr === valQuery;
+            } else if (operator === 'contains') {
+              isMatch = propValStr.includes(valQuery);
+            } else if (operator === 'gt' && !isNaN(propValNum) && !isNaN(queryValNum)) {
+              isMatch = propValNum > queryValNum;
+            } else if (operator === 'lt' && !isNaN(propValNum) && !isNaN(queryValNum)) {
+              isMatch = propValNum < queryValNum;
+            }
+            break;
+          }
+        }
+        if (isMatch) matchedIds.push(id);
+      });
+      
+      viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+      if (matchedIds.length > 0) {
+        viewer.scene.setObjectsXRayed(allObjectIds, true);
+        viewer.scene.setObjectsXRayed(matchedIds, false);
+        viewer.scene.setObjectsHighlighted(matchedIds, true);
+        if (filterResultCount) filterResultCount.innerText = `Found ${matchedIds.length} matching objects`;
+        return { success: true, count: matchedIds.length, matchedIds };
+      } else {
+        viewer.scene.setObjectsXRayed(allObjectIds, true);
+        if (filterResultCount) filterResultCount.innerText = "No matching objects found";
+        return { success: true, count: 0, matchedIds: [] };
+      }
+    },
+    resetPropertyFilter: () => {
+      const allObjectIds = viewer.scene.objectIds;
+      viewer.scene.setObjectsXRayed(allObjectIds, false);
+      viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+      if (filterResultCount) filterResultCount.innerText = "";
+      return { success: true, message: "Reset property filter." };
+    },
+    searchObjectsByText: (query) => {
+      filterObjects(query);
+      const allObjectIds = viewer.scene.objectIds;
+      const matchedIds = [];
+      const queryLower = query.toLowerCase().trim();
+      if (queryLower === "") {
+        return { success: true, count: allObjectIds.length, message: "Cleared search query." };
+      }
+      allObjectIds.forEach(id => {
+        const metaObj = viewer.metaScene.metaObjects[id];
+        if (!metaObj) return;
+        let isMatch = (metaObj.name && metaObj.name.toLowerCase().includes(queryLower)) ||
+                      (metaObj.type && metaObj.type.toLowerCase().includes(queryLower)) ||
+                      String(id).toLowerCase().includes(queryLower);
+        if (!isMatch && metaObj.propertySets) {
+          for (const pset of metaObj.propertySets) {
+            if (pset.properties) {
+              for (const prop of pset.properties) {
+                if ((prop.name && prop.name.toLowerCase().includes(queryLower)) ||
+                    (prop.value && String(prop.value).toLowerCase().includes(queryLower))) {
+                  isMatch = true;
+                  break;
+                }
+              }
+            }
+            if (isMatch) break;
+          }
+        }
+        if (isMatch) matchedIds.push(id);
+      });
+      return { success: true, count: matchedIds.length, matchedIds };
+    },
+    addSectionPlane: (type, pos, dir) => {
+      const id = `plane-ai-${Date.now()}`;
+      let plane;
+      if (type === 'center') {
+        plane = sectionPlanes.createSectionPlane({
+          id: id,
+          pos: pos || viewer.scene.center,
+          dir: dir || [0, -1, 0]
+        });
+      } else {
+        if (!pos || !dir) {
+          return { success: false, error: "Position and normal direction are required for surface cuts." };
+        }
+        plane = sectionPlanes.createSectionPlane({
+          id,
+          pos,
+          dir
+        });
+      }
+      if (chkShowGizmos.checked) {
+        sectionPlanes.showControl(plane.id);
+      }
+      return { success: true, planeId: plane.id, message: `Added section plane of type ${type}.` };
+    },
+    clearSectionPlanes: () => {
+      sectionPlanes.clear();
+      return { success: true, message: "Cleared all section planes." };
+    },
+    setMeasurementMode: (mode) => {
+      const cleanMode = mode === 'none' ? null : mode;
+      setMeasurementMode(cleanMode);
+      return { success: true, message: `Set measurement mode to ${mode}.` };
+    },
+    clearAllMeasurements: () => {
+      clearAllMeasurements();
+      return { success: true, message: "Cleared all measurements." };
+    },
+    runIfcDiff: async (oldModelId, newModelId) => {
+      const oldModel = loadedModels.find(m => m.id === oldModelId);
+      const newModel = loadedModels.find(m => m.id === newModelId);
+      if (!oldModel || !newModel) {
+        return { error: "Models not found in current session." };
+      }
+      const formData = new FormData();
+      formData.append('oldFile', oldModel.file);
+      formData.append('newFile', newModel.file);
+      const response = await fetch('/api/python/ifcdiff', {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Diff failed on backend');
+      }
+      const result = await response.json();
+      return { success: true, result };
+    },
+    runClashDetection: async (modelAId, modelBId, tolerance = 0.0) => {
+      const modelA = loadedModels.find(m => m.id === modelAId);
+      const modelB = loadedModels.find(m => m.id === modelBId);
+      if (!modelA) return { error: "Model A not found." };
+      const formData = new FormData();
+      formData.append('fileA', modelA.file);
+      if (modelB) formData.append('fileB', modelB.file);
+      formData.append('tolerance', tolerance);
+      const response = await fetch('/api/python/ifcclash', {
+        method: 'POST',
+        body: formData
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Clash failed on backend');
+      }
+      const result = await response.json();
+      return { success: true, result };
+    }
+  };
+
+  // Initialize the AI Chatbox Controller
+  setupAiAgent();
+
   updateStatus("BIM Viewer initialized. Ready for user files.");
 }
 

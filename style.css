@@ -578,7 +578,7 @@ input:checked + .slider:before {
 /* Status bar */
 .status-bar {
     position: absolute;
-    bottom: 12px;
+    bottom: 52px;
     left: 12px;
     background-color: rgba(17, 24, 39, 0.85);
     border: 1px solid var(--border-color);
@@ -732,13 +732,68 @@ input:checked + .slider:before {
     font-weight: 500;
     word-break: break-all;
     padding-right: 8px;
+    align-self: center;
+}
+
+.property-value-container {
+    flex: 1.2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    min-width: 0;
 }
 
 .property-value {
-    flex: 1.2;
     color: var(--text-main);
     text-align: right;
     word-break: break-word;
+}
+
+.btn-prop-action {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0.3;
+    flex-shrink: 0;
+}
+
+.property-row:hover .btn-prop-action,
+.object-summary-card:hover .btn-prop-action {
+    opacity: 0.8;
+}
+
+.btn-prop-action:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    opacity: 1 !important;
+}
+
+.property-edit-input {
+    background-color: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 12px;
+    padding: 3px 8px;
+    width: 100%;
+    min-width: 60px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.property-edit-input:focus {
+    border-color: var(--accent-color, #4f46e5);
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* --- Added Form & Modal Styles --- */
@@ -1830,3 +1885,198 @@ select.form-input option {
     opacity: 0;
     pointer-events: none;
 }
+
+/* --- AI Agent Chatbox Bottom Panel Layout --- */
+.ai-agent-chat-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.ai-agent-chat-container.collapsed {
+    transform: translateY(calc(100% - 40px));
+}
+
+.ai-agent-chat-header {
+    height: 40px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+}
+
+.ai-agent-chat-header h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.ai-agent-chat-header .toggle-icon {
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: transform 0.3s ease;
+}
+
+.ai-agent-chat-body {
+    padding: 16px 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    height: 240px;
+    box-sizing: border-box;
+}
+
+.ai-agent-chat-config {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-right: 1px solid var(--border-color);
+    padding-right: 24px;
+}
+
+/* Override input styling inside bottom panel to fit nicely */
+.ai-agent-chat-body .form-input {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.ai-chat-history {
+    height: 160px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+    font-size: 12px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Scrollbar for chat history */
+.ai-chat-history::-webkit-scrollbar {
+    width: 4px;
+}
+.ai-chat-history::-webkit-scrollbar-track {
+    background: transparent;
+}
+.ai-chat-history::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.ai-chat-input-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.ai-chat-input-wrapper .form-input {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+.ai-message {
+    padding: 8px 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+    word-break: break-word;
+    max-width: 90%;
+}
+
+.ai-message.system {
+    color: var(--text-muted);
+    font-style: italic;
+    background: transparent;
+    border: none;
+    align-self: center;
+    text-align: center;
+    padding: 4px;
+    max-width: 100%;
+}
+
+.ai-message.user {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.ai-message.agent {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    border: 1px solid var(--border-color);
+}
+
+.ai-message.error {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    align-self: center;
+    text-align: center;
+}
+
+.ai-message.thinking {
+    background-color: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted);
+    align-self: flex-start;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ai-dot-loader {
+    display: flex;
+    gap: 3px;
+}
+
+.ai-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-muted);
+    border-radius: 50%;
+    animation: aiPulse 1.2s infinite ease-in-out;
+}
+
+.ai-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.ai-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes aiPulse {
+    0%, 100% { transform: scale(0.6); opacity: 0.4; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+.ai-tool-call {
+    font-size: 11px;
+    background: rgba(6, 182, 212, 0.08);
+    border-left: 2px solid var(--accent);
+    padding: 4px 8px;
+    margin-top: 4px;
+    border-radius: 2px;
+    color: var(--accent);
+    font-family: monospace;
+}
+

@@ -14,10 +14,13 @@
     "desktop:build": "npm run build && electron-builder"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
+    "@google/genai": "^2.11.0",
     "@xeokit/xeokit-convert": "^1.1.18",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "openai": "^6.46.0"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
