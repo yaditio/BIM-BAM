@@ -191,6 +191,19 @@ export const aiTools = [
       },
       required: ["modelAId"]
     }
+  },
+  {
+    name: "update_object_parameter",
+    description: "Update the value of a specific parameter/property for an object (works on both Revit parameters and IFC properties). Modifies in-memory representation.",
+    parameters: {
+      type: "object",
+      properties: {
+        objectId: { type: "string", description: "The unique ID of the object." },
+        parameterName: { type: "string", description: "The name of the parameter/property to update." },
+        newValue: { type: "string", description: "The new value to assign." }
+      },
+      required: ["objectId", "parameterName", "newValue"]
+    }
   }
 ];
 
@@ -199,10 +212,12 @@ export function setupAiAgent() {
   const geminiGroup = document.getElementById('geminiKeyGroup');
   const openaiGroup = document.getElementById('openaiKeyGroup');
   const anthropicGroup = document.getElementById('anthropicKeyGroup');
+  const ollamaModelGroup = document.getElementById('ollamaModelGroup');
   
   const geminiInput = document.getElementById('geminiApiKey');
   const openaiInput = document.getElementById('openaiApiKey');
   const anthropicInput = document.getElementById('anthropicApiKey');
+  const ollamaModelSelect = document.getElementById('ollamaModelSelect');
   
   const chatInput = document.getElementById('aiChatInput');
   const btnSend = document.getElementById('btnSendAiChat');
@@ -210,6 +225,38 @@ export function setupAiAgent() {
   const chatContainer = document.getElementById('aiAgentChatContainer');
   const chatHeader = document.getElementById('aiAgentChatHeader');
   const chatToggle = document.getElementById('aiAgentChatToggle');
+
+  const loadOllamaModels = async () => {
+    ollamaModelSelect.innerHTML = '<option value="">Loading models...</option>';
+    try {
+      const response = await fetch('/api/ollama/models');
+      if (!response.ok) {
+        throw new Error('Failed to load Ollama models');
+      }
+      const data = await response.json();
+      ollamaModelSelect.innerHTML = '';
+      if (!data.models || data.models.length === 0) {
+        ollamaModelSelect.innerHTML = '<option value="">No models found</option>';
+        return;
+      }
+      data.models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.name;
+        option.textContent = model.name;
+        ollamaModelSelect.appendChild(option);
+      });
+      if (localStorage.getItem('bim_ollama_model')) {
+        ollamaModelSelect.value = localStorage.getItem('bim_ollama_model');
+      }
+    } catch (err) {
+      console.error(err);
+      ollamaModelSelect.innerHTML = '<option value="">Error loading models</option>';
+    }
+  };
+
+  ollamaModelSelect.addEventListener('change', () => {
+    localStorage.setItem('bim_ollama_model', ollamaModelSelect.value);
+  });
 
   // Collapse/Expand toggle
   chatHeader.addEventListener('click', () => {
@@ -227,12 +274,21 @@ export function setupAiAgent() {
     geminiGroup.style.display = val === 'gemini' ? 'block' : 'none';
     openaiGroup.style.display = val === 'openai' ? 'block' : 'none';
     anthropicGroup.style.display = val === 'anthropic' ? 'block' : 'none';
+    ollamaModelGroup.style.display = val === 'ollama' ? 'block' : 'none';
+    if (val === 'ollama') {
+      loadOllamaModels();
+    }
   });
 
   // Load saved API keys from localStorage
   if (localStorage.getItem('bim_gemini_key')) geminiInput.value = localStorage.getItem('bim_gemini_key');
   if (localStorage.getItem('bim_openai_key')) openaiInput.value = localStorage.getItem('bim_openai_key');
   if (localStorage.getItem('bim_anthropic_key')) anthropicInput.value = localStorage.getItem('bim_anthropic_key');
+
+  if (providerSelect.value === 'ollama') {
+    ollamaModelGroup.style.display = 'block';
+    loadOllamaModels();
+  }
 
   const getApiKey = () => {
     const provider = providerSelect.value;
@@ -320,6 +376,8 @@ After calling a tool, explain what you did clearly in one or two short sentences
           return await api.runIfcDiff(args.oldModelId, args.newModelId);
         case 'run_clash_detection':
           return await api.runClashDetection(args.modelAId, args.modelBId, args.tolerance);
+        case 'update_object_parameter':
+          return api.updateObjectParameter(args.objectId, args.parameterName, args.newValue);
         default:
           return { error: `Tool ${name} is not implemented.` };
       }
@@ -333,9 +391,14 @@ After calling a tool, explain what you did clearly in one or two short sentences
     const text = chatInput.value.trim();
     if (!text) return;
 
+    const provider = providerSelect.value;
     const apiKey = getApiKey();
-    if (!apiKey) {
+    if (!apiKey && provider !== 'ollama') {
       appendMessage('error', 'Please enter your API Key.');
+      return;
+    }
+    if (provider === 'ollama' && !ollamaModelSelect.value) {
+      appendMessage('error', 'Please select an Ollama model.');
       return;
     }
     saveApiKeys();
@@ -364,7 +427,8 @@ After calling a tool, explain what you did clearly in one or two short sentences
           provider,
           apiKey,
           messages,
-          tools: aiTools
+          tools: aiTools,
+          model: provider === 'ollama' ? ollamaModelSelect.value : undefined
         })
       });
 
@@ -378,28 +442,44 @@ After calling a tool, explain what you did clearly in one or two short sentences
       const resData = await response.json();
       
       if (resData.tool_calls && resData.tool_calls.length > 0) {
-        const toolCall = resData.tool_calls[0];
-        
-        const toolNotice = document.createElement('div');
-        toolNotice.className = 'ai-tool-call';
-        toolNotice.textContent = `⚡ Calling: ${toolCall.function.name}(${toolCall.function.arguments})`;
-        chatHistory.appendChild(toolNotice);
-        chatHistory.scrollTop = chatHistory.scrollHeight;
+        // Render introductory explanation text if present
+        if (resData.content && resData.content.trim() !== "") {
+          appendMessage('agent', resData.content);
+        }
 
-        const args = JSON.parse(toolCall.function.arguments);
-        const result = await executeTool(toolCall.function.name, args);
+        const toolResponses = [];
+        for (const toolCall of resData.tool_calls) {
+          const toolNotice = document.createElement('div');
+          toolNotice.className = 'ai-tool-call';
+          toolNotice.textContent = `⚡ Calling: ${toolCall.function.name}(${toolCall.function.arguments})`;
+          chatHistory.appendChild(toolNotice);
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+
+          try {
+            const args = JSON.parse(toolCall.function.arguments);
+            const result = await executeTool(toolCall.function.name, args);
+            toolResponses.push({
+              role: 'tool',
+              tool_call_id: toolCall.id,
+              name: toolCall.function.name,
+              content: JSON.stringify(result)
+            });
+          } catch (err) {
+            toolResponses.push({
+              role: 'tool',
+              tool_call_id: toolCall.id,
+              name: toolCall.function.name,
+              content: JSON.stringify({ error: err.message })
+            });
+          }
+        }
 
         messages.push({
           role: 'assistant',
           content: resData.content || null,
           tool_calls: resData.tool_calls
         });
-        messages.push({
-          role: 'tool',
-          tool_call_id: toolCall.id,
-          name: toolCall.function.name,
-          content: JSON.stringify(result)
-        });
+        messages.push(...toolResponses);
 
         await runChatLoop(apiKey);
       } else {

@@ -496,10 +496,11 @@
                     <div class="ai-agent-chat-config">
                         <div class="form-group" style="margin-bottom: 12px;">
                             <label for="aiProviderSelect" style="margin-bottom: 6px;">AI Provider</label>
-                            <select id="aiProviderSelect" class="form-input" style="width: 100%;">
+                             <select id="aiProviderSelect" class="form-input" style="width: 100%;">
                                 <option value="gemini">Google Gemini</option>
                                 <option value="openai">OpenAI (GPT)</option>
                                 <option value="anthropic">Anthropic Claude</option>
+                                <option value="ollama">Ollama (Local)</option>
                             </select>
                         </div>
                         <!-- API Key Inputs -->
@@ -514,6 +515,12 @@
                         <div class="form-group" id="anthropicKeyGroup" style="display: none; margin-bottom: 0;">
                             <label for="anthropicApiKey" style="margin-bottom: 6px;">Anthropic API Key</label>
                             <input type="password" id="anthropicApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
+                        </div>
+                        <div class="form-group" id="ollamaModelGroup" style="display: none; margin-bottom: 0;">
+                            <label for="ollamaModelSelect" style="margin-bottom: 6px;">Ollama Model</label>
+                            <select id="ollamaModelSelect" class="form-input" style="width: 100%;">
+                                <option value="">Loading models...</option>
+                            </select>
                         </div>
                     </div>
                     <!-- Chat Interface Column -->
@@ -582,10 +589,8 @@
             </div>
 
             <!-- Georeference Panel -->
-            <div class="georeference-panel" id="georeferencePanel">
-                <div class="panel-section-header">
-                    <h3><i class="fa-solid fa-earth-americas"></i> Georeferencing</h3>
-                </div>
+            <div class="georeference-panel panel-section" id="georeferencePanel">
+                <h3><i class="fa-solid fa-earth-americas"></i> Georeferencing</h3>
                 <div class="georeference-status no-geo" id="geoStatusText">No model loaded.</div>
                 <div class="form-group geo-group" id="geoModelSelectGroup" style="display: none; margin-top: 10px;">
                     <label for="geoModelSelect">Select Model</label>
@@ -623,6 +628,31 @@
                 <button class="btn btn-secondary btn-full" id="btnToggleCesium" disabled style="margin-top: 8px;">
                     <i class="fa-solid fa-earth-americas"></i> Activate Cesium Globe
                 </button>
+                
+                <div class="sun-position-section" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                    <h4 style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; margin: 4px 0 8px 0;"><i class="fa-solid fa-sun" style="color: var(--accent-color, #06b6d4);"></i> Solar Position &amp; Lighting</h4>
+                    <div class="form-group checkbox-group" style="margin-bottom: 8px;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="chkEnableSunPosition">
+                            <span class="slider"></span>
+                        </label>
+                        <span class="label-text">Enable Sun Position Light</span>
+                    </div>
+                    <div id="sunParamsContainer" style="display: none; flex-direction: column; gap: 8px;">
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label for="sunDateTime" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Date &amp; Time</label>
+                            <input type="datetime-local" id="sunDateTime" class="form-input" style="width: 100%; box-sizing: border-box;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label for="sunSkyColor" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Sky Color (Hemisphere Top)</label>
+                            <input type="color" id="sunSkyColor" class="form-input-color" value="#d0e0ff" style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 6px; padding: 2px; box-sizing: border-box; background: none;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label for="sunGroundColor" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Ground Color (Hemisphere Bottom)</label>
+                            <input type="color" id="sunGroundColor" class="form-input-color" value="#3a3530" style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 6px; padding: 2px; box-sizing: border-box; background: none;">
+                        </div>
+                    </div>
+                </div>
             </div>
         </aside>
     </div>

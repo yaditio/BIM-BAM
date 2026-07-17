@@ -598,7 +598,7 @@ if (fs.existsSync(distPath)) {
 app.post('/api/ai/chat', async (req, res) => {
   const { provider, apiKey, messages, tools } = req.body;
 
-  if (!apiKey) {
+  if (!apiKey && provider !== 'ollama') {
     return res.status(400).json({ error: 'API key is required' });
   }
 
@@ -797,12 +797,126 @@ app.post('/api/ai/chat', async (req, res) => {
         tool_calls: toolCalls.length > 0 ? toolCalls : null
       });
 
+    } else if (provider === 'ollama') {
+      const { default: ollama } = await import('ollama');
+      
+      const formattedMessages = messages.map(msg => {
+        const formatted = { role: msg.role, content: msg.content || '' };
+        if (msg.tool_calls) {
+          formatted.tool_calls = msg.tool_calls.map(tc => ({
+            function: {
+              name: tc.function.name,
+              arguments: typeof tc.function.arguments === 'string' ? JSON.parse(tc.function.arguments) : tc.function.arguments
+            }
+          }));
+        }
+        if (msg.name) {
+          formatted.name = msg.name;
+        }
+        return formatted;
+      });
+
+      const formattedTools = tools.map(t => ({
+        type: 'function',
+        function: {
+          name: t.name,
+          description: t.description,
+          parameters: t.parameters
+        }
+      }));
+
+      console.log(`[Server] Requesting Ollama with model ${req.body.model} and ${formattedMessages.length} messages`);
+      const response = await ollama.chat({
+        model: req.body.model,
+        messages: formattedMessages,
+        tools: formattedTools.length > 0 ? formattedTools : undefined
+      });
+
+      const message = response.message;
+      let toolCalls = null;
+      if (message.tool_calls && message.tool_calls.length > 0) {
+        toolCalls = message.tool_calls.map((call, idx) => ({
+          id: call.id || `call_ollama_${Date.now()}_${idx}`,
+          type: 'function',
+          function: {
+            name: call.function.name,
+            arguments: typeof call.function.arguments === 'string' ? call.function.arguments : JSON.stringify(call.function.arguments)
+          }
+        }));
+      } else {
+        try {
+          const contentText = message.content || '';
+          const regex = /```(?:json)?\s*(\{[\s\S]*?\})\s*```/gi;
+          let match;
+          const extractedCalls = [];
+          
+          while ((match = regex.exec(contentText)) !== null) {
+            try {
+              const parsed = JSON.parse(match[1].trim());
+              if (parsed.name && parsed.arguments) {
+                extractedCalls.push({
+                  id: `call_ollama_${Date.now()}_${extractedCalls.length}`,
+                  type: 'function',
+                  function: {
+                    name: parsed.name,
+                    arguments: typeof parsed.arguments === 'string' ? parsed.arguments : JSON.stringify(parsed.arguments)
+                  }
+                });
+              }
+            } catch (e) {
+              // Ignore invalid JSON chunks inside markdown
+            }
+          }
+
+          // If no markdown blocks matched, try parsing the whole trimmed content
+          if (extractedCalls.length === 0) {
+            const contentTrimmed = contentText.trim();
+            if (contentTrimmed.startsWith('{') && contentTrimmed.endsWith('}')) {
+              const parsed = JSON.parse(contentTrimmed);
+              if (parsed.name && parsed.arguments) {
+                extractedCalls.push({
+                  id: `call_ollama_${Date.now()}_0`,
+                  type: 'function',
+                  function: {
+                    name: parsed.name,
+                    arguments: typeof parsed.arguments === 'string' ? parsed.arguments : JSON.stringify(parsed.arguments)
+                  }
+                });
+              }
+            }
+          }
+
+          if (extractedCalls.length > 0) {
+            toolCalls = extractedCalls;
+          }
+        } catch (e) {
+          // Ignore parse errors, treat as regular message content
+        }
+      }
+
+      return res.json({
+        content: toolCalls ? '' : (message.content || ''),
+        tool_calls: toolCalls
+      });
+
     } else {
       return res.status(400).json({ error: 'Unsupported provider: ' + provider });
     }
   } catch (err) {
     console.error('[Server] AI Chat failed:', err);
     res.status(500).json({ error: err.message || 'AI Chat failed' });
+  }
+});
+
+// --- Get Local Ollama Models ---
+app.get('/api/ollama/models', async (req, res) => {
+  try {
+    const { default: ollama } = await import('ollama');
+    const response = await ollama.list();
+    res.json({ models: response.models || [] });
+  } catch (err) {
+    console.error('[Server] Failed to fetch Ollama models:', err);
+    res.status(500).json({ error: 'Failed to fetch local Ollama models. Is Ollama running?' });
   }
 });
 

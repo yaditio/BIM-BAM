@@ -12,7 +12,13 @@ import {
   AngleMeasurementsPlugin,
   AngleMeasurementsMouseControl,
   PointerLens,
-  math 
+  math,
+  AmbientLight,
+  DirLight,
+  Mesh,
+  VBOGeometry,
+  PhongMaterial,
+  buildSphereGeometry
 } from "./lib/xeokit/xeokit-sdk.min.es.js";
 
 import * as WebIFC from "https://cdn.jsdelivr.net/npm/web-ifc@0.0.51/web-ifc-api.js";
@@ -111,6 +117,15 @@ let isCesiumActive = false;
 let cesiumViewer = null;
 let cesiumTickUnsubscribe = null;
 
+// --- Sun Position state ---
+let activeSunLight = null;
+let activeSkyLight = null;
+let activeAmbientLight = null;
+let savedDefaultLights = null;
+let sunHelperSphere = null;
+let sunHelperLine = null;
+let savedContainerBackground = "";
+
 // Phase 2 UI elements
 const filterPropName = document.getElementById('filterPropName');
 const filterOperator = document.getElementById('filterOperator');
@@ -143,6 +158,13 @@ const geoStatusText = document.getElementById('geoStatusText');
 const btnEditGeoreference = document.getElementById('btnEditGeoreference');
 const btnToggleCesium = document.getElementById('btnToggleCesium');
 const cesiumContainer = document.getElementById('cesiumContainer');
+
+// Sun Position UI elements
+const chkEnableSunPosition = document.getElementById('chkEnableSunPosition');
+const sunParamsContainer = document.getElementById('sunParamsContainer');
+const sunDateTime = document.getElementById('sunDateTime');
+const sunSkyColor = document.getElementById('sunSkyColor');
+const sunGroundColor = document.getElementById('sunGroundColor');
 
 // Model Tree elements
 const modelTreeSection = document.getElementById('modelTreeSection');
@@ -1949,34 +1971,32 @@ function filterObjects(query) {
     // Clear filter
     viewer.scene.setObjectsXRayed(allObjectIds, false);
     viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
-    filterResultCount.innerText = "";
+    if (filterResultCount) filterResultCount.innerText = "";
     btnClearSearch.style.display = "none";
-    return;
+    return allObjectIds;
   }
 
   btnClearSearch.style.display = "block";
   const matchedIds = [];
 
   allObjectIds.forEach((id) => {
-    const metaObj = viewer.metaScene.metaObjects[id];
-    if (!metaObj) return;
+    const obj = viewer.scene.objects[id];
+    const modelId = obj && obj.model ? obj.model.id : null;
+    const meta = getElementMetadata(id, modelId);
+    if (!meta) return;
 
-    let isMatch = (metaObj.name && metaObj.name.toLowerCase().includes(query)) ||
-                  (metaObj.type && metaObj.type.toLowerCase().includes(query)) ||
+    let isMatch = (meta.name && meta.name.toLowerCase().includes(query)) ||
+                  (meta.type && meta.type.toLowerCase().includes(query)) ||
+                  (meta.category && meta.category.toLowerCase().includes(query)) ||
                   String(id).toLowerCase().includes(query);
 
-    if (!isMatch && metaObj.propertySets) {
-      for (const pset of metaObj.propertySets) {
-        if (pset.properties) {
-          for (const prop of pset.properties) {
-            if ((prop.name && prop.name.toLowerCase().includes(query)) ||
-                (prop.value && String(prop.value).toLowerCase().includes(query))) {
-              isMatch = true;
-              break;
-            }
-          }
+    if (!isMatch && meta.props) {
+      for (const prop of meta.props) {
+        if ((prop.name && prop.name.toLowerCase().includes(query)) ||
+            (prop.value && String(prop.value).toLowerCase().includes(query))) {
+          isMatch = true;
+          break;
         }
-        if (isMatch) break;
       }
     }
 
@@ -1991,11 +2011,13 @@ function filterObjects(query) {
     viewer.scene.setObjectsXRayed(allObjectIds, true);
     viewer.scene.setObjectsXRayed(matchedIds, false);
     viewer.scene.setObjectsHighlighted(matchedIds, true);
-    filterResultCount.innerText = `Found ${matchedIds.length} matching objects`;
+    if (filterResultCount) filterResultCount.innerText = `Found ${matchedIds.length} matching objects`;
   } else {
     viewer.scene.setObjectsXRayed(allObjectIds, true);
-    filterResultCount.innerText = "No matching objects found";
+    if (filterResultCount) filterResultCount.innerText = "No matching objects found";
   }
+
+  return matchedIds;
 }
 
 propertySearch.addEventListener('input', (e) => {
@@ -3486,6 +3508,300 @@ function convertToLatLon(easting, northing, epsg) {
   return { lat, lon };
 }
 
+// --- Solar Position Astronomical Calculation (Meeus Algorithms) ---
+const PI = Math.PI;
+const rad = PI / 180;
+const J1970 = 2440588;
+const J2000 = 2451545;
+
+function toJulian(date) { return date.valueOf() / 86400000 - 0.5 + J1970; }
+function toDays(date)   { return toJulian(date) - J2000; }
+function rightAscension(l, b) { return Math.atan2(Math.sin(l) * Math.cos(rad * 23.4397) - Math.tan(b) * Math.sin(rad * 23.4397), Math.cos(l)); }
+function declination(l, b)    { return Math.asin(Math.sin(b) * Math.cos(rad * 23.4397) + Math.cos(b) * Math.sin(rad * 23.4397) * Math.sin(l)); }
+function azimuth(H, phi, dec)  { return Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dec) * Math.cos(phi)); }
+function altitude(H, phi, dec) { return Math.asin(Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(H)); }
+function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
+function solarMeanAnomaly(d) { return rad * (357.5291 + 0.98560028 * d); }
+
+function eclipticLongitude(M) {
+  const C = rad * (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M));
+  const P = rad * 102.9372;
+  return M + C + P + PI;
+}
+
+function sunCoords(d) {
+  const M = solarMeanAnomaly(d);
+  const L = eclipticLongitude(M);
+  return {
+    dec: declination(L, 0),
+    ra: rightAscension(L, 0)
+  };
+}
+
+function getSunPosition(date, lat, lng) {
+  const lw = rad * -lng;
+  const phi = rad * lat;
+  const d = toDays(date);
+  const c = sunCoords(d);
+  const H = siderealTime(d, lw) - c.ra;
+  
+  let az = azimuth(H, phi, c.dec);
+  // Normalize azimuth so 0 = North, rotating clockwise
+  az = (az + PI) % (2 * PI);
+  if (az < 0) az += 2 * PI;
+
+  return {
+    altitude: altitude(H, phi, c.dec),
+    azimuth: az
+  };
+}
+
+// --- Lights Backup, Restore and Sun Position Lighting logic ---
+function backupDefaultLights() {
+  if (savedDefaultLights && savedDefaultLights.length > 0) return;
+  savedDefaultLights = [];
+  Object.values(viewer.scene.lights).forEach((light) => {
+    const config = {
+      id: light.id,
+      isDir: !!light.dir,
+      color: [...light.color],
+      intensity: light.intensity
+    };
+    if (config.isDir) {
+      config.dir = [...light.dir];
+      config.space = light.space || "view";
+    }
+    savedDefaultLights.push(config);
+  });
+  console.log("[Solar Position] Backed up default viewer lights:", savedDefaultLights);
+}
+
+function restoreDefaultLights() {
+  if (!savedDefaultLights || savedDefaultLights.length === 0) return;
+  
+  clearSunPositionLights();
+  restoreSkyBackground();
+
+  savedDefaultLights.forEach((config) => {
+    if (config.isDir) {
+      new DirLight(viewer.scene, {
+        id: config.id,
+        dir: config.dir,
+        color: config.color,
+        intensity: config.intensity,
+        space: config.space
+      });
+    } else {
+      new AmbientLight(viewer.scene, {
+        id: config.id,
+        color: config.color,
+        intensity: config.intensity
+      });
+    }
+  });
+  console.log("[Solar Position] Restored default lights.");
+}
+
+function clearDefaultLights() {
+  Object.values(viewer.scene.lights).forEach((light) => {
+    if (light.id !== "sun-position-direct" && light.id !== "sun-position-sky" && light.id !== "sun-position-ambient") {
+      light.destroy();
+    }
+  });
+}
+
+function clearSunPositionLights() {
+  if (activeSunLight) {
+    activeSunLight.destroy();
+    activeSunLight = null;
+  }
+  if (activeSkyLight) {
+    activeSkyLight.destroy();
+    activeSkyLight = null;
+  }
+  if (activeAmbientLight) {
+    activeAmbientLight.destroy();
+    activeAmbientLight = null;
+  }
+  if (sunHelperSphere) {
+    sunHelperSphere.destroy();
+    sunHelperSphere = null;
+  }
+  if (sunHelperLine) {
+    sunHelperLine.destroy();
+    sunHelperLine = null;
+  }
+  // Safe cleanup for IDs
+  ["sun-position-direct", "sun-position-sky", "sun-position-ambient", "sun-helper-sphere", "sun-helper-line"].forEach(id => {
+    if (viewer.scene.lights[id]) viewer.scene.lights[id].destroy();
+    if (viewer.scene.objects[id]) viewer.scene.objects[id].destroy();
+  });
+}
+
+function hexToRgbNormalized(hex) {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16) / 255;
+  const g = parseInt(c.substring(2, 4), 16) / 255;
+  const b = parseInt(c.substring(4, 6), 16) / 255;
+  return [r, g, b];
+}
+
+function applySkyBackground(skyColorHex, altitude) {
+  const container = document.querySelector('.viewer-container');
+  if (!container) return;
+  
+  if (savedContainerBackground === "") {
+    savedContainerBackground = container.style.backgroundImage || container.style.background || "none";
+  }
+
+  if (altitude > 0) {
+    container.style.background = `linear-gradient(to bottom, ${skyColorHex} 0%, #f0f4f8 100%)`;
+  } else {
+    container.style.background = `linear-gradient(to bottom, #070b19 0%, #1a2238 100%)`;
+  }
+}
+
+function restoreSkyBackground() {
+  const container = document.querySelector('.viewer-container');
+  if (!container || savedContainerBackground === "") return;
+  container.style.background = savedContainerBackground;
+  savedContainerBackground = "";
+}
+
+function updateSunPositionLight() {
+  if (!chkEnableSunPosition || !chkEnableSunPosition.checked) {
+    return;
+  }
+
+  backupDefaultLights();
+  clearDefaultLights();
+
+  const dtVal = sunDateTime ? sunDateTime.value : "";
+  const date = dtVal ? new Date(dtVal) : new Date();
+
+  const easting = parseFloat(geoEasting.value) || 0;
+  const northing = parseFloat(geoNorthing.value) || 0;
+  const epsg = geoEPSG.value || '';
+  
+  let lat = 51.5074;
+  let lon = -0.1278;
+
+  if (easting && northing) {
+    const latLon = convertToLatLon(easting, northing, epsg);
+    lat = latLon.lat;
+    lon = latLon.lon;
+  }
+
+  const sunPos = getSunPosition(date, lat, lon);
+  const altDeg = sunPos.altitude * 180 / PI;
+  const azDeg = sunPos.azimuth * 180 / PI;
+
+  console.log(`[Solar Position] Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}, Time: ${date.toLocaleString()}`);
+  console.log(`[Solar Position] Altitude: ${altDeg.toFixed(2)}°, Azimuth: ${azDeg.toFixed(2)}°`);
+
+  // Calculate direction vector pointing from the sun to target
+  const cosAlt = Math.cos(sunPos.altitude);
+  const sunXRel = Math.sin(sunPos.azimuth) * cosAlt;
+  const sunYRel = Math.sin(sunPos.altitude);
+  const sunZRel = -Math.cos(sunPos.azimuth) * cosAlt;
+  const dir = [-sunXRel, -sunYRel, -sunZRel];
+
+  const skyColorHex = sunSkyColor ? sunSkyColor.value : "#d0e0ff";
+  const skyColor = hexToRgbNormalized(skyColorHex);
+  const groundColor = hexToRgbNormalized(sunGroundColor ? sunGroundColor.value : "#3a3530");
+
+  clearSunPositionLights();
+
+  // 1. Ground Light (Ambient)
+  activeAmbientLight = new AmbientLight(viewer.scene, {
+    id: "sun-position-ambient",
+    color: groundColor,
+    intensity: 0.3
+  });
+
+  // 2. Sky Light (Dir pointing straight down representing sky ambient dome)
+  activeSkyLight = new DirLight(viewer.scene, {
+    id: "sun-position-sky",
+    dir: [0, -1, 0],
+    color: skyColor,
+    intensity: 0.4,
+    space: "world"
+  });
+
+  // 3. Sun Light (Dir pointing from the sun position)
+  const sunIntensity = sunPos.altitude > 0 ? 0.95 * Math.sin(sunPos.altitude) : 0.0;
+  const sunColor = [1.0, 0.98, 0.93]; // warm direct sunlight
+
+  activeSunLight = new DirLight(viewer.scene, {
+    id: "sun-position-direct",
+    dir: dir,
+    color: sunColor,
+    intensity: sunIntensity,
+    space: "world"
+  });
+
+  // 4. Update Sky Background Gradient to match Three.js example
+  applySkyBackground(skyColorHex, sunPos.altitude);
+
+  // 5. Render 3D Sun direction helper
+  const aabb = viewer.scene.aabb;
+  const diag = math.aabbDiag(aabb) || 100;
+  const sunDistance = diag * 0.9;
+  const center = [(aabb[0] + aabb[3]) / 2, (aabb[1] + aabb[4]) / 2, (aabb[2] + aabb[5]) / 2];
+
+  const sunX = center[0] + sunDistance * sunXRel;
+  const sunY = center[1] + sunDistance * sunYRel;
+  const sunZ = center[2] + sunDistance * sunZRel;
+
+  // Only show sun helper if the sun is above the horizon
+  const showHelper = sunPos.altitude > 0;
+  if (showHelper) {
+    const radius = diag * 0.02;
+
+    // Emissive yellow material for the sun sphere
+    const sunMaterial = new PhongMaterial(viewer.scene, {
+      emissive: [1.0, 0.95, 0.2],
+      diffuse: [0, 0, 0],
+      specular: [0, 0, 0]
+    });
+
+    sunHelperSphere = new Mesh(viewer.scene, {
+      id: "sun-helper-sphere",
+      geometry: new VBOGeometry(viewer.scene, buildSphereGeometry({
+        radius: radius,
+        lod: 2
+      })),
+      material: sunMaterial,
+      position: [sunX, sunY, sunZ],
+      pickable: false,
+      collidable: false
+    });
+
+    // Thin line pointing from the sun to the model center
+    sunHelperLine = new Mesh(viewer.scene, {
+      id: "sun-helper-line",
+      geometry: new VBOGeometry(viewer.scene, {
+        primitive: "lines",
+        positions: [
+          sunX, sunY, sunZ,
+          center[0], center[1], center[2]
+        ],
+        indices: [0, 1]
+      }),
+      material: new PhongMaterial(viewer.scene, {
+        emissive: [1.0, 0.85, 0.0],
+        diffuse: [0, 0, 0],
+        specular: [0, 0, 0],
+        lineWidth: 2
+      }),
+      pickable: false,
+      collidable: false
+    });
+  }
+
+  updateStatus(`Solar Position: Altitude = ${altDeg.toFixed(1)}°, Azimuth = ${azDeg.toFixed(1)}°`);
+}
+
 let terrainElevation = 0;
 let lastSampledCoords = { lat: null, lon: null };
 
@@ -4673,35 +4989,11 @@ function startApp() {
       return { success: true, message: "Reset property filter." };
     },
     searchObjectsByText: (query) => {
-      filterObjects(query);
-      const allObjectIds = viewer.scene.objectIds;
-      const matchedIds = [];
+      const matchedIds = filterObjects(query);
       const queryLower = query.toLowerCase().trim();
       if (queryLower === "") {
-        return { success: true, count: allObjectIds.length, message: "Cleared search query." };
+        return { success: true, count: matchedIds.length, message: "Cleared search query." };
       }
-      allObjectIds.forEach(id => {
-        const metaObj = viewer.metaScene.metaObjects[id];
-        if (!metaObj) return;
-        let isMatch = (metaObj.name && metaObj.name.toLowerCase().includes(queryLower)) ||
-                      (metaObj.type && metaObj.type.toLowerCase().includes(queryLower)) ||
-                      String(id).toLowerCase().includes(queryLower);
-        if (!isMatch && metaObj.propertySets) {
-          for (const pset of metaObj.propertySets) {
-            if (pset.properties) {
-              for (const prop of pset.properties) {
-                if ((prop.name && prop.name.toLowerCase().includes(queryLower)) ||
-                    (prop.value && String(prop.value).toLowerCase().includes(queryLower))) {
-                  isMatch = true;
-                  break;
-                }
-              }
-            }
-            if (isMatch) break;
-          }
-        }
-        if (isMatch) matchedIds.push(id);
-      });
       return { success: true, count: matchedIds.length, matchedIds };
     },
     addSectionPlane: (type, pos, dir) => {
@@ -4779,8 +5071,103 @@ function startApp() {
       }
       const result = await response.json();
       return { success: true, result };
+    },
+    updateObjectParameter: (objectId, parameterName, newValue) => {
+      const entity = viewer.scene.objects[objectId];
+      const modelId = entity && entity.model ? entity.model.id : null;
+      let updated = false;
+
+      // 1. Try Revit metadata map first
+      const revitMeta = revitMetadataMap[modelId];
+      if (revitMeta && revitMeta.Elements) {
+        const element = revitMeta.Elements.find(e => String(e.Id) === String(objectId));
+        if (element && element.ParameterGroups) {
+          element.ParameterGroups.forEach((gIdx) => {
+            const group = revitMeta.ParameterGroups[gIdx];
+            if (group && group.Parameters) {
+              group.Parameters.forEach((pIdx) => {
+                const param = revitMeta.Parameters[pIdx];
+                if (param && param.Name === parameterName) {
+                  param.Value = newValue;
+                  updated = true;
+                }
+              });
+            }
+          });
+        }
+      }
+
+      // 2. Try standard IFC metadata next
+      if (!updated && viewer.metaScene) {
+        const metaObj = viewer.metaScene.metaObjects[objectId];
+        if (metaObj && metaObj.propertySets) {
+          metaObj.propertySets.forEach((pset) => {
+            if (pset.properties) {
+              pset.properties.forEach((prop) => {
+                if (prop.name === parameterName) {
+                  prop.value = newValue;
+                  updated = true;
+                }
+              });
+            }
+          });
+        }
+      }
+
+      if (updated) {
+        recalculateAvailableQuantities();
+        if (String(activeElementId) === String(objectId)) {
+          updateSelectionUI();
+        }
+        updateStatus(`Updated parameter "${parameterName}" of object ${objectId} to "${newValue}"`);
+        return { success: true, message: `Successfully updated parameter "${parameterName}" to "${newValue}".` };
+      }
+
+      return { success: false, error: `Parameter "${parameterName}" not found on object ${objectId}.` };
     }
   };
+
+  // Set default datetime to 12:00 PM (noon) of the current day in local time
+  const todayNoon = new Date();
+  todayNoon.setHours(12, 0, 0, 0);
+  const tzoffset = todayNoon.getTimezoneOffset() * 60000;
+  const localISOTime = (new Date(todayNoon.getTime() - tzoffset)).toISOString().slice(0, 16);
+  if (sunDateTime) sunDateTime.value = localISOTime;
+
+  // Bind sun position event listeners
+  if (chkEnableSunPosition) {
+    chkEnableSunPosition.addEventListener('change', () => {
+      if (chkEnableSunPosition.checked) {
+        if (sunParamsContainer) sunParamsContainer.style.display = 'flex';
+        updateSunPositionLight();
+      } else {
+        if (sunParamsContainer) sunParamsContainer.style.display = 'none';
+        restoreDefaultLights();
+        updateStatus("Solar Position light disabled. Default lights restored.");
+      }
+    });
+  }
+
+  if (sunDateTime) sunDateTime.addEventListener('input', updateSunPositionLight);
+  if (sunSkyColor) sunSkyColor.addEventListener('input', updateSunPositionLight);
+  if (sunGroundColor) sunGroundColor.addEventListener('input', updateSunPositionLight);
+
+  // Trigger update if coordinates are changed manually
+  if (btnEditGeoreference) {
+    btnEditGeoreference.addEventListener('click', () => {
+      if (!isEditingGeoreference && chkEnableSunPosition && chkEnableSunPosition.checked) {
+        updateSunPositionLight();
+      }
+    });
+  }
+
+  if (geoModelSelect) {
+    geoModelSelect.addEventListener('change', () => {
+      if (chkEnableSunPosition && chkEnableSunPosition.checked) {
+        updateSunPositionLight();
+      }
+    });
+  }
 
   // Initialize the AI Chatbox Controller
   setupAiAgent();
