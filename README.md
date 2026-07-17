@@ -53,7 +53,13 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 * Georeference your models using **Easting (X)**, **Northing (Y)**, **True North Angle**, **EPSG Coordinate Systems**, and **Vertical Datum**.
 * Project the georeferenced model onto an interactive 3D **Cesium World Terrain** dynamically to visualize your building in its real-world geographical context. Use your own **Cesium Ion Token** for terrain streaming to make project sites realistic.
 
-### 9. Python & IfcOpenShell Tools Integration
+### 9. Solar Position & Lighting
+* **Astronomic Solar Calculations**: Compute solar azimuth and altitude based on geographical coordinates (Easting/Northing converted dynamically to Latitude/Longitude via Proj4) and Date & Time using Jean Meeus' standard astronomical algorithms.
+* **Hemisphere Lighting Model**: Simulates a graduated sky hemisphere (gradient background matching the Three.js hemisphere light example), ground bounce reflection, and direct warm sunlight.
+* **3D Sun Helper**: Renders a bright yellow 3D sphere helper indicating the sun's position in the sky, and draws a ray pointing to the center of the scene bounding box.
+* **Smart Night Cycle**: Automatically switches to a dark starry sky gradient and sets direct sunlight intensity to zero when the sun sets.
+
+### 10. Python & IfcOpenShell Tools Integration
 * **IFC Diff**: Compare any two loaded IFC models to highlight added (Green), changed (Yellow), and deleted elements.
 * **BCF Reader**: Parse and view BIM Collaboration Format (.bcf) issues, viewpoints, comments, and screenshots.
 * **IFC Clash**: Detect structural geometric collisions between or within loaded models with custom tolerances, select and fly to clashed components, and export results to BCF.
