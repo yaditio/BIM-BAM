@@ -139,5 +139,10 @@ The repository includes a comprehensive Playwright test script (`verify-p2.mjs`)
 
 ---
 
+## 🤝 Development & Contributions
+
+This application was built with AI assistance, while I am entirely responsible for the concept, architecture, workflow, and feature design. The project is still evolving, so contributions, improvements, and custom implementations from the community are greatly appreciated. This application is published under an open-source license.
+
 ## 📄 License
-This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3) - see the [LICENSE](file:///e:/Documents/Practice/xeokit/BIM%20BAM/LICENSE) file for details.
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3) - see the [LICENSE](LICENSE) file for details.
