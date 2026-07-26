@@ -45,6 +45,7 @@
             <div class="sidebar-tabs">
                 <button class="sidebar-tab active" data-tab="viewer-tab"><i class="fa-solid fa-eye"></i> Viewer</button>
                 <button class="sidebar-tab" data-tab="ifcopenshell-tab"><i class="fa-brands fa-python"></i> IfcOpenShell</button>
+                <button class="sidebar-tab" data-tab="boq-tab"><i class="fa-solid fa-file-invoice-dollar"></i> 5D BOQ</button>
             </div>
 
             <div id="viewer-tab" class="tab-pane active">
@@ -425,6 +426,57 @@
                     </button>
                  </section>
             </div> <!-- End of ifcopenshell-tab -->
+
+            <!-- 5D BOQ Estimating Tab -->
+            <div id="boq-tab" class="tab-pane" style="display: none;">
+                <section class="panel-section">
+                    <h3><i class="fa-solid fa-file-invoice-dollar"></i> Cost Estimating</h3>
+                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Automatically map BIM quantities to Work Packages and regional AHSP unit rates.</p>
+                    
+                    <div class="form-group">
+                        <label for="boqRegionSelect">Estimating Region</label>
+                        <select id="boqRegionSelect" class="form-input">
+                            <option value="R-JKT">Jakarta</option>
+                            <option value="R-BDG">Bandung</option>
+                            <option value="R-SBY">Surabaya</option>
+                            <option value="R-PAP">Papua</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" id="btnOpenBoqModal" style="margin-top: 10px;">
+                        <i class="fa-solid fa-calculator"></i> Open 5D BOQ Sheet
+                    </button>
+                </section>
+
+                <section class="panel-section">
+                    <h3><i class="fa-solid fa-coins"></i> Resource Rates Editor</h3>
+                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Adjust raw material, labor, and machine prices for the selected region.</p>
+                    
+                    <div class="form-group">
+                        <label for="rateResourceSelect">Select Resource</label>
+                        <select id="rateResourceSelect" class="form-input">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rateResourcePrice">Unit Price (Rp)</label>
+                        <input type="number" id="rateResourcePrice" class="form-input" placeholder="Price in IDR...">
+                    </div>
+                    
+                    <button class="btn btn-secondary btn-full" id="btnUpdateResourceRate">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Rate Change
+                    </button>
+                </section>
+
+                <section class="panel-section">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Quantity Overrides</h3>
+                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">View active manual quantity overrides applied by construction engineers.</p>
+                    <div id="overridesList" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; font-size: 11px; background: rgba(0,0,0,0.2);">
+                        <p style="color: var(--text-muted); text-align: center; margin: 10px 0;">No active overrides.</p>
+                    </div>
+                </section>
+            </div>
         </aside>
 
         <!-- Main Viewer Canvas Area -->
@@ -651,30 +703,28 @@
                             <label for="sunGroundColor" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Ground Color (Hemisphere Bottom)</label>
                             <input type="color" id="sunGroundColor" class="form-input-color" value="#3a3530" style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 6px; padding: 2px; box-sizing: border-box; background: none;">
                         </div>
-                    </div>
-                </div>
             </div>
         </aside>
     </div>
 
     <!-- Quantity Take-Off (QTO) Modal Panel -->
     <div id="qtoModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
+        <div class="modal-card" style="width: 90%; max-width: 1400px; height: 85vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-table"></i> Quantity Take-Off (QTO)</h3>
                 <button class="btn-close" id="btnCloseQto"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="modal-controls">
-                <div class="search-box" style="flex: 1; margin-right: 12px;">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="qtoSearch" placeholder="Search quantities, types or classes...">
+            <div class="modal-controls" style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
+                <div class="search-box" style="flex: 1; position: relative;">
+                    <i class="fa-solid fa-magnifying-glass search-icon" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="qtoSearch" placeholder="Search quantities, types or classes..." style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,0.2); color: var(--text-color);">
                 </div>
                 <button class="btn btn-primary" id="btnExportCsv">
                     <i class="fa-solid fa-file-csv"></i> Export CSV
                 </button>
             </div>
-            <div class="qto-split-container">
-                <div class="table-container">
+            <div class="qto-split-container" style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
+                <div class="table-container" style="flex: 1.5; overflow-y: auto;">
                     <table class="qto-table" id="qtoTable">
                         <thead>
                             <tr>
@@ -693,16 +743,16 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="qto-charts-container">
-                    <div class="qto-chart-wrapper">
-                        <h4>Budget Distribution by Category</h4>
-                        <div class="qto-chart-canvas-holder">
+                <div class="qto-charts-container" style="flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
+                    <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Budget Distribution by Category</h4>
+                        <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
                             <canvas id="qtoPieChart"></canvas>
                         </div>
                     </div>
-                    <div class="qto-chart-wrapper">
-                        <h4>Accumulated Price by Category</h4>
-                        <div class="qto-chart-canvas-holder">
+                    <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Accumulated Price by Category</h4>
+                        <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
                             <canvas id="qtoBarChart"></canvas>
                         </div>
                     </div>
@@ -710,6 +760,284 @@
             </div>
             <div class="modal-footer">
                 <span id="qtoSummaryText">Total quantity entries: 0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5D Cost Estimate & BOQ Modal Panel -->
+    <div id="boqModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card boq-modal-card" style="width: 90%; max-width: 1400px; height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-invoice-dollar"></i> 5D BIM Cost Estimation & BOQ</h3>
+                <button class="btn-close" id="btnCloseBoq"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Modal Tabs Navigation -->
+            <div class="modal-tabs" style="display: flex; gap: 10px; padding: 10px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+                <button class="modal-tab-btn active" data-modal-tab="boq-summary-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-list-check"></i> Bill of Quantities (BOQ)</button>
+                <button class="modal-tab-btn" data-modal-tab="element-qto-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-calculator"></i> Element QTO &amp; Overrides</button>
+                <button class="modal-tab-btn" data-modal-tab="rules-mapping-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-gears"></i> Mappings &amp; Rules</button>
+                <button class="modal-tab-btn" data-modal-tab="ahsp-library-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-book"></i> Price Unit Analysis</button>
+            </div>
+
+            <!-- Tab Content: 1. BOQ Summary & Dashboard -->
+            <div id="boq-summary-tab" class="modal-tab-content" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+                <!-- Cost Summary Cards -->
+                <div class="cost-summary-cards" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div class="summary-card" style="background: linear-gradient(135deg, #4f46e5, #3730a3); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: #c7d2fe; letter-spacing: 0.5px;">Total Project Cost</h4>
+                        <span id="summaryTotalCost" style="font-size: 20px; font-weight: 700; color: #ffffff;">Rp 0</span>
+                    </div>
+                    <div class="summary-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Labor Cost</h4>
+                        <span id="summaryLaborCost" style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
+                    </div>
+                    <div class="summary-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Material Cost</h4>
+                        <span id="summaryMaterialCost" style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
+                    </div>
+                    <div class="summary-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Equipment Cost</h4>
+                        <span id="summaryEquipmentCost" style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="qto-split-container" style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
+                    <!-- BOQ Table -->
+                    <div class="table-container" style="flex: 1.5; overflow-y: auto;">
+                        <table class="qto-table" id="boqTable">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Category</th>
+                                    <th>Source Catalog</th>
+                                    <th>Work Item Description</th>
+                                    <th style="text-align: right;">Quantity</th>
+                                    <th>Unit</th>
+                                    <th style="text-align: right;">Unit Price</th>
+                                    <th style="text-align: right;">Total Price</th>
+                                    <th style="width: 80px; text-align: center;">Highlight</th>
+                                </tr>
+                            </thead>
+                            <tbody id="boqTableBody">
+                                <!-- Generated Dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Cost Charts & Pareto Analysis -->
+                    <div class="qto-charts-container" style="flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
+                        <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                            <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Budget Distribution by Category</h4>
+                            <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
+                                <canvas id="boqPieChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                            <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Pareto Analysis (Cost Breakdown)</h4>
+                            <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
+                                <canvas id="boqBarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: 2. Element QTO & Overrides -->
+            <div id="element-qto-tab" class="modal-tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+                <div class="modal-controls" style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
+                    <div class="search-box" style="flex: 1; position: relative;">
+                        <i class="fa-solid fa-magnifying-glass search-icon" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                        <input type="text" id="elementQtoSearch" placeholder="Search elements by name, category, or IFC class..." style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,0.2); color: var(--text-color);">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary" id="btnExportQto" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export QTO JSON</button>
+                        <button class="btn btn-secondary" id="btnImportQto" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import QTO JSON</button>
+                        <input type="file" id="qtoFileInput" accept=".json" style="display: none;">
+                    </div>
+                </div>
+                <div class="table-container" style="flex: 1; overflow-y: auto;">
+                    <table class="qto-table" id="elementQtoTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>IFC Type</th>
+                                <th>IFC Correction</th>
+                                <th>Storey</th>
+                                <th>Material</th>
+                                <th style="text-align: right;">Volume (m³)</th>
+                                <th style="text-align: right;">Area (m²)</th>
+                                <th style="text-align: right;">Length (m)</th>
+                                <th style="text-align: right;">Count</th>
+                                <th style="width: 220px; text-align: left;">Classification Override</th>
+                                <th style="text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="elementQtoTableBody">
+                            <!-- Generated Dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: 3. Mappings & Rules -->
+            <div id="rules-mapping-tab" class="modal-tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+                <div style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
+                    <!-- Rules List -->
+                    <div style="flex: 1.5; display: flex; flex-direction: column; overflow: hidden;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color); font-size: 13px; font-weight: 500;">Active Classification Mapping Rules</h4>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary danger" id="btnClearRules" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-trash"></i> Clear Database</button>
+                                <button class="btn btn-secondary" id="btnExportRules" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export Rules</button>
+                                <button class="btn btn-secondary" id="btnImportRules" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import Rules</button>
+                                <input type="file" id="rulesFileInput" accept=".json" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="table-container" style="flex: 1; overflow-y: auto;">
+                            <table class="qto-table" id="rulesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rule Name</th>
+                                        <th>IFC Class</th>
+                                        <th>Material Match</th>
+                                        <th>Classification Target</th>
+                                        <th>Formula</th>
+                                        <th style="width: 60px; text-align: center;">Priority</th>
+                                        <th style="width: 80px; text-align: center;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rulesTableBody">
+                                    <!-- Generated Dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Add Rule Form -->
+                    <div style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; overflow-y: auto;">
+                        <h4 style="margin: 0 0 15px 0; color: var(--text-color); font-size: 13px; font-weight: 500;"><i class="fa-solid fa-plus"></i> Add Mappings Rule</h4>
+                        
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Rule Name</label>
+                            <input type="text" id="ruleNameInput" class="form-input" placeholder="e.g. Concrete Slab Volume">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">IFC Class Type</label>
+                            <input type="text" id="ruleIfcTypeInput" class="form-input" placeholder="e.g. IfcSlab">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Material Filter (Optional)</label>
+                            <input type="text" id="ruleMaterialInput" class="form-input" placeholder="e.g. Concrete">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Classification Target Code</label>
+                            <select id="ruleClassCodeSelect" class="form-input">
+                                <option value="A.2.2.1">A.2.2.1 - Excavation (m³)</option>
+                                <option value="A.4.1.1">A.4.1.1 - Concrete casting (m³)</option>
+                                <option value="A.4.1.2">A.4.1.2 - Reinforcement rebar (kg)</option>
+                                <option value="A.4.1.3">A.4.1.3 - Formwork template (m²)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Quantity Calculation Formula</label>
+                            <input type="text" id="ruleFormulaInput" class="form-input" placeholder="e.g. volume * 135" value="volume">
+                            <span style="font-size: 9px; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.2;">Supported variables: <code>volume</code>, <code>area</code>, <code>surface_area</code>, <code>length</code>, <code>count</code></span>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Priority</label>
+                            <input type="number" id="rulePriorityInput" class="form-input" value="10" min="1" max="100">
+                        </div>
+                        
+                        <button class="btn btn-primary btn-full" id="btnSaveRule">
+                            <i class="fa-solid fa-circle-check"></i> Register Mapping Rule
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: 4. Price Unit Analysis -->
+            <div id="ahsp-library-tab" class="modal-tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+                <div style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
+                    <!-- AHSP List -->
+                    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border-color); padding-right: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color); font-size: 13px; font-weight: 500;">Price Unit Analysis (Indonesian AHSP standards)</h4>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary danger" id="btnClearAhsp" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-trash"></i> Clear Database</button>
+                                <button class="btn btn-secondary" id="btnExportAhsp" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export CSV</button>
+                                <button class="btn btn-secondary" id="btnImportAhsp" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import CSV</button>
+                                <input type="file" id="ahspFileInput" accept=".csv" style="display: none;">
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                            <label for="ahspCatalogFilter" style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Filter by Source Catalog:</label>
+                            <select id="ahspCatalogFilter" class="form-input" style="width: auto; max-width: 350px; padding: 4px 10px; font-size: 11px; height: 28px; margin: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
+                                <option value="">-- All Catalogs --</option>
+                            </select>
+                        </div>
+                        <div class="table-container" style="flex: 1; overflow-y: auto;">
+                            <table class="qto-table" id="ahspTable">
+                                <thead>
+                                    <tr>
+                                        <th>Analysis Code</th>
+                                        <th>WBS Item</th>
+                                        <th>Source Catalog</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ahspTableBody">
+                                    <!-- Populated Dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Selected AHSP Details -->
+                    <div style="flex: 1.5; display: flex; flex-direction: column; overflow: hidden;">
+                        <h4 id="ahspDetailsHeader" style="margin: 0 0 10px 0; color: var(--accent); font-size: 13px; font-weight: 500;">Select an AHSP to view analysis coefficients</h4>
+                        <div class="table-container" style="flex: 1; overflow-y: auto;">
+                            <table class="qto-table" id="ahspDetailsTable" style="display: none;">
+                                <thead>
+                                    <tr>
+                                        <th>Resource ID</th>
+                                        <th>Category</th>
+                                        <th>Resource Description</th>
+                                        <th>Unit</th>
+                                        <th style="text-align: right; width: 80px;">Coefficient</th>
+                                        <th style="text-align: right; width: 70px;">Waste</th>
+                                        <th style="text-align: right;">Unit Rate (Rp)</th>
+                                        <th style="text-align: right;">Total (Rp)</th>
+                                        <th style="text-align: center; width: 60px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ahspDetailsTableBody">
+                                    <!-- Populated Dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Add Breakdown Detail Form -->
+                        <div id="addAhspDetailForm" style="display: none; margin-top: 10px; padding: 10px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-color); border-radius: 6px; gap: 8px; align-items: center; font-size: 11px;">
+                            <span style="font-weight: 600; color: var(--accent); white-space: nowrap;">Add Detail:</span>
+                            <select id="newDetailResourceSelect" style="flex: 2; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; min-width: 150px;"></select>
+                            <input type="number" id="newDetailCoefficient" placeholder="Coef" step="any" style="width: 70px; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; text-align: right;">
+                            <input type="number" id="newDetailWaste" placeholder="Waste" value="1.0" step="any" style="width: 60px; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; text-align: right;">
+                            <button class="btn btn-secondary" id="btnAddAhspDetail" style="padding: 4px 8px; font-size: 11px; white-space: nowrap;"><i class="fa-solid fa-plus"></i> Add</button>
+                        </div>
+
+                        <div id="ahspDetailsSummary" style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; display: none; text-align: right;">
+                            <span style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Overhead & Profit: 10.0%</span>
+                            <span id="ahspCalculatedUnitPrice" style="font-size: 16px; font-weight: 700; color: var(--text-color);">Unit Price: Rp 0 / unit</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <span id="boqSummaryText">Project Model: None</span>
             </div>
         </div>
     </div>

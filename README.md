@@ -36,10 +36,11 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 * **Interactive Section Planes**: Slice models using 3D cut planes. Add planes by clicking directly on surfaces or centering them automatically, and manipulate them using built-in translation gizmos.
 * **Visibility Controls**: Hide, isolate, or show all elements instantly.
 
-### 6. Quantity Take-Off (QTO)
+### 6. Quantity Take-Off (QTO) & Element Overrides
 * Scan model properties to harvest structural quantities (Volume, Area, Count, etc.).
 * Review materials and sizes in a spreadsheet-like interface.
-* **Export to CSV** for integration with external estimators and spreadsheet software.
+* **3D Canvas Interactive Highlighting**: Clicking any element name link zooms and highlights the element in the 3D viewer and automatically auto-closes the sheet panel for an unobstructed view.
+* **Overrides & IFC Correction**: Override calculated volume/area, apply IFC type corrections, and override WBS classification mappings dynamically.
 
 ### 7. Measurement Toolbar
 * **Distance**: Measure direct 3D vertex-to-vertex distances.
@@ -66,6 +67,13 @@ BIM BAM is a web-based Building Information Modeling (BIM) viewer built with **X
 * **IFC Convert**: Convert loaded IFC models to formats like GLB, OBJ, DAE, STEP, or IGES on the backend.
 * **IFC CSV (ifccsv)**: Extract selected IFC attributes and properties into a custom downloadable CSV. Choose a class filter, select parameters from a dropdown, add them to columns, and download structured IFC spreadsheets.
 * **Dropdown Selection**: Rather than separate file uploads, all command-line tools (Diff, Clash, Convert) dynamically run directly on the models already loaded in the viewer.
+
+### 11. 5D BOQ & Price Unit Analysis (Indonesian AHSP)
+* **Standard Catalog Ingestion**: Synchronized local catalog ingestion of `AHSP BM` and `AHSP SNI` standards, with a source catalog dropdown filter.
+* **Robust File Parsing**: Supports importing both flat object database dumps and nested analysis array JSON schemas (resolving empty details issues).
+* **Flat CSV Import & Export**: Export and import entire price unit analysis definitions in a flat, spreadsheet-compatible CSV format.
+* **Mappings & Rules Target Synchronization**: Rules target column dynamically displays matching analysis codes alongside WBS classification codes, with safe form selection.
+* **Interactive Breakdown Editor**: Edit coefficients and waste factors inline inside the breakdown details table with automatic database saving, or add and delete resource rows instantly.
 
 ---
 

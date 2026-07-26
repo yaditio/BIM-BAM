@@ -727,6 +727,28 @@ function getElementMetadata(id, modelId) {
         foundCategory = String(catProp.value).trim();
       }
 
+      // Also append AABB dimensions if missing geometric values
+      const entity = viewer.scene.objects[id];
+      if (entity && entity.aabb) {
+        const aabb = entity.aabb;
+        const dx = Math.abs(aabb[3] - aabb[0]);
+        const dy = Math.abs(aabb[4] - aabb[1]);
+        const dz = Math.abs(aabb[5] - aabb[2]);
+        const estimatedVolume = dx * dy * dz;
+        const estimatedArea = Math.max(dx * dy, dy * dz, dz * dx);
+        const estimatedLength = Math.max(dx, dy, dz);
+        
+        if (!props.some(p => p.name.toLowerCase().includes("volume"))) {
+          props.push({ name: "Volume (Estimated)", value: estimatedVolume });
+        }
+        if (!props.some(p => p.name.toLowerCase().includes("area"))) {
+          props.push({ name: "Area (Estimated)", value: estimatedArea });
+        }
+        if (!props.some(p => p.name.toLowerCase().includes("length"))) {
+          props.push({ name: "Length (Estimated)", value: estimatedLength });
+        }
+      }
+
       return {
         name: element.Name || `Revit Element ${element.Id}`,
         type: element.class || "Revit Element",
@@ -800,6 +822,28 @@ function getElementMetadata(id, modelId) {
         category = cleanType.replace(/([A-Z])/g, ' $1').trim();
       }
 
+      // Also append AABB dimensions if missing geometric values
+      const entity = viewer.scene.objects[id];
+      if (entity && entity.aabb) {
+        const aabb = entity.aabb;
+        const dx = Math.abs(aabb[3] - aabb[0]);
+        const dy = Math.abs(aabb[4] - aabb[1]);
+        const dz = Math.abs(aabb[5] - aabb[2]);
+        const estimatedVolume = dx * dy * dz;
+        const estimatedArea = Math.max(dx * dy, dy * dz, dz * dx);
+        const estimatedLength = Math.max(dx, dy, dz);
+        
+        if (!props.some(p => p.name.toLowerCase().includes("volume"))) {
+          props.push({ name: "Volume (Estimated)", value: estimatedVolume });
+        }
+        if (!props.some(p => p.name.toLowerCase().includes("area"))) {
+          props.push({ name: "Area (Estimated)", value: estimatedArea });
+        }
+        if (!props.some(p => p.name.toLowerCase().includes("length"))) {
+          props.push({ name: "Length (Estimated)", value: estimatedLength });
+        }
+      }
+
       return {
         name: metaObj.name || "Unnamed Object",
         type: ifcClass,
@@ -809,7 +853,44 @@ function getElementMetadata(id, modelId) {
     }
   }
 
+  // Fallback using standard Xeokit Entity 3D bounds when no metadata is parsed
+  const entity = viewer.scene.objects[id];
+  if (entity) {
+    const rawType = entity.type || "IfcObject";
+    let cleanType = rawType.startsWith("Ifc") ? rawType.substring(3) : rawType;
+    let category = cleanType.replace(/([A-Z])/g, ' $1').trim();
+    
+    const props = [];
+    if (entity.aabb) {
+      const aabb = entity.aabb;
+      const dx = Math.abs(aabb[3] - aabb[0]);
+      const dy = Math.abs(aabb[4] - aabb[1]);
+      const dz = Math.abs(aabb[5] - aabb[2]);
+      const estimatedVolume = dx * dy * dz;
+      const estimatedArea = Math.max(dx * dy, dy * dz, dz * dx);
+      const estimatedLength = Math.max(dx, dy, dz);
+      
+      props.push({ name: "Volume (Estimated)", value: estimatedVolume });
+      props.push({ name: "Area (Estimated)", value: estimatedArea });
+      props.push({ name: "Length (Estimated)", value: estimatedLength });
+    }
+
+    return {
+      name: entity.id || `Object ${id}`,
+      type: rawType,
+      category: category || "Other",
+      props: props
+    };
+  }
+
   return null;
+}
+
+function getDefaultUnitPrice(item) {
+  const cat = (item.category || "").toLowerCase();
+  if (cat.includes("door")) return 2500000;
+  if (cat.includes("window")) return 1500000;
+  return 500000;
 }
 
 function setupModelLoadedListener(modelId, file) {
@@ -1048,6 +1129,101 @@ function setupModelLoadedListener(modelId, file) {
       fileName: file.name,
       georeference: geo,
       file: file
+    });
+
+    // Save elements to SQLite DB
+    const elementsList = [];
+    modelObjectIds.forEach((id) => {
+      const meta = getElementMetadata(id, modelId);
+      if (!meta) return;
+
+      const metaObj = viewer.metaScene.metaObjects[id];
+      
+      const getParamVal = (names) => {
+        for (const p of meta.props) {
+          if (!p.name) continue;
+          const pNameLower = p.name.toLowerCase();
+          if (names.some(n => pNameLower === n || pNameLower.includes(n))) {
+            const valStr = String(p.value).trim();
+            const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
+            if (matchNum) {
+              return parseFloat(matchNum[0]);
+            }
+          }
+        }
+        return 0;
+      };
+
+      const getMaterialVal = () => {
+        for (const p of meta.props) {
+          if (!p.name) continue;
+          const pNameLower = p.name.toLowerCase();
+          if (pNameLower.includes("material") || pNameLower === "mat") {
+            return String(p.value).trim();
+          }
+        }
+        return "";
+      };
+
+      let storey = "";
+      let zone = "";
+      if (metaObj) {
+        let current = metaObj.parent;
+        while (current) {
+          if (current.type === "IfcBuildingStorey") {
+            storey = current.name || current.id;
+          }
+          if (current.type === "IfcZone") {
+            zone = current.name || current.id;
+          }
+          current = current.parent;
+        }
+      }
+
+      const propertiesMap = {};
+      meta.props.forEach(p => {
+        if (p.name) propertiesMap[p.name] = p.value;
+      });
+
+      elementsList.push({
+        id: id,
+        globalId: metaObj ? metaObj.id : id,
+        ifcType: meta.type || "IfcObject",
+        name: meta.name || "",
+        storey: storey,
+        zone: zone,
+        material: getMaterialVal(),
+        volume: getParamVal(["volume", "vol", "netvolume", "grossvolume"]),
+        area: getParamVal(["area", "netarea", "grossarea"]),
+        surfaceArea: getParamVal(["surface area", "surfacearea", "surfarea"]) || getParamVal(["area", "netarea"]),
+        length: getParamVal(["length", "len", "netlength", "grosslength", "perimeter"]),
+        count: 1,
+        properties: propertiesMap
+      });
+    });
+
+    fetch('/api/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: modelId, name: file.name })
+    })
+    .then(r => r.json())
+    .then(() => {
+      return fetch(`/api/projects/${modelId}/elements`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ elements: elementsList })
+      });
+    })
+    .then(r => r.json())
+    .then(data => {
+      console.log(`[Database] Elements saved to backend SQLite db:`, data);
+      window.selectedRegionId = window.selectedRegionId || 'R-JKT';
+      triggerBOQGeneration(modelId, window.selectedRegionId);
+      reloadResourceRatesDropdown();
+    })
+    .catch(err => {
+      console.error('[Database] Failed to save elements to database:', err);
     });
 
     updateGeoModelDropdown(modelId);
@@ -2302,11 +2478,17 @@ btnResetPropFilter.addEventListener('click', () => {
   updateStatus("Property query filter reset.");
 });
 
-// --- Quantity Take-Off (QTO) Modal Interface ---
+// --- 5D BIM Cost Estimating, BOQ & AHSP Interface ---
+window.selectedRegionId = 'R-JKT';
+let activeBOQ = [];
+let activeRules = [];
+let activeResources = [];
+let activeAHSP = [];
 let qtoPieChart = null;
 let qtoBarChart = null;
+let boqPieChart = null;
+let boqBarChart = null;
 
-// Format price to IDR format
 function formatIDR(value) {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -2315,6 +2497,963 @@ function formatIDR(value) {
     maximumFractionDigits: 0
   }).format(value);
 }
+
+// 1. Modal tab navigation controller
+const modalTabBtns = document.querySelectorAll('#boqModal .modal-tab-btn');
+const modalTabContents = document.querySelectorAll('#boqModal .modal-tab-content');
+
+modalTabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    modalTabBtns.forEach(b => {
+      b.classList.remove('active');
+      b.style.background = 'none';
+      b.style.color = 'var(--text-muted)';
+    });
+    modalTabContents.forEach(c => c.style.display = 'none');
+    
+    btn.classList.add('active');
+    btn.style.background = 'rgba(255,255,255,0.08)';
+    btn.style.color = 'var(--accent)';
+    
+    const tabId = btn.dataset.modalTab;
+    const contentPane = document.getElementById(tabId);
+    if (contentPane) {
+      contentPane.style.display = 'flex';
+    }
+    
+    // Trigger specific tab rendering
+    if (tabId === 'boq-summary-tab') {
+      renderBOQSummary();
+    } else if (tabId === 'element-qto-tab') {
+      renderElementQTO();
+    } else if (tabId === 'rules-mapping-tab') {
+      renderRulesMapping();
+    } else if (tabId === 'ahsp-library-tab') {
+      renderAhspLibrary();
+    }
+  });
+});
+
+// Render BOQ Summary Tab & Update Chart.js Dashboard
+function renderBOQSummary() {
+  const tbody = document.getElementById('boqTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  
+  if (!activeModel) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">Please load a model first.</td></tr>`;
+    return;
+  }
+
+  const boqSummaryText = document.getElementById('boqSummaryText');
+  if (boqSummaryText) {
+    const modelInfo = loadedModels.find(m => m.id === activeModel.id);
+    const fileName = modelInfo ? modelInfo.fileName : (activeModel.id || 'Unknown');
+    boqSummaryText.innerHTML = `Project Model: <strong>${fileName}</strong>`;
+  }
+  
+  fetch(`/api/projects/${activeModel.id}/boq`)
+    .then(r => r.json())
+    .then(boq => {
+      activeBOQ = boq;
+      if (boq.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">No BOQ items generated. Adjust parameters and click open BOQ again.</td></tr>`;
+        return;
+      }
+      
+      let totalCost = 0;
+      let laborCost = 0;
+      let materialCost = 0;
+      let equipmentCost = 0;
+
+      tbody.innerHTML = boq.map(item => {
+        totalCost += item.total_price;
+        
+        // Cost category splits heuristic
+        if (item.category === 'Labor') laborCost += item.total_price;
+        else if (item.category === 'Material') materialCost += item.total_price;
+        else if (item.category === 'Equipment') equipmentCost += item.total_price;
+        else {
+          if (item.classification_code.startsWith('A.4.1.2')) {
+            materialCost += item.total_price * 0.85;
+            laborCost += item.total_price * 0.15;
+          } else if (item.classification_code.startsWith('A.4.1.1')) {
+            materialCost += item.total_price * 0.80;
+            laborCost += item.total_price * 0.20;
+          } else if (item.classification_code.startsWith('A.4.1.3')) {
+            materialCost += item.total_price * 0.50;
+            laborCost += item.total_price * 0.50;
+          } else {
+            laborCost += item.total_price * 0.70;
+            equipmentCost += item.total_price * 0.30;
+          }
+        }
+
+        return `
+          <tr data-code="${item.classification_code}">
+            <td><strong style="color: var(--accent);">${item.classification_code}</strong></td>
+            <td>${item.category}</td>
+            <td style="font-size: 11px; color: var(--text-muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.source_title || 'General'}">${item.source_title || 'General'}</td>
+            <td>${item.description}</td>
+            <td style="text-align: right; font-weight: 500;">${item.quantity.toLocaleString(undefined, { maximumFractionDigits: 3 })}</td>
+            <td>${item.unit}</td>
+            <td style="text-align: right; font-family: monospace;">${formatIDR(item.unit_price)}</td>
+            <td style="text-align: right; font-family: monospace; font-weight: 600; color: var(--accent);">${formatIDR(item.total_price)}</td>
+            <td style="text-align: center;">
+              <button class="btn btn-secondary" onclick="highlightBOQElements('${item.classification_code}')" style="padding: 2px 8px; font-size: 11px;">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('summaryTotalCost').innerText = formatIDR(totalCost);
+      document.getElementById('summaryLaborCost').innerText = formatIDR(laborCost);
+      document.getElementById('summaryMaterialCost').innerText = formatIDR(materialCost);
+      document.getElementById('summaryEquipmentCost').innerText = formatIDR(equipmentCost);
+
+      updateBOQCharts(boq);
+    });
+}
+
+function updateBOQCharts(boq) {
+  if (typeof Chart === 'undefined') return;
+
+  const categoryTotals = {};
+  boq.forEach((item) => {
+    const category = item.category || "Other";
+    if (!categoryTotals[category]) {
+      categoryTotals[category] = 0;
+    }
+    categoryTotals[category] += item.total_price || 0;
+  });
+
+  const labels = Object.keys(categoryTotals);
+  const data = Object.values(categoryTotals);
+
+  const backgroundColors = [
+    'rgba(79, 70, 229, 0.75)',
+    'rgba(6, 182, 212, 0.75)',
+    'rgba(16, 185, 129, 0.75)',
+    'rgba(239, 68, 68, 0.75)',
+    'rgba(245, 158, 11, 0.75)',
+    'rgba(139, 92, 246, 0.75)',
+    'rgba(236, 72, 153, 0.75)'
+  ];
+
+  const borderColors = [
+    '#4f46e5',
+    '#06b6d4',
+    '#10b981',
+    '#ef4444',
+    '#f59e0b',
+    '#8b5cf6',
+    '#ec4899'
+  ];
+
+  const pieCanvas = document.getElementById('boqPieChart');
+  if (pieCanvas) {
+    if (boqPieChart) {
+      boqPieChart.data.labels = labels;
+      boqPieChart.data.datasets[0].data = data;
+      boqPieChart.update();
+    } else {
+      boqPieChart = new Chart(pieCanvas, {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            data,
+            backgroundColor: backgroundColors.slice(0, labels.length),
+            borderColor: borderColors.slice(0, labels.length),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: '#f3f4f6', font: { family: 'Inter', size: 9 } }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  const barCanvas = document.getElementById('boqBarChart');
+  if (barCanvas) {
+    const sortedBOQ = [...boq].sort((a,b) => b.total_price - a.total_price).slice(0, 5);
+    const barLabels = sortedBOQ.map(item => item.classification_code);
+    const barData = sortedBOQ.map(item => item.total_price);
+
+    if (boqBarChart) {
+      boqBarChart.data.labels = barLabels;
+      boqBarChart.data.datasets[0].data = barData;
+      boqBarChart.update();
+    } else {
+      boqBarChart = new Chart(barCanvas, {
+        type: 'bar',
+        data: {
+          labels: barLabels,
+          datasets: [{
+            label: 'Total Cost (Rp)',
+            data: barData,
+            backgroundColor: 'rgba(6, 182, 212, 0.75)',
+            borderColor: '#06b6d4',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#9ca3af', font: { size: 8 } } },
+            y: {
+              ticks: {
+                color: '#9ca3af',
+                font: { size: 8 },
+                callback: v => 'Rp ' + (v / 1e6).toFixed(1) + ' jt'
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+}
+
+// 5D Bidirectional Highlighter: BOQ -> 3D Elements
+window.highlightBOQElements = function(classificationCode) {
+  const item = activeBOQ.find(b => b.classification_code === classificationCode);
+  if (!item || !item.elements) return;
+  
+  viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+  viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+  
+  const guids = item.elements;
+  const sceneIds = Object.values(viewer.scene.objects)
+    .filter(obj => guids.includes(obj.id))
+    .map(obj => obj.id);
+
+  if (sceneIds.length > 0) {
+    const allIds = viewer.scene.objectIds;
+    viewer.scene.setObjectsVisible(allIds, true);
+    viewer.scene.setObjectsXRayed(allIds, true);
+    viewer.scene.setObjectsHighlighted(allIds, false);
+    
+    viewer.scene.setObjectsXRayed(sceneIds, false);
+    viewer.scene.setObjectsHighlighted(sceneIds, true);
+    viewer.cameraFlight.flyTo(sceneIds);
+    updateStatus(`Isolated WBS ${classificationCode} elements.`);
+  } else {
+    updateStatus(`No active elements found in visual viewport for ${classificationCode}.`, true);
+  }
+};
+
+// 5D Bidirectional Highlighter: 3D Element selection -> BOQ sheet highlighting
+function highlightBOQRowsForElement(globalId) {
+  const matchingWbs = activeBOQ.filter(b => b.elements && b.elements.includes(globalId)).map(b => b.classification_code);
+  const rows = document.querySelectorAll('#boqTableBody tr');
+  rows.forEach(row => {
+    const code = row.dataset.code;
+    if (matchingWbs.includes(code)) {
+      row.style.background = 'rgba(6, 182, 212, 0.2)';
+      row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      row.style.background = '';
+    }
+  });
+}
+
+// Zoom & highlight element on 3D canvas
+window.zoomToElement = function(elementGuid) {
+  if (!viewer) return;
+  
+  // Clear existing selections
+  viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+  viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+  
+  const obj = viewer.scene.objects[elementGuid];
+  if (obj) {
+    const allIds = viewer.scene.objectIds;
+    viewer.scene.setObjectsVisible(allIds, true);
+    viewer.scene.setObjectsXRayed(allIds, true);
+    
+    // Highlight and isolate this element
+    viewer.scene.setObjectsXRayed([elementGuid], false);
+    viewer.scene.setObjectsHighlighted([elementGuid], true);
+    viewer.cameraFlight.flyTo([elementGuid]);
+    updateStatus(`Highlighted element: ${obj.id}`);
+    
+    // Close the BOQ Modal panel so the user can see the 3D canvas
+    const modal = document.getElementById('boqModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  } else {
+    updateStatus(`Element ${elementGuid} not found in 3D viewport.`, true);
+  }
+};
+
+// Element QTO and Overrides tab
+function renderElementQTO() {
+  const tbody = document.getElementById('elementQtoTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  
+  if (!activeModel) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 20px;">Please load a model first.</td></tr>`;
+    return;
+  }
+  
+  Promise.all([
+    fetch(`/api/projects/${activeModel.id}/elements`).then(r => r.json()),
+    fetch(`/api/projects/${activeModel.id}/overrides`).then(r => r.json()),
+    fetch(`/api/classifications`).then(r => r.json()),
+    fetch(`/api/projects/${activeModel.id}/classification-overrides`).then(r => r.json()),
+    fetch(`/api/projects/${activeModel.id}/boq`).then(r => r.json()),
+    fetch(`/api/rules`).then(r => r.json())
+  ]).then(([elements, overrides, classifications, classOverrides, boqResponse, rules]) => {
+    const overrideMap = {};
+    overrides.forEach(o => {
+      if (!overrideMap[o.element_id]) overrideMap[o.element_id] = {};
+      overrideMap[o.element_id][o.quantity_name] = o.override_value;
+    });
+
+    const defaultRuleMap = {};
+    if (Array.isArray(boqResponse)) {
+      boqResponse.forEach(item => {
+        if (item.elements && Array.isArray(item.elements)) {
+          item.elements.forEach(guid => {
+            defaultRuleMap[guid] = item.classification_code;
+          });
+        }
+      });
+    }
+
+    const manualOverrideMap = {};
+    if (Array.isArray(classOverrides)) {
+      classOverrides.forEach(co => {
+        manualOverrideMap[co.element_id] = co.classification_code;
+      });
+    }
+
+    const filterText = document.getElementById('elementQtoSearch').value.toLowerCase().trim();
+
+    // Extract unique IFC types configured in rules table
+    const uniqueRuleIfcTypes = Array.from(new Set(rules.map(r => r.ifc_type))).sort();
+
+    tbody.innerHTML = elements.filter(el => {
+      return filterText === '' ||
+        el.name.toLowerCase().includes(filterText) ||
+        el.ifc_type.toLowerCase().includes(filterText) ||
+        (el.ifc_type_override && el.ifc_type_override.toLowerCase().includes(filterText)) ||
+        el.storey.toLowerCase().includes(filterText) ||
+        el.material.toLowerCase().includes(filterText);
+    }).map(el => {
+      const volOverride = overrideMap[el.id] && overrideMap[el.id]['volume'];
+      const areaOverride = overrideMap[el.id] && overrideMap[el.id]['area'];
+
+      // Generate IFC Correction dropdown
+      let ifcCorrectionHtml = `<select class="qto-ifc-override-select" data-el-id="${el.id}" style="width: 100%; padding: 4px; font-size: 11px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);">`;
+      ifcCorrectionHtml += `<option value="" ${!el.ifc_type_override ? 'selected' : ''}>-- No Correction --</option>`;
+      uniqueRuleIfcTypes.forEach(t => {
+        ifcCorrectionHtml += `<option value="${t}" ${el.ifc_type_override === t ? 'selected' : ''}>${t}</option>`;
+      });
+      ifcCorrectionHtml += `</select>`;
+
+      // Get active IFC type (either overridden/corrected or actual)
+      const activeIfcType = (el.ifc_type_override || el.ifc_type).toLowerCase();
+
+      // Get rules matching this active IFC type
+      const matchedRules = rules.filter(r => r.ifc_type.toLowerCase() === activeIfcType || r.ifc_type.toLowerCase() === 'all');
+
+      // Generate classification override dropdown
+      let selectHtml = `<select class="qto-class-select" data-el-id="${el.id}" style="width: 100%; padding: 4px; font-size: 11px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);">`;
+      
+      const defaultCode = defaultRuleMap[el.global_id];
+      const defaultLabel = defaultCode 
+        ? `Default Rule: ${defaultCode}` 
+        : `-- No Classification Override --`;
+      
+      selectHtml += `<option value="" ${!manualOverrideMap[el.id] ? 'selected' : ''}>${defaultLabel}</option>`;
+      
+      matchedRules.forEach(r => {
+        const isManualSelected = manualOverrideMap[el.id] === r.classification_code;
+        selectHtml += `<option value="${r.classification_code}" ${isManualSelected ? 'selected' : ''}>${r.rule_name} (${r.classification_code})</option>`;
+      });
+
+      // Keep manual override option if it doesn't match current matched rules
+      const activeOverride = manualOverrideMap[el.id];
+      if (activeOverride && !matchedRules.some(r => r.classification_code === activeOverride)) {
+        const cls = classifications.find(c => c.code === activeOverride);
+        const label = cls ? `${cls.code} - ${cls.description}` : activeOverride;
+        selectHtml += `<option value="${activeOverride}" selected>${label} (Manual Override)</option>`;
+      }
+      
+      selectHtml += `</select>`;
+
+      return `
+        <tr>
+          <td><a href="#" onclick="zoomToElement('${el.global_id}'); return false;" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 600;">${el.name || 'Unnamed'}</a></td>
+          <td><span style="font-size: 11px; padding: 2px 6px; background: rgba(255,255,255,0.05); border-radius: 4px;">${el.ifc_type}</span></td>
+          <td>${ifcCorrectionHtml}</td>
+          <td>${el.storey || '-'}</td>
+          <td><span style="color: var(--text-muted);">${el.material || '-'}</span></td>
+          <td style="text-align: right;">
+            ${volOverride ? `<span style="text-decoration: line-through; color: var(--text-muted); font-size: 11px;">${el.volume.toFixed(3)}</span> <strong style="color: var(--accent);">${volOverride.toFixed(3)}</strong>` : el.volume.toFixed(3)}
+          </td>
+          <td style="text-align: right;">
+            ${areaOverride ? `<span style="text-decoration: line-through; color: var(--text-muted); font-size: 11px;">${el.area.toFixed(2)}</span> <strong style="color: var(--accent);">${areaOverride.toFixed(2)}</strong>` : el.area.toFixed(2)}
+          </td>
+          <td style="text-align: right;">${el.length.toFixed(2)}</td>
+          <td style="text-align: right;">${el.count}</td>
+          <td>${selectHtml}</td>
+          <td style="text-align: center;">
+            <button class="btn btn-secondary" onclick="openOverrideDialog('${el.id}', '${el.name || el.ifc_type}')" style="padding: 2px 8px; font-size: 11px;">
+              Override
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    // Setup select change events
+    tbody.querySelectorAll('.qto-class-select').forEach(select => {
+      select.addEventListener('change', (e) => {
+        const elId = e.target.dataset.elId;
+        const code = e.target.value;
+        
+        fetch(`/api/projects/${activeModel.id}/elements/${elId}/classification`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ classificationCode: code })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            updateStatus("Manual classification assigned successfully.");
+            if (typeof triggerBOQGeneration === 'function') {
+              triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+            }
+            renderElementQTO();
+          }
+        });
+      });
+    });
+
+    // Setup IFC correction dropdown change events
+    tbody.querySelectorAll('.qto-ifc-override-select').forEach(select => {
+      select.addEventListener('change', (e) => {
+        const elId = e.target.dataset.elId;
+        const correctedType = e.target.value;
+        
+        fetch(`/api/projects/${activeModel.id}/elements/${elId}/ifc-type-override`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ifcTypeOverride: correctedType })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            updateStatus("IFC correction applied successfully.");
+            if (typeof triggerBOQGeneration === 'function') {
+              triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+            }
+            renderElementQTO();
+          }
+        });
+      });
+    });
+  });
+}
+
+window.openOverrideDialog = function(elementId, elementName) {
+  const qtyName = prompt(`Enter quantity parameter to override (volume, area, surface_area, length, count):`, "volume");
+  if (!qtyName) return;
+  
+  const valStr = prompt(`Enter manual override value for ${elementName} (${qtyName}):`);
+  if (valStr === null || valStr.trim() === '') return;
+  const val = parseFloat(valStr);
+  if (isNaN(val)) {
+    alert("Invalid numerical input.");
+    return;
+  }
+  
+  const reason = prompt("Enter justification for this override:");
+  if (reason === null) return;
+  
+  fetch(`/api/projects/${activeModel.id}/overrides`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      element_id: elementId,
+      quantity_name: qtyName,
+      override_value: val,
+      reason: reason || 'Estimate override',
+      updated_by: 'Senior Dev'
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      updateStatus(`Override updated for ${elementName}.`);
+      renderElementQTO();
+      triggerBOQGeneration(activeModel.id, window.selectedRegionId);
+    }
+  });
+};
+
+// Mappings & Rules Tab
+function renderRulesMapping() {
+  const tbody = document.getElementById('rulesTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  
+  fetch('/api/rules')
+    .then(r => r.json())
+    .then(rules => {
+      activeRules = rules;
+      tbody.innerHTML = rules.map(r => `
+        <tr>
+          <td><strong>${r.rule_name}</strong></td>
+          <td>${r.ifc_type}</td>
+          <td>${r.material_filter || '<span style="color: var(--text-muted); font-size: 11px;">Any</span>'}</td>
+          <td><strong style="color: var(--accent);" title="${r.classification_desc || ''}">${r.analysis_code ? `${r.analysis_code} (${r.classification_code})` : r.classification_code}</strong></td>
+          <td><code>${r.quantity_expression}</code></td>
+          <td style="text-align: center;">${r.priority}</td>
+          <td style="text-align: center;">
+            <button class="btn btn-secondary btn-close" onclick="deleteRule('${r.id}')" style="padding: 2px 6px; font-size: 10px;"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    });
+}
+
+window.deleteRule = function(id) {
+  if (!confirm("Delete this rule mapping?")) return;
+  fetch(`/api/rules/${id}`, { method: 'DELETE' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        updateStatus("Mapping rule removed.");
+        renderRulesMapping();
+        if (activeModel) triggerBOQGeneration(activeModel.id, window.selectedRegionId);
+      }
+    });
+};
+
+const btnSaveRule = document.getElementById('btnSaveRule');
+if (btnSaveRule) {
+  btnSaveRule.addEventListener('click', () => {
+    const rule_name = document.getElementById('ruleNameInput').value;
+    const ifc_type = document.getElementById('ruleIfcTypeInput').value;
+    const material_filter = document.getElementById('ruleMaterialInput').value;
+    const classification_code = document.getElementById('ruleClassCodeSelect').value;
+    const quantity_expression = document.getElementById('ruleFormulaInput').value;
+    const priority = parseInt(document.getElementById('rulePriorityInput').value) || 10;
+    
+    if (!rule_name || !ifc_type || !classification_code || !quantity_expression) {
+      alert("Please complete rule configuration fields.");
+      return;
+    }
+    
+    fetch('/api/rules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        updateStatus(`Rule registered: "${rule_name}"`);
+        renderRulesMapping();
+        if (activeModel) triggerBOQGeneration(activeModel.id, window.selectedRegionId);
+      }
+    });
+  });
+}
+
+// AHSP Standard Library Tab
+let hasCatalogFilterListener = false;
+function renderAhspLibrary() {
+  const tbody = document.getElementById('ahspTableBody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  
+  const filterSelect = document.getElementById('ahspCatalogFilter');
+  if (filterSelect && !hasCatalogFilterListener) {
+    filterSelect.addEventListener('change', () => {
+      filterAhspLibraryTable();
+    });
+    hasCatalogFilterListener = true;
+  }
+  
+  fetch(`/api/ahsp?regionId=${window.selectedRegionId}`)
+    .then(r => r.json())
+    .then(analyses => {
+      activeAHSP = analyses;
+      
+      // Update catalog dropdown
+      if (filterSelect) {
+        const uniqueCatalogs = Array.from(new Set(analyses.map(a => a.source_title || 'General'))).sort();
+        const prevVal = filterSelect.value;
+        filterSelect.innerHTML = '<option value="">-- All Catalogs --</option>';
+        uniqueCatalogs.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat;
+          opt.textContent = cat;
+          filterSelect.appendChild(opt);
+        });
+        if (uniqueCatalogs.includes(prevVal)) {
+          filterSelect.value = prevVal;
+        } else {
+          filterSelect.value = '';
+        }
+      }
+
+      filterAhspLibraryTable();
+    });
+}
+
+function filterAhspLibraryTable() {
+  const tbody = document.getElementById('ahspTableBody');
+  if (!tbody) return;
+  
+  const filterSelect = document.getElementById('ahspCatalogFilter');
+  const selectedCatalog = filterSelect ? filterSelect.value : '';
+  
+  let filtered = activeAHSP || [];
+  if (selectedCatalog) {
+    filtered = filtered.filter(a => (a.source_title || 'General') === selectedCatalog);
+  }
+  
+  tbody.innerHTML = filtered.map(a => `
+    <tr style="cursor: pointer;" onclick="showAHSPDetails('${a.code}')">
+      <td><strong style="color: var(--accent);">${a.code}</strong></td>
+      <td>${a.classification_code}</td>
+      <td style="font-size: 11px; color: var(--text-muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${a.source_title || 'General'}">${a.source_title || 'General'}</td>
+      <td>${a.description}</td>
+    </tr>
+  `).join('');
+
+  updateRuleClassCodeSelect(filtered);
+}
+
+function updateRuleClassCodeSelect(filteredAnalyses) {
+  const select = document.getElementById('ruleClassCodeSelect');
+  if (!select) return;
+  const prevVal = select.value;
+  select.innerHTML = '';
+  
+  filteredAnalyses.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a.classification_code;
+    opt.textContent = a.classification_code !== a.code 
+      ? `${a.code} (${a.classification_code}) - ${a.description}` 
+      : `${a.code} - ${a.description}`;
+    select.appendChild(opt);
+  });
+  
+  select.value = prevVal;
+  if (!select.value && select.options.length > 0) {
+    select.selectedIndex = 0;
+  }
+}
+
+window.showAHSPDetails = function(code) {
+  const ana = activeAHSP.find(a => a.code === code);
+  if (!ana) return;
+  
+  window.activeAnalysisCode = code;
+  document.getElementById('ahspDetailsHeader').innerText = `Breakdown for ${ana.code}`;
+  
+  const addForm = document.getElementById('addAhspDetailForm');
+  if (addForm) addForm.style.display = 'flex';
+  
+  const resourceSelect = document.getElementById('newDetailResourceSelect');
+  if (resourceSelect) {
+    fetch(`/api/resource-prices?regionId=${window.selectedRegionId || 'R-JKT'}`)
+      .then(r => r.json())
+      .then(prices => {
+        resourceSelect.innerHTML = prices.map(p => `
+          <option value="${p.resource_id}">${p.resource_id} - ${p.description} (${p.unit})</option>
+        `).join('');
+      });
+  }
+
+  const tbody = document.getElementById('ahspDetailsTableBody');
+  tbody.innerHTML = '';
+  
+  let totalCost = 0;
+  tbody.innerHTML = ana.details.map(d => {
+    const rowCost = d.coefficient * d.waste_factor * d.price;
+    totalCost += rowCost;
+    return `
+      <tr data-detail-id="${d.id}">
+        <td><strong>${d.resource_id}</strong></td>
+        <td>${d.category}</td>
+        <td>${d.description}</td>
+        <td>${d.unit}</td>
+        <td>
+          <input type="number" step="any" class="dt-coef-input" data-detail-id="${d.id}" value="${d.coefficient}" style="width: 70px; padding: 2px; text-align: right; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px;">
+        </td>
+        <td>
+          <input type="number" step="any" class="dt-waste-input" data-detail-id="${d.id}" value="${d.waste_factor || 1.0}" style="width: 60px; padding: 2px; text-align: right; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px;">
+        </td>
+        <td style="text-align: right; font-family: monospace;">${formatIDR(d.price)}</td>
+        <td style="text-align: right; font-family: monospace; color: var(--accent);">${formatIDR(rowCost)}</td>
+        <td style="text-align: center;">
+          <button class="btn btn-secondary danger" onclick="deleteAhspDetail('${d.id}')" style="padding: 2px 6px; font-size: 10px;"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+  
+  const finalUnitPrice = totalCost * (1.0 + (ana.overhead_factor || 0.10));
+  
+  document.getElementById('ahspDetailsTable').style.display = 'table';
+  document.getElementById('ahspDetailsSummary').style.display = 'block';
+  document.getElementById('ahspCalculatedUnitPrice').innerText = `Derived Unit Price: ${formatIDR(finalUnitPrice)} / unit`;
+  
+  tbody.querySelectorAll('.dt-coef-input, .dt-waste-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const detailId = e.target.dataset.detailId;
+      const row = tbody.querySelector(`tr[data-detail-id="${detailId}"]`);
+      const coef = parseFloat(row.querySelector('.dt-coef-input').value) || 0;
+      const waste = parseFloat(row.querySelector('.dt-waste-input').value) || 1.0;
+      
+      fetch('/api/ahsp-details/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: detailId, coefficient: coef, waste_factor: waste })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          updateStatus("Detail breakdown coefficient updated.");
+          refreshAhspData();
+        }
+      });
+    });
+  });
+};
+
+function refreshAhspData() {
+  fetch(`/api/ahsp?regionId=${window.selectedRegionId}`)
+    .then(r => r.json())
+    .then(analyses => {
+      activeAHSP = analyses;
+      filterAhspLibraryTable();
+      if (window.activeAnalysisCode) {
+        window.showAHSPDetails(window.activeAnalysisCode);
+      }
+      if (activeModel) {
+        triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+      }
+    });
+}
+
+window.deleteAhspDetail = function(detailId) {
+  if (!confirm("Are you sure you want to delete this resource from the analysis breakdown?")) return;
+  fetch(`/api/ahsp-details/${detailId}/delete`, { method: 'POST' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        updateStatus("Detail item deleted.");
+        refreshAhspData();
+      }
+    });
+};
+
+// Wire up the add breakdown detail listener
+setTimeout(() => {
+  const btnAddAhspDetail = document.getElementById('btnAddAhspDetail');
+  if (btnAddAhspDetail) {
+    btnAddAhspDetail.addEventListener('click', () => {
+      const ahsp_code = window.activeAnalysisCode;
+      const resource_id = document.getElementById('newDetailResourceSelect').value;
+      const coefficient = parseFloat(document.getElementById('newDetailCoefficient').value);
+      const waste_factor = parseFloat(document.getElementById('newDetailWaste').value) || 1.0;
+      
+      if (!ahsp_code) {
+        alert("Please select an analysis first.");
+        return;
+      }
+      if (!resource_id || isNaN(coefficient)) {
+        alert("Please select a resource and specify coefficient.");
+        return;
+      }
+      
+      fetch('/api/ahsp-details/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ahsp_code, resource_id, coefficient, waste_factor })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          updateStatus("Added new resource detail to analysis.");
+          document.getElementById('newDetailCoefficient').value = '';
+          document.getElementById('newDetailWaste').value = '1.0';
+          refreshAhspData();
+        }
+      });
+    });
+  }
+}, 500);
+
+// Sidebar cost configurations
+
+const boqRegionSelect = document.getElementById('boqRegionSelect');
+if (boqRegionSelect) {
+  boqRegionSelect.addEventListener('change', (e) => {
+    window.selectedRegionId = e.target.value;
+    reloadResourceRatesDropdown();
+    if (activeModel) {
+      triggerBOQGeneration(activeModel.id, window.selectedRegionId);
+    }
+  });
+}
+
+function reloadResourceRatesDropdown() {
+  const select = document.getElementById('rateResourceSelect');
+  if (!select) return;
+  fetch(`/api/resource-prices?regionId=${window.selectedRegionId}`)
+    .then(r => r.json())
+    .then(prices => {
+      select.innerHTML = prices.map(p => `
+        <option value="${p.resource_id}" data-price="${p.price}">${p.description} (${p.unit}) - ${formatIDR(p.price)}</option>
+      `).join('');
+      updateResourcePriceInput();
+    });
+}
+
+function updateResourcePriceInput() {
+  const select = document.getElementById('rateResourceSelect');
+  const priceInput = document.getElementById('rateResourcePrice');
+  if (select && priceInput) {
+    const selectedOpt = select.options[select.selectedIndex];
+    if (selectedOpt) {
+      priceInput.value = selectedOpt.dataset.price || 0;
+    }
+  }
+}
+
+const rateResourceSelect = document.getElementById('rateResourceSelect');
+if (rateResourceSelect) {
+  rateResourceSelect.addEventListener('change', updateResourcePriceInput);
+}
+
+const btnUpdateResourceRate = document.getElementById('btnUpdateResourceRate');
+if (btnUpdateResourceRate) {
+  btnUpdateResourceRate.addEventListener('click', () => {
+    const resId = document.getElementById('rateResourceSelect').value;
+    const price = parseFloat(document.getElementById('rateResourcePrice').value);
+    
+    if (!resId || isNaN(price)) {
+      alert("Select resource and define valid price.");
+      return;
+    }
+    
+    fetch('/api/resource-prices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resource_id: resId, region_id: window.selectedRegionId, price })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        updateStatus("Resource price adjusted.");
+        reloadResourceRatesDropdown();
+        if (activeModel) {
+          triggerBOQGeneration(activeModel.id, window.selectedRegionId);
+        }
+      }
+    });
+  });
+}
+
+function triggerBOQGeneration(projectId, regionId) {
+  fetch(`/api/projects/${projectId}/boq/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ regionId })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      activeBOQ = data.boq;
+      if (document.getElementById('boqModal').style.display === 'flex') {
+        const activeTab = document.querySelector('#boqModal .modal-tab-btn.active').dataset.modalTab;
+        if (activeTab === 'boq-summary-tab') renderBOQSummary();
+      }
+      refreshOverridesSidebar();
+    }
+  });
+}
+
+function refreshOverridesSidebar() {
+  if (!activeModel) return;
+  fetch(`/api/projects/${activeModel.id}/overrides`)
+    .then(r => r.json())
+    .then(overrides => {
+      const list = document.getElementById('overridesList');
+      if (overrides.length === 0) {
+        list.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin: 10px 0;">No active overrides.</p>`;
+        return;
+      }
+      list.innerHTML = overrides.map(o => `
+        <div style="border-bottom: 1px solid var(--border-color); padding: 6px 0; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong style="color: var(--accent);">${o.element_name || o.ifc_type}</strong><br>
+            <span style="color: var(--text-muted);">${o.quantity_name}: ${o.calculated_value} -> <strong>${o.override_value}</strong></span>
+          </div>
+          <button class="btn btn-secondary btn-close" onclick="deleteOverride('${o.id}')" style="padding: 2px 6px; font-size: 10px;"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      `).join('');
+    });
+}
+
+window.deleteOverride = function(overrideId) {
+  if (!confirm("Delete this manual quantity override?")) return;
+  fetch(`/api/projects/${activeModel.id}/overrides/${overrideId}`, { method: 'DELETE' })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        updateStatus("Quantity override deleted.");
+        refreshOverridesSidebar();
+        triggerBOQGeneration(activeModel.id, window.selectedRegionId);
+        if (document.getElementById('boqModal').style.display === 'flex') {
+          const activeTab = document.querySelector('#boqModal .modal-tab-btn.active').dataset.modalTab;
+          if (activeTab === 'element-qto-tab') renderElementQTO();
+        }
+      }
+    });
+};
+
+const elementQtoSearch = document.getElementById('elementQtoSearch');
+if (elementQtoSearch) {
+  elementQtoSearch.addEventListener('input', renderElementQTO);
+}
+
+// Modify object selection UI to highlight matching rows in BOQ
+const originalUpdateSelectionUI = updateSelectionUI;
+updateSelectionUI = function() {
+  originalUpdateSelectionUI();
+  const selectedIds = viewer.scene.selectedObjectIds;
+  if (selectedIds.length === 1 && activeBOQ.length > 0) {
+    const metaObj = viewer.metaScene.metaObjects[selectedIds[0]];
+    if (metaObj) {
+      highlightBOQRowsForElement(metaObj.id);
+    }
+  }
+};
 
 // Clean up category strings for display/grouping
 function getCleanCategory(item) {
@@ -2325,55 +3464,7 @@ function getCleanCategory(item) {
   return cat.charAt(0).toUpperCase() + cat.slice(1);
 }
 
-// Get default Indonesian market unit prices based on category and unit
-function getDefaultUnitPrice(item) {
-  const cls = (item.ifcClass || "").toLowerCase();
-  const cat = (item.category || "").toLowerCase();
-  const unit = (item.unit || "").toLowerCase();
-  
-  if (cls.includes("door") || cat.includes("door")) return 2500000;
-  if (cls.includes("window") || cat.includes("window")) return 1500000;
-  
-  if (cls.includes("column") || cat.includes("column")) {
-    return unit.includes("3") ? 5000000 : 800000;
-  }
-  if (cls.includes("beam") || cat.includes("beam")) {
-    return unit.includes("3") ? 4500000 : 700000;
-  }
-  if (cls.includes("slab") || cat.includes("slab") || cls.includes("floor") || cat.includes("floor")) {
-    return unit.includes("3") ? 4000000 : 350000;
-  }
-  if (cls.includes("footing") || cat.includes("footing") || cls.includes("foundation") || cat.includes("foundation")) {
-    return 3500000;
-  }
-  
-  if (cls.includes("wall") || cat.includes("wall")) return 250000;
-  if (cls.includes("roof") || cat.includes("roof")) return 400000;
-  if (cls.includes("covering") || cat.includes("covering") || cls.includes("ceiling") || cat.includes("ceiling")) return 120000;
-  
-  if (cls.includes("railing") || cat.includes("railing")) {
-    if (unit.includes("mm") && !unit.includes("2") && !unit.includes("²")) {
-      return 600; // Rp 600 per mm (equivalent to Rp 600,000 per m)
-    }
-    return 600000;
-  }
-  if (cls.includes("pipe") || cat.includes("pipe") || cls.includes("duct") || cat.includes("duct") || cls.includes("flowsegment") || cat.includes("flowsegment")) return 150000;
-  
-  if (cls.includes("stair") || cat.includes("stair")) {
-    if (unit.includes("riser")) return 200000;
-    return 5000000;
-  }
-  
-  if (cls.includes("furniture") || cat.includes("furniture")) return 1500000;
-  
-  if (unit.includes("3") || unit.includes("m3")) return 3000000;
-  if (unit.includes("2") || unit.includes("m2")) return 250000;
-  if (unit === "m" || unit === "meter") return 200000;
-  
-  return 500000;
-}
-
-// Update or initialize Pie and Bar charts using Chart.js
+// Update or initialize Pie and Bar charts using Chart.js for QTO
 function updateQtoCharts() {
   if (typeof Chart === 'undefined') {
     console.warn("Chart.js is not loaded yet.");
@@ -2393,14 +3484,13 @@ function updateQtoCharts() {
   const data = Object.values(categoryTotals);
   
   const backgroundColors = [
-    'rgba(79, 70, 229, 0.75)',  // var(--primary) - Indigo
-    'rgba(6, 182, 212, 0.75)',  // var(--accent) - Cyan
-    'rgba(16, 185, 129, 0.75)', // var(--success) - Emerald
-    'rgba(239, 68, 68, 0.75)',  // var(--danger) - Rose
-    'rgba(245, 158, 11, 0.75)',  // Orange
-    'rgba(139, 92, 246, 0.75)', // Violet
-    'rgba(236, 72, 153, 0.75)', // Pink
-    'rgba(107, 114, 128, 0.75)' // Gray
+    'rgba(79, 70, 229, 0.75)',
+    'rgba(6, 182, 212, 0.75)',
+    'rgba(16, 185, 129, 0.75)',
+    'rgba(239, 68, 68, 0.75)',
+    'rgba(245, 158, 11, 0.75)',
+    'rgba(139, 92, 246, 0.75)',
+    'rgba(236, 72, 153, 0.75)'
   ];
   
   const borderColors = [
@@ -2410,18 +3500,14 @@ function updateQtoCharts() {
     '#ef4444',
     '#f59e0b',
     '#8b5cf6',
-    '#ec4899',
-    '#6b7280'
+    '#ec4899'
   ];
   
-  // Pie Chart
   const pieCanvas = document.getElementById('qtoPieChart');
   if (pieCanvas) {
     if (qtoPieChart) {
       qtoPieChart.data.labels = labels;
       qtoPieChart.data.datasets[0].data = data;
-      qtoPieChart.data.datasets[0].backgroundColor = backgroundColors.slice(0, labels.length);
-      qtoPieChart.data.datasets[0].borderColor = borderColors.slice(0, labels.length);
       qtoPieChart.update();
     } else {
       qtoPieChart = new Chart(pieCanvas, {
@@ -2441,21 +3527,7 @@ function updateQtoCharts() {
           plugins: {
             legend: {
               position: 'right',
-              labels: {
-                color: '#f3f4f6',
-                font: {
-                  family: 'Inter',
-                  size: 11
-                }
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const val = context.raw || 0;
-                  return ` ${context.label}: ${formatIDR(val)}`;
-                }
-              }
+              labels: { color: '#f3f4f6', font: { family: 'Inter', size: 10 } }
             }
           }
         }
@@ -2463,14 +3535,11 @@ function updateQtoCharts() {
     }
   }
   
-  // Bar Chart
   const barCanvas = document.getElementById('qtoBarChart');
   if (barCanvas) {
     if (qtoBarChart) {
       qtoBarChart.data.labels = labels;
       qtoBarChart.data.datasets[0].data = data;
-      qtoBarChart.data.datasets[0].backgroundColor = backgroundColors.slice(0, labels.length);
-      qtoBarChart.data.datasets[0].borderColor = borderColors.slice(0, labels.length);
       qtoBarChart.update();
     } else {
       qtoBarChart = new Chart(barCanvas, {
@@ -2488,48 +3557,18 @@ function updateQtoCharts() {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  const val = context.raw || 0;
-                  return ` Price: ${formatIDR(val)}`;
-                }
-              }
-            }
-          },
+          plugins: { legend: { display: false } },
           scales: {
-            x: {
-              ticks: {
-                color: '#9ca3af',
-                font: {
-                  family: 'Inter',
-                  size: 10
-                }
-              },
-              grid: {
-                color: 'rgba(255, 255, 255, 0.05)'
-              }
-            },
+            x: { ticks: { color: '#9ca3af', font: { size: 9 } } },
             y: {
               ticks: {
                 color: '#9ca3af',
-                font: {
-                  family: 'Inter',
-                  size: 10
-                },
+                font: { size: 9 },
                 callback: function(value) {
-                  if (value >= 1e9) return 'Rp ' + (value / 1e9).toFixed(1) + ' M';
                   if (value >= 1e6) return 'Rp ' + (value / 1e6).toFixed(1) + ' jt';
                   if (value >= 1e3) return 'Rp ' + (value / 1e3).toFixed(0) + ' rb';
                   return 'Rp ' + value;
                 }
-              },
-              grid: {
-                color: 'rgba(255, 255, 255, 0.05)'
               }
             }
           }
@@ -2550,10 +3589,10 @@ function updateQtoSummaryAndCharts() {
   let rowCount = 0;
   availableQuantities.forEach((item) => {
     const match = query === "" || 
-                  item.ifcClass.toLowerCase().includes(query) || 
-                  item.category.toLowerCase().includes(query) || 
-                  item.quantityName.toLowerCase().includes(query) || 
-                  item.name.toLowerCase().includes(query);
+                  (item.ifcClass || "").toLowerCase().includes(query) || 
+                  (item.category || "").toLowerCase().includes(query) || 
+                  (item.quantityName || "").toLowerCase().includes(query) || 
+                  (item.name || "").toLowerCase().includes(query);
     if (match) {
       rowCount++;
     }
@@ -2573,42 +3612,73 @@ function updateQtoSummaryAndCharts() {
 function renderQtoTable(filterText = "") {
   qtoTableBody.innerHTML = "";
   const query = filterText.toLowerCase().trim();
-  
-  let rowCount = 0;
-  availableQuantities.forEach((item) => {
-    const match = query === "" || 
-                  (item.ifcClass || "").toLowerCase().includes(query) || 
-                  (item.category || "").toLowerCase().includes(query) || 
-                  (item.quantityName || "").toLowerCase().includes(query) || 
-                  (item.name || "").toLowerCase().includes(query);
-    
-    if (match) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.ifcClass || ""}</td>
-        <td>${item.category || ""}</td>
-        <td><span class="qto-object-link" data-id="${item.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${item.name || ""}</span></td>
-        <td>${item.quantityName || ""}</td>
-        <td>${(item.value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
-        <td>${item.unit || ""}</td>
-        <td>
-          <div style="display: flex; align-items: center; gap: 4px;">
-            <span style="font-size: 11px; color: var(--text-muted);">Rp</span>
-            <input type="number" class="qto-price-input" data-id="${item.id}" value="${item.unitPrice || 0}">
-          </div>
-        </td>
-        <td>
-          <span class="qto-total-price" data-id="${item.id}" style="font-family: monospace; font-weight: 600; color: var(--accent);">
-            ${formatIDR(item.totalPrice || 0)}
-          </span>
-        </td>
-      `;
-      qtoTableBody.appendChild(tr);
-      rowCount++;
-    }
-  });
-  
-  updateQtoSummaryAndCharts();
+
+  const renderRows = (boqElementPriceMap = {}) => {
+    availableQuantities.forEach((item) => {
+      const match = query === "" || 
+                    (item.ifcClass || "").toLowerCase().includes(query) || 
+                    (item.category || "").toLowerCase().includes(query) || 
+                    (item.quantityName || "").toLowerCase().includes(query) || 
+                    (item.name || "").toLowerCase().includes(query);
+      
+      if (match) {
+        const metaObj = viewer.metaScene.metaObjects[item.id];
+        const globalId = metaObj ? metaObj.id : item.id;
+        const boqPrice = boqElementPriceMap[globalId];
+        if (boqPrice !== undefined) {
+          item.unitPrice = boqPrice;
+          item.totalPrice = item.value * boqPrice;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.ifcClass || ""}</td>
+          <td>${item.category || ""}</td>
+          <td><span class="qto-object-link" data-id="${item.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${item.name || ""}</span></td>
+          <td>${item.quantityName || ""}</td>
+          <td>${(item.value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
+          <td>${item.unit || ""}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 11px; color: var(--text-muted);">Rp</span>
+              <input type="number" class="qto-price-input" data-id="${item.id}" value="${item.unitPrice || 0}">
+            </div>
+          </td>
+          <td>
+            <span class="qto-total-price" data-id="${item.id}" style="font-family: monospace; font-weight: 600; color: var(--accent);">
+              ${formatIDR(item.totalPrice || 0)}
+            </span>
+          </td>
+        `;
+        qtoTableBody.appendChild(tr);
+      }
+    });
+    updateQtoSummaryAndCharts();
+  };
+
+  if (activeModel) {
+    fetch(`/api/projects/${activeModel.id}/boq`)
+      .then(r => r.json())
+      .then(boqResponse => {
+        const boqElementPriceMap = {};
+        if (Array.isArray(boqResponse)) {
+          boqResponse.forEach(boqItem => {
+            if (boqItem.elements && Array.isArray(boqItem.elements)) {
+              boqItem.elements.forEach(guid => {
+                boqElementPriceMap[guid] = boqItem.unit_price;
+              });
+            }
+          });
+        }
+        renderRows(boqElementPriceMap);
+      })
+      .catch(err => {
+        console.error("[QTO] Failed to fetch linked BOQ prices:", err);
+        renderRows({});
+      });
+  } else {
+    renderRows({});
+  }
 }
 
 // Click listener to fly to object from QTO table links
@@ -2618,11 +3688,9 @@ qtoTableBody.addEventListener('click', (e) => {
     e.preventDefault();
     const objectId = link.dataset.id;
     if (objectId) {
-      // 1. Close QTO modal
       qtoModal.style.display = 'none';
       updateStatus(`Zooming to object #${objectId} from QTO.`);
       
-      // 2. Select & Highlight
       viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
       viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
       
@@ -2630,11 +3698,7 @@ qtoTableBody.addEventListener('click', (e) => {
       if (entity) {
         entity.selected = true;
         entity.highlighted = true;
-        
-        // 3. Populate Properties panel
         handleObjectSelected(entity);
-        
-        // 4. Zoom to it
         viewer.cameraFlight.flyTo(entity);
       }
     }
@@ -2652,7 +3716,6 @@ qtoTableBody.addEventListener('input', (e) => {
       item.unitPrice = newPrice;
       item.totalPrice = item.value * newPrice;
       
-      // Update the total price cell in the row
       const row = e.target.closest('tr');
       if (row) {
         const totalSpan = row.querySelector('.qto-total-price');
@@ -2660,8 +3723,6 @@ qtoTableBody.addEventListener('input', (e) => {
           totalSpan.innerText = formatIDR(item.totalPrice);
         }
       }
-      
-      // Recalculate and update summary and charts
       updateQtoSummaryAndCharts();
     }
   }
@@ -2720,6 +3781,38 @@ btnExportCsv.addEventListener('click', () => {
   URL.revokeObjectURL(url);
   updateStatus("Exported quantity takeoff CSV spreadsheet.");
 });
+
+// --- Separate 5D BOQ Modal triggers ---
+const boqModal = document.getElementById('boqModal');
+const btnCloseBoq = document.getElementById('btnCloseBoq');
+
+if (btnOpenBoqModal) {
+  btnOpenBoqModal.addEventListener('click', () => {
+    if (!activeModel) {
+      alert("Please load a BIM model first.");
+      return;
+    }
+    boqModal.style.display = 'flex';
+    document.querySelector('#boqModal .modal-tab-btn[data-modal-tab="boq-summary-tab"]').click();
+  });
+}
+
+if (btnCloseBoq) {
+  btnCloseBoq.addEventListener('click', () => {
+    boqModal.style.display = 'none';
+    updateStatus("Closed 5D cost estimate modal.");
+  });
+}
+
+if (boqModal) {
+  boqModal.addEventListener('click', (e) => {
+    if (e.target === boqModal) {
+      boqModal.style.display = 'none';
+      updateStatus("Closed 5D cost estimate modal.");
+    }
+  });
+}
+
 
 // --- Visibility Actions ---
 btnShowAllGlobal.addEventListener('click', () => {
@@ -4843,7 +5936,10 @@ function initCollapsiblePanels() {
       titleText.includes('visibility') ||
       titleText.includes('georeferencing') ||
       titleText.includes('options') ||
-      titleText.includes('clash');
+      titleText.includes('clash') ||
+      titleText.includes('cost estimating') ||
+      titleText.includes('rate editor') ||
+      titleText.includes('overrides');
 
     if (!shouldStartExpanded) {
       header.classList.add('collapsed');
@@ -5644,6 +6740,9 @@ function setupIfcOpenShellTools() {
 
   // 7. RVT to IFC Converter Tool
   setupRvtConverter();
+
+  // 8. JSON Backup & Manual Classification Tools
+  setupBackupAndOverrideTools();
 }
 
 // --- RVT to IFC Converter Tool ---
@@ -5822,12 +6921,18 @@ function setupIfcCsvTool() {
   // Helper: get all IFC classes from the selected model
   function gatherIfcClasses(modelId) {
     const classes = new Set();
+    const lowercaseSeen = new Set();
     if (!viewer || !viewer.metaScene) return [];
     const metaObjects = viewer.metaScene.metaObjects;
     for (const metaObj of Object.values(metaObjects)) {
       if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
       if (metaObj.type && metaObj.type.trim()) {
-        classes.add(metaObj.type.trim());
+        const original = metaObj.type.trim();
+        const lower = original.toLowerCase();
+        if (!lowercaseSeen.has(lower)) {
+          lowercaseSeen.add(lower);
+          classes.add(original);
+        }
       }
     }
     return Array.from(classes).sort((a, b) => a.localeCompare(b));
@@ -5924,7 +7029,7 @@ function setupIfcCsvTool() {
     const metaObjects = viewer.metaScene.metaObjects;
     for (const metaObj of Object.values(metaObjects)) {
       if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
-      if (classFilter && metaObj.type !== classFilter) continue;
+      if (classFilter && (!metaObj.type || metaObj.type.toLowerCase() !== classFilter.toLowerCase())) continue;
       // Skip non-leaf types like IfcProject, IfcSite, IfcBuilding
       if (!metaObj.type || ['IfcProject', 'IfcSite', 'IfcBuilding', 'IfcBuildingStorey'].includes(metaObj.type)) continue;
       count++;
@@ -6041,7 +7146,7 @@ function setupIfcCsvTool() {
       // Filter by model
       if (modelId && metaObj.metaModel && metaObj.metaModel.id !== modelId) continue;
       // Filter by class
-      if (classFilter && metaObj.type !== classFilter) continue;
+      if (classFilter && (!metaObj.type || metaObj.type.toLowerCase() !== classFilter.toLowerCase())) continue;
       // Skip project/site/building containers
       if (!metaObj.type || ['IfcProject', 'IfcSite', 'IfcBuilding', 'IfcBuildingStorey'].includes(metaObj.type)) continue;
 
@@ -6106,6 +7211,362 @@ function setupIfcCsvTool() {
     updateStatus(`CSV exported: ${rows.length} objects, ${headers.length} columns.`);
   });
 } // end setupIfcCsvTool
+
+// --- JSON Backup & Manual Classification Overrides Tool ---
+function setupBackupAndOverrideTools() {
+  const btnExportRules = document.getElementById('btnExportRules');
+  if (btnExportRules) {
+    btnExportRules.addEventListener('click', () => {
+      fetch('/api/rules/export')
+        .then(r => r.json())
+        .then(rules => {
+          const blob = new Blob([JSON.stringify(rules, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `rules_backup_${Date.now()}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          updateStatus("Exported classification rules mapping JSON.");
+        });
+    });
+  }
+
+  const btnImportRules = document.getElementById('btnImportRules');
+  const rulesFileInput = document.getElementById('rulesFileInput');
+  if (btnImportRules && rulesFileInput) {
+    btnImportRules.addEventListener('click', () => rulesFileInput.click());
+    rulesFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const rules = JSON.parse(evt.target.result);
+          fetch('/api/rules/import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rules })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              updateStatus(`Imported ${data.count} mapping rules successfully.`);
+              if (typeof renderRulesMapping === 'function') {
+                renderRulesMapping();
+              }
+              if (activeModel) {
+                triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+              }
+            }
+          });
+        } catch (err) {
+          alert("Failed to parse JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  const btnExportAhsp = document.getElementById('btnExportAhsp');
+  if (btnExportAhsp) {
+    btnExportAhsp.addEventListener('click', () => {
+      fetch('/api/ahsp/export')
+        .then(r => r.text())
+        .then(csvText => {
+          const blob = new Blob([csvText], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ahsp_library_backup_${Date.now()}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          updateStatus("Exported AHSP standards catalog CSV.");
+        });
+    });
+  }
+
+  const btnImportAhsp = document.getElementById('btnImportAhsp');
+  const ahspFileInput = document.getElementById('ahspFileInput');
+  if (btnImportAhsp && ahspFileInput) {
+    btnImportAhsp.addEventListener('click', () => ahspFileInput.click());
+    ahspFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const csvText = evt.target.result;
+        fetch('/api/ahsp/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csvText })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            updateStatus("Imported AHSP catalog library successfully from CSV.");
+            if (typeof renderAhspLibrary === 'function') {
+              renderAhspLibrary();
+            }
+            if (activeModel) {
+              triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+            }
+          } else {
+            alert("Import failed: " + data.error);
+          }
+        })
+        .catch(err => alert("Import request failed: " + err.message));
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // --- Clear Price Unit Analysis Database (no reload) ---
+  const btnClearAhsp = document.getElementById('btnClearAhsp');
+  if (btnClearAhsp) {
+    btnClearAhsp.addEventListener('click', () => {
+      if (!confirm("This will permanently delete ALL Price Unit Analysis data (classifications, resources, analyses, BOQ items). Are you sure?")) return;
+      fetch('/api/ahsp/clear', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            updateStatus("Price Unit Analysis database cleared.");
+            alert(data.message);
+            if (typeof renderAhspLibrary === 'function') renderAhspLibrary();
+          } else {
+            alert("Clear failed: " + data.error);
+          }
+        })
+        .catch(err => alert("Clear request failed: " + err.message));
+    });
+  }
+
+  // --- Clear Mapping & Rules Database ---
+  const btnClearRules = document.getElementById('btnClearRules');
+  if (btnClearRules) {
+    btnClearRules.addEventListener('click', () => {
+      if (!confirm("This will permanently delete ALL mapping rules, classification overrides, quantity overrides, and BOQ items. Are you sure?")) return;
+      fetch('/api/rules/clear', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            updateStatus("Mapping & Rules database cleared.");
+            alert(data.message);
+            if (typeof renderRulesMapping === 'function') renderRulesMapping();
+          } else {
+            alert("Clear failed: " + data.error);
+          }
+        })
+        .catch(err => alert("Clear request failed: " + err.message));
+    });
+  }
+
+  // --- Dynamic Template Backups & Restore Setup ---
+  const templates = [
+    { key: 'Equipment', endpoint: '/api/equipment', file: 'equipment_backup.json' },
+    { key: 'Labor', endpoint: '/api/labor', file: 'labor_backup.json' },
+    { key: 'Materials', endpoint: '/api/materials', file: 'materials_backup.json' },
+    { key: 'Resources', endpoint: '/api/resources', file: 'resources_backup.json' },
+    { key: 'Prices', endpoint: '/api/prices', file: 'prices_backup.json' },
+    { key: 'AhspFormulas', endpoint: '/api/analyses', file: 'ahsp_formulas_backup.json' },
+    { key: 'Metadata', endpoint: '/api/metadata', file: 'metadata_backup.json' },
+    { key: 'Validation', endpoint: '/api/validation', file: 'validation_report.json' }
+  ];
+
+  const templateFileInput = document.getElementById('templateFileInput');
+  let activeImportEndpoint = '';
+
+  templates.forEach(t => {
+    const exportBtn = document.getElementById(`btnExport${t.key}`);
+    const importBtn = document.getElementById(`btnImport${t.key}`);
+
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        updateStatus(`Exporting ${t.key} template...`);
+        fetch(`${t.endpoint}/export`)
+          .then(r => r.json())
+          .then(data => {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${t.file.replace('.json', '')}_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            updateStatus(`Exported ${t.key} template successfully.`);
+          })
+          .catch(err => {
+            alert(`Failed to export ${t.key}: ` + err.message);
+          });
+      });
+    }
+
+    if (importBtn && templateFileInput) {
+      importBtn.addEventListener('click', () => {
+        activeImportEndpoint = `${t.endpoint}/import`;
+        templateFileInput.value = '';
+        templateFileInput.click();
+      });
+    }
+  });
+
+  if (templateFileInput) {
+    templateFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file || !activeImportEndpoint) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const payload = JSON.parse(evt.target.result);
+          updateStatus("Uploading template JSON...");
+          fetch(activeImportEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              updateStatus(`Imported template successfully.`);
+              alert(`Template imported successfully! Added/updated ${data.count || ''} records.`);
+              if (typeof renderAhspLibrary === 'function') renderAhspLibrary();
+              if (activeModel) {
+                triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+              }
+            } else {
+              alert("Import failed: " + (data.error || "Unknown error"));
+            }
+          })
+          .catch(err => {
+            alert("Upload request failed: " + err.message);
+          });
+        } catch (err) {
+          alert("Failed to parse JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // --- Export QTO Overrides JSON (Resume Estimating) ---
+  const btnExportQto = document.getElementById('btnExportQto');
+  if (btnExportQto) {
+    btnExportQto.addEventListener('click', () => {
+      if (!activeModel) {
+        alert("Please load a model first.");
+        return;
+      }
+      
+      updateStatus("Preparing QTO export JSON...");
+      
+      Promise.all([
+        fetch(`/api/projects/${activeModel.id}/elements`).then(r => r.json()),
+        fetch(`/api/projects/${activeModel.id}/overrides`).then(r => r.json()),
+        fetch(`/api/projects/${activeModel.id}/classification-overrides`).then(r => r.json())
+      ]).then(([elements, overrides, classOverrides]) => {
+        const idToGuidMap = {};
+        elements.forEach(el => {
+          idToGuidMap[el.id] = el.global_id;
+        });
+
+        const qtyOverrideMap = {};
+        overrides.forEach(o => {
+          if (!qtyOverrideMap[o.element_id]) qtyOverrideMap[o.element_id] = {};
+          qtyOverrideMap[o.element_id][o.quantity_name] = o.override_value;
+        });
+
+        const classOverrideMap = {};
+        classOverrides.forEach(c => {
+          classOverrideMap[c.element_id] = c.classification_code;
+        });
+
+        const qtoExport = [];
+        elements.forEach(el => {
+          const elOverrides = qtyOverrideMap[el.id];
+          const elClass = classOverrideMap[el.id];
+          
+          if (elOverrides || elClass) {
+            qtoExport.push({
+              global_id: el.global_id,
+              overrides: elOverrides || null,
+              manual_classification: elClass || null
+            });
+          }
+        });
+
+        const blob = new Blob([JSON.stringify(qtoExport, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `qto_overrides_backup_${activeModel.id}_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        updateStatus("Exported QTO overrides JSON.");
+      }).catch(err => {
+        alert("Failed to export QTO: " + err.message);
+      });
+    });
+  }
+
+  // --- Import QTO Overrides JSON (Resume Estimating) ---
+  const btnImportQto = document.getElementById('btnImportQto');
+  const qtoFileInput = document.getElementById('qtoFileInput');
+  if (btnImportQto && qtoFileInput) {
+    btnImportQto.addEventListener('click', () => {
+      if (!activeModel) {
+        alert("Please load a model first.");
+        return;
+      }
+      qtoFileInput.click();
+    });
+    
+    qtoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const qto = JSON.parse(evt.target.result);
+          if (!Array.isArray(qto)) {
+            throw new Error("Invalid QTO file format. Expected a JSON array.");
+          }
+          
+          updateStatus("Importing overrides and manual classifications...");
+          
+          fetch(`/api/projects/${activeModel.id}/qto/import`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ qto })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              updateStatus("Imported overrides successfully. Recalculating BOQ...");
+              triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+              renderQtoTable();
+              alert("QTO overrides and manual classifications resumed successfully.");
+            } else {
+              alert("Failed to import QTO: " + data.error);
+            }
+          });
+        } catch (err) {
+          alert("Failed to parse JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+      qtoFileInput.value = '';
+    });
+  }
+}
 
 if (document.readyState === "complete" || document.readyState === "interactive") {
   startApp();
