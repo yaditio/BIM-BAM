@@ -1,0 +1,836 @@
+[
+  {
+    "code": "3.5.(2b)",
+    "description": "Geotekstil Separator Kelas 2",
+    "division": "DIVISI 3 Pekerjaan Struktur",
+    "category": "Pekerjaan Geotekstil",
+    "unit": "m2",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.0016,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0002,
+        "unit": "jam"
+      },
+      {
+        "resource": "M58c",
+        "coefficient": 1.02,
+        "unit": "m2"
+      }
+    ]
+  },
+  {
+    "code": "SKh-1.3.16.(5)c",
+    "description": "Angkur Pin dari batang Baja Sirip BjTS 520 Dia 32 mm",
+    "division": "DIVISI 3 Pekerjaan Struktur",
+    "category": "Pekerjaan Angkur",
+    "unit": "titik",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.3213,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.09,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "4.6.(1)",
+    "description": "Latasir Kelas A (SS-A)",
+    "division": "DIVISI 4 Pelebaran Perkerasan",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2008,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "M01a",
+        "coefficient": 0.09,
+        "unit": "m3"
+      },
+      {
+        "resource": "M01c",
+        "coefficient": 0.5543,
+        "unit": "m3"
+      },
+      {
+        "resource": "M05",
+        "coefficient": 9.45,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 98.88,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0109,
+        "unit": "jam"
+      },
+      {
+        "resource": "E01",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E12",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "4.7.(2)",
+    "description": "Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus)",
+    "division": "DIVISI 4 Pelebaran Perkerasan",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2008,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.1236,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.5482,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 9.87,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 65.405,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0087,
+        "unit": "jam"
+      },
+      {
+        "resource": "E01",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E12",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E09",
+        "coefficient": 0.049,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "E.23",
+    "description": "Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB)",
+    "division": "DIVISI 5 Perkerasan Berbutir",
+    "category": "Perkerasan Berbutir",
+    "unit": "m3",
+    "details": [
+      {
+        "resource": "E15",
+        "coefficient": 0.0084,
+        "unit": "jam"
+      },
+      {
+        "resource": "E09",
+        "coefficient": 0.2562,
+        "unit": "jam"
+      },
+      {
+        "resource": "E13",
+        "coefficient": 0.0018,
+        "unit": "jam"
+      },
+      {
+        "resource": "E18",
+        "coefficient": 0.0102,
+        "unit": "jam"
+      },
+      {
+        "resource": "E23",
+        "coefficient": 0.0462,
+        "unit": "jam"
+      },
+      {
+        "resource": "E27",
+        "coefficient": 0.003,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "E.24",
+    "description": "Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2",
+    "division": "DIVISI 5 Perkerasan Berbutir",
+    "category": "Perkerasan Berbutir",
+    "unit": "m3",
+    "details": [
+      {
+        "resource": "E15",
+        "coefficient": 0.0082,
+        "unit": "jam"
+      },
+      {
+        "resource": "E27",
+        "coefficient": 0.0069,
+        "unit": "jam"
+      },
+      {
+        "resource": "E09",
+        "coefficient": 0.0365,
+        "unit": "jam"
+      },
+      {
+        "resource": "E99",
+        "coefficient": 0.0097,
+        "unit": "jam"
+      },
+      {
+        "resource": "E23",
+        "coefficient": 0.012,
+        "unit": "jam"
+      },
+      {
+        "resource": "E28",
+        "coefficient": 0.0097,
+        "unit": "jam"
+      },
+      {
+        "resource": "E22",
+        "coefficient": 0.0028,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "E.25",
+    "description": "Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB)",
+    "division": "DIVISI 5 Perkerasan Berbutir",
+    "category": "Perkerasan Berbutir",
+    "unit": "m3",
+    "details": [
+      {
+        "resource": "M12",
+        "coefficient": 102.3998,
+        "unit": "kg"
+      },
+      {
+        "resource": "M27",
+        "coefficient": 1.05,
+        "unit": "m3"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0086,
+        "unit": "jam"
+      },
+      {
+        "resource": "E27",
+        "coefficient": 0.0011,
+        "unit": "jam"
+      },
+      {
+        "resource": "E09",
+        "coefficient": 0.2429,
+        "unit": "jam"
+      },
+      {
+        "resource": "E99",
+        "coefficient": 0.0065,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "SKh-5.6.(1b)",
+    "description": "Lapis Cement Treated Base Recycler Base (CTRB)",
+    "division": "DIVISI 5 Perkerasan Berbutir",
+    "category": "Perkerasan Berbutir",
+    "unit": "m3",
+    "details": [
+      {
+        "resource": "M139",
+        "coefficient": 0.3451,
+        "unit": "m3"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0088,
+        "unit": "jam"
+      },
+      {
+        "resource": "E09",
+        "coefficient": 0.0163,
+        "unit": "jam"
+      },
+      {
+        "resource": "E13",
+        "coefficient": 0.0027,
+        "unit": "jam"
+      },
+      {
+        "resource": "E27",
+        "coefficient": 0.0686,
+        "unit": "jam"
+      },
+      {
+        "resource": "E23",
+        "coefficient": 0.005,
+        "unit": "jam"
+      },
+      {
+        "resource": "E17",
+        "coefficient": 0.0268,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "6.3.(1a)",
+    "description": "Stone Matrix Asphalt Halus (SMA Halus)",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M92",
+        "coefficient": 0.5938,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.0986,
+        "unit": "m3"
+      },
+      {
+        "resource": "M05",
+        "coefficient": 67.465,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 62.83,
+        "unit": "kg"
+      },
+      {
+        "resource": "M158",
+        "coefficient": 3.09,
+        "unit": "kg"
+      }
+    ]
+  },
+  {
+    "code": "6.3.(1b)",
+    "description": "Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus)",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2008,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.5929,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.0985,
+        "unit": "m3"
+      },
+      {
+        "resource": "M05",
+        "coefficient": 67.362,
+        "unit": "kg"
+      },
+      {
+        "resource": "M31c",
+        "coefficient": 64.375,
+        "unit": "kg"
+      },
+      {
+        "resource": "M158",
+        "coefficient": 3.09,
+        "unit": "kg"
+      }
+    ]
+  },
+  {
+    "code": "6.3.(4b)",
+    "description": "Lataston Lapis Fondasi (HRS-Base)",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2008,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.3348,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.1649,
+        "unit": "m3"
+      },
+      {
+        "resource": "M01c",
+        "coefficient": 0.2531,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 19.176,
+        "unit": "kg"
+      }
+    ]
+  },
+  {
+    "code": "6.3.(6a)",
+    "description": "Laston Lapis Antara (AC-BC)",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2008,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.3866,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3747,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 9.588,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 56.1,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0129,
+        "unit": "jam"
+      },
+      {
+        "resource": "E01",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E12",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "6.3.(6a).mod",
+    "description": "Laston Lapis Antara (AC-BC) Modifikasi",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2008,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.3783,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3847,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 10.2,
+        "unit": "kg"
+      },
+      {
+        "resource": "M31c",
+        "coefficient": 57.12,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0135,
+        "unit": "jam"
+      },
+      {
+        "resource": "E01b",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E12",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "6.4.(1a)",
+    "description": "Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M92",
+        "coefficient": 0.3206,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.4193,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 9.682,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 62.315,
+        "unit": "kg"
+      },
+      {
+        "resource": "M159",
+        "coefficient": 12.566,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0054,
+        "unit": "jam"
+      },
+      {
+        "resource": "E01",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E12",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      },
+      {
+        "resource": "E09",
+        "coefficient": 0.0255,
+        "unit": "jam"
+      },
+      {
+        "resource": "E02",
+        "coefficient": 0.0125,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "6.4.(2b)",
+    "description": "Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M92",
+        "coefficient": 0.3719,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3719,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 9.682,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 57.165,
+        "unit": "kg"
+      },
+      {
+        "resource": "M160",
+        "coefficient": 0.8832,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0054,
+        "unit": "jam"
+      },
+      {
+        "resource": "E01",
+        "coefficient": 0.0201,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "6.6.(1)",
+    "description": "CPHMA (Cold Paving Hot Mix Asphalt)",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M92",
+        "coefficient": 0.2333,
+        "unit": "m3"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 81.6,
+        "unit": "kg"
+      },
+      {
+        "resource": "L01",
+        "coefficient": 1.4489,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0935,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "SKh-1.6.25.(1)",
+    "description": "Campuran Beraspal Panas (Laston) Lapis Aus (AC-WCNR)",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "E15",
+        "coefficient": 0.0041,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "SKh-1.6.29.(1g)",
+    "description": "Laston Lapis Aus (AC-WC) Asbuton Murni",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M92",
+        "coefficient": 0.3761,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3547,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 9.69,
+        "unit": "kg"
+      },
+      {
+        "resource": "M31c",
+        "coefficient": 61.2,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0123,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "SKh-1.6.29.(1i)",
+    "description": "Laston Lapis Antara (AC-BC) Asbuton Murni",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "L01",
+        "coefficient": 0.2564,
+        "unit": "jam"
+      },
+      {
+        "resource": "L03",
+        "coefficient": 0.0214,
+        "unit": "jam"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.3869,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3721,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 9.588,
+        "unit": "kg"
+      },
+      {
+        "resource": "M31c",
+        "coefficient": 58.14,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0129,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "SKh-1.6.29.(1k)",
+    "description": "Laston Lapis Fondasi (AC-Base) Asbuton Murni",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M93",
+        "coefficient": 0.3142,
+        "unit": "m3"
+      },
+      {
+        "resource": "M92",
+        "coefficient": 0.1819,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3102,
+        "unit": "m3"
+      },
+      {
+        "resource": "M12",
+        "coefficient": 10.2,
+        "unit": "kg"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 49.98,
+        "unit": "kg"
+      },
+      {
+        "resource": "E15",
+        "coefficient": 0.0129,
+        "unit": "jam"
+      }
+    ]
+  },
+  {
+    "code": "SKh-1.6.36.(1).PG70",
+    "description": "Laston Lapis Aus Asb Pracampur Tinggi (AC-WC Asb Pracampur Tinggi) PG 70",
+    "division": "DIVISI 6 Perkerasan Aspal",
+    "category": "Perkerasan Aspal",
+    "unit": "ton",
+    "details": [
+      {
+        "resource": "M92",
+        "coefficient": 0.2882,
+        "unit": "m3"
+      },
+      {
+        "resource": "M91",
+        "coefficient": 0.3627,
+        "unit": "m3"
+      },
+      {
+        "resource": "M10",
+        "coefficient": 72.1,
+        "unit": "kg"
+      }
+    ]
+  }
+]

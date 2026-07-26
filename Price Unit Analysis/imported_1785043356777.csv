@@ -1,0 +1,392 @@
+Analysis Code,WBS Item,Source Catalog,Analysis Description,Overhead Factor,Resource ID,Resource Category,Resource Description,Resource Unit,Coefficient,Resource Price
+AHSP-3.5.(2b),3.5.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Geotekstil Separator Kelas 2,0.1,L01,Labor,Pekerja,jam,0.0016,120000
+AHSP-3.5.(2b),3.5.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Geotekstil Separator Kelas 2,0.1,L03,Labor,Mandor,jam,0.0002,120000
+AHSP-3.5.(2b),3.5.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Geotekstil Separator Kelas 2,0.1,M58c,Material,Geotekstil separator,m2,1.02,25000
+AHSP-SKh-1.3.16.(5)c,SKh-1.3.16.(5)c,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Angkur Pin dari batang Baja Sirip BjTS 520 Dia 32 mm,0.1,L01,Labor,Pekerja,jam,0.3213,120000
+AHSP-SKh-1.3.16.(5)c,SKh-1.3.16.(5)c,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Angkur Pin dari batang Baja Sirip BjTS 520 Dia 32 mm,0.1,L03,Labor,Mandor,jam,0.09,120000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,E01,Equipment,Asphalt Mixing Plant (AMP),jam,0.0201,350000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,E12,Equipment,Generator Set (Genset),jam,0.0201,350000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,E15,Equipment,Wheel Loader,jam,0.0109,350000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,L01,Labor,Pekerja,jam,0.2008,120000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,L03,Labor,Mandor,jam,0.0201,120000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,M01a,Material,Pasir Kasar,m3,0.09,25000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,M01c,Material,Pasir Halus,m3,0.5543,25000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,M05,Material,Filler Added,kg,9.45,25000
+AHSP-4.6.(1),4.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Latasir Kelas A (SS-A),0.1,M10,Material,Aspal,kg,98.88,25000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,E01,Equipment,Asphalt Mixing Plant (AMP),jam,0.0201,350000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,E09,Equipment,Dump Truck 6-8 M3,jam,0.049,350000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,E12,Equipment,Generator Set (Genset),jam,0.0201,350000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,E15,Equipment,Wheel Loader,jam,0.0087,350000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,L01,Labor,Pekerja,jam,0.2008,120000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,L03,Labor,Mandor,jam,0.0201,120000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,M10,Material,Aspal,kg,65.405,25000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,M12,Material,Semen/PC,kg,9.87,25000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,M91,Material,Agregate uk.0-5,m3,0.5482,25000
+AHSP-4.7.(2),4.7.(2),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus),0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.1236,25000
+AHSP-E.23,E.23,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB),0.1,E09,Equipment,Dump Truck 6-8 M3,jam,0.2562,350000
+AHSP-E.23,E.23,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB),0.1,E13,Equipment,Motor Grader,jam,0.0018,350000
+AHSP-E.23,E.23,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB),0.1,E15,Equipment,Wheel Loader,jam,0.0084,350000
+AHSP-E.23,E.23,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB),0.1,E18,Equipment,Pneumatic Tire Roller,jam,0.0102,350000
+AHSP-E.23,E.23,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB),0.1,E23,Equipment,Watertank truck,jam,0.0462,350000
+AHSP-E.23,E.23,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB),0.1,E27,Equipment,Pulvi mixer / Self Propelled Mixer,jam,0.003,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E09,Equipment,Dump Truck 6-8 M3,jam,0.0365,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E15,Equipment,Wheel Loader,jam,0.0082,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E22,Equipment,Motor Grader E22,jam,0.0028,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E23,Equipment,Watertank truck,jam,0.012,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E27,Equipment,Pulvi mixer / Self Propelled Mixer,jam,0.0069,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E28,Equipment,Smooth Drum,jam,0.0097,350000
+AHSP-E.24,E.24,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB) Variasi 2,0.1,E99,Equipment,Vibratory Padfoot Roller 25T,jam,0.0097,350000
+AHSP-E.25,E.25,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB),0.1,E09,Equipment,Dump Truck 6-8 M3,jam,0.2429,350000
+AHSP-E.25,E.25,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB),0.1,E15,Equipment,Wheel Loader,jam,0.0086,350000
+AHSP-E.25,E.25,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB),0.1,E27,Equipment,Pulvi mixer / Self Propelled Mixer,jam,0.0011,350000
+AHSP-E.25,E.25,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB),0.1,E99,Equipment,Vibratory Padfoot Roller 25T,jam,0.0065,350000
+AHSP-E.25,E.25,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB),0.1,M12,Material,Semen/PC,kg,102.3998,25000
+AHSP-E.25,E.25,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB),0.1,M27,Material,Lapis Fondasi Agregat Kelas B,m3,1.05,25000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,E09,Equipment,Dump Truck 6-8 M3,jam,0.0163,350000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,E13,Equipment,Motor Grader,jam,0.0027,350000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,E15,Equipment,Wheel Loader,jam,0.0088,350000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,E17,Equipment,Tandem Roller,jam,0.0268,350000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,E23,Equipment,Watertank truck,jam,0.005,350000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,E27,Equipment,Pulvi mixer / Self Propelled Mixer,jam,0.0686,350000
+AHSP-SKh-5.6.(1b),SKh-5.6.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lapis Cement Treated Base Recycler Base (CTRB),0.1,M139,Material,Bahan tanah timbunan,m3,0.3451,25000
+AHSP-6.3.(1a),6.3.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Halus (SMA Halus),0.1,M05,Material,Filler Added,kg,67.465,25000
+AHSP-6.3.(1a),6.3.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Halus (SMA Halus),0.1,M10,Material,Aspal,kg,62.83,25000
+AHSP-6.3.(1a),6.3.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Halus (SMA Halus),0.1,M158,Material,Serat Selulosa,kg,3.09,25000
+AHSP-6.3.(1a),6.3.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Halus (SMA Halus),0.1,M91,Material,Agregate uk.0-5,m3,0.0986,25000
+AHSP-6.3.(1a),6.3.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Halus (SMA Halus),0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.5938,25000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,L01,Labor,Pekerja,jam,0.2008,120000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,L03,Labor,Mandor,jam,0.0201,120000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,M05,Material,Filler Added,kg,67.362,25000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,M158,Material,Serat Selulosa,kg,3.09,25000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,M31c,Material,Aspal Modifikasi,kg,64.375,25000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,M91,Material,Agregate uk.0-5,m3,0.0985,25000
+AHSP-6.3.(1b),6.3.(1b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus),0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.5929,25000
+AHSP-6.3.(4b),6.3.(4b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lataston Lapis Fondasi (HRS-Base),0.1,L01,Labor,Pekerja,jam,0.2008,120000
+AHSP-6.3.(4b),6.3.(4b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lataston Lapis Fondasi (HRS-Base),0.1,L03,Labor,Mandor,jam,0.0201,120000
+AHSP-6.3.(4b),6.3.(4b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lataston Lapis Fondasi (HRS-Base),0.1,M01c,Material,Pasir Halus,m3,0.2531,25000
+AHSP-6.3.(4b),6.3.(4b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lataston Lapis Fondasi (HRS-Base),0.1,M12,Material,Semen/PC,kg,19.176,25000
+AHSP-6.3.(4b),6.3.(4b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lataston Lapis Fondasi (HRS-Base),0.1,M91,Material,Agregate uk.0-5,m3,0.1649,25000
+AHSP-6.3.(4b),6.3.(4b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Lataston Lapis Fondasi (HRS-Base),0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3348,25000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,E01,Equipment,Asphalt Mixing Plant (AMP),jam,0.0201,350000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,E12,Equipment,Generator Set (Genset),jam,0.0201,350000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,E15,Equipment,Wheel Loader,jam,0.0129,350000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,L01,Labor,Pekerja,jam,0.2008,120000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,L03,Labor,Mandor,jam,0.0201,120000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,M10,Material,Aspal,kg,56.1,25000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,M12,Material,Semen/PC,kg,9.588,25000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,M91,Material,Agregate uk.0-5,m3,0.3747,25000
+AHSP-6.3.(6a),6.3.(6a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC),0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3866,25000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,E01b,Equipment,AMP E01b,jam,0.0201,350000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,E12,Equipment,Generator Set (Genset),jam,0.0201,350000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,E15,Equipment,Wheel Loader,jam,0.0135,350000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,L01,Labor,Pekerja,jam,0.2008,120000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,L03,Labor,Mandor,jam,0.0201,120000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,M12,Material,Semen/PC,kg,10.2,25000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,M31c,Material,Aspal Modifikasi,kg,57.12,25000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,M91,Material,Agregate uk.0-5,m3,0.3847,25000
+AHSP-6.3.(6a).mod,6.3.(6a).mod,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Modifikasi,0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3783,25000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,E01,Equipment,Asphalt Mixing Plant (AMP),jam,0.0201,350000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,E02,Equipment,Asp. Finisher,jam,0.0125,350000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,E09,Equipment,Dump Truck 6-8 M3,jam,0.0255,350000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,E12,Equipment,Generator Set (Genset),jam,0.0201,350000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,E15,Equipment,Wheel Loader,jam,0.0054,350000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,M10,Material,Aspal,kg,62.315,25000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,M12,Material,Semen/PC,kg,9.682,25000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,M159,Material,Zeolit,kg,12.566,25000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,M91,Material,Agregate uk.0-5,m3,0.4193,25000
+AHSP-6.4.(1a),6.4.(1a),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3206,25000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,E01,Equipment,Asphalt Mixing Plant (AMP),jam,0.0201,350000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,E15,Equipment,Wheel Loader,jam,0.0054,350000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,M10,Material,Aspal,kg,57.165,25000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,M12,Material,Semen/PC,kg,9.682,25000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,M160,Material,Wax,kg,0.8832,25000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,M91,Material,Agregate uk.0-5,m3,0.3719,25000
+AHSP-6.4.(2b),6.4.(2b),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),"Analisis Laston Hangat Pen. 60-70, WMAC Lapis Antara (WMAC-BC) with Wax",0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3719,25000
+AHSP-6.6.(1),6.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis CPHMA (Cold Paving Hot Mix Asphalt),0.1,L01,Labor,Pekerja,jam,1.4489,120000
+AHSP-6.6.(1),6.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis CPHMA (Cold Paving Hot Mix Asphalt),0.1,L03,Labor,Mandor,jam,0.0935,120000
+AHSP-6.6.(1),6.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis CPHMA (Cold Paving Hot Mix Asphalt),0.1,M10,Material,Aspal,kg,81.6,25000
+AHSP-6.6.(1),6.6.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis CPHMA (Cold Paving Hot Mix Asphalt),0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.2333,25000
+AHSP-SKh-1.6.25.(1),SKh-1.6.25.(1),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Campuran Beraspal Panas (Laston) Lapis Aus (AC-WCNR),0.1,E15,Equipment,Wheel Loader,jam,0.0041,350000
+AHSP-SKh-1.6.29.(1g),SKh-1.6.29.(1g),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus (AC-WC) Asbuton Murni,0.1,E15,Equipment,Wheel Loader,jam,0.0123,350000
+AHSP-SKh-1.6.29.(1g),SKh-1.6.29.(1g),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus (AC-WC) Asbuton Murni,0.1,M12,Material,Semen/PC,kg,9.69,25000
+AHSP-SKh-1.6.29.(1g),SKh-1.6.29.(1g),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus (AC-WC) Asbuton Murni,0.1,M31c,Material,Aspal Modifikasi,kg,61.2,25000
+AHSP-SKh-1.6.29.(1g),SKh-1.6.29.(1g),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus (AC-WC) Asbuton Murni,0.1,M91,Material,Agregate uk.0-5,m3,0.3547,25000
+AHSP-SKh-1.6.29.(1g),SKh-1.6.29.(1g),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus (AC-WC) Asbuton Murni,0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3761,25000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,E15,Equipment,Wheel Loader,jam,0.0129,350000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,L01,Labor,Pekerja,jam,0.2564,120000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,L03,Labor,Mandor,jam,0.0214,120000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,M12,Material,Semen/PC,kg,9.588,25000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,M31c,Material,Aspal Modifikasi,kg,58.14,25000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,M91,Material,Agregate uk.0-5,m3,0.3721,25000
+AHSP-SKh-1.6.29.(1i),SKh-1.6.29.(1i),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Antara (AC-BC) Asbuton Murni,0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.3869,25000
+AHSP-SKh-1.6.29.(1k),SKh-1.6.29.(1k),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Fondasi (AC-Base) Asbuton Murni,0.1,E15,Equipment,Wheel Loader,jam,0.0129,350000
+AHSP-SKh-1.6.29.(1k),SKh-1.6.29.(1k),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Fondasi (AC-Base) Asbuton Murni,0.1,M10,Material,Aspal,kg,49.98,25000
+AHSP-SKh-1.6.29.(1k),SKh-1.6.29.(1k),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Fondasi (AC-Base) Asbuton Murni,0.1,M12,Material,Semen/PC,kg,10.2,25000
+AHSP-SKh-1.6.29.(1k),SKh-1.6.29.(1k),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Fondasi (AC-Base) Asbuton Murni,0.1,M91,Material,Agregate uk.0-5,m3,0.3102,25000
+AHSP-SKh-1.6.29.(1k),SKh-1.6.29.(1k),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Fondasi (AC-Base) Asbuton Murni,0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.1819,25000
+AHSP-SKh-1.6.29.(1k),SKh-1.6.29.(1k),Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Fondasi (AC-Base) Asbuton Murni,0.1,M93,Material,Agregat uk.20-30,m3,0.3142,25000
+AHSP-SKh-1.6.36.(1).PG70,SKh-1.6.36.(1).PG70,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus Asb Pracampur Tinggi (AC-WC Asb Pracampur Tinggi) PG 70,0.1,M10,Material,Aspal,kg,72.1,25000
+AHSP-SKh-1.6.36.(1).PG70,SKh-1.6.36.(1).PG70,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus Asb Pracampur Tinggi (AC-WC Asb Pracampur Tinggi) PG 70,0.1,M91,Material,Agregate uk.0-5,m3,0.3627,25000
+AHSP-SKh-1.6.36.(1).PG70,SKh-1.6.36.(1).PG70,Analisis Harga Satuan Pekerjaan Bidang Bina Marga (BM),Analisis Laston Lapis Aus Asb Pracampur Tinggi (AC-WC Asb Pracampur Tinggi) PG 70,0.1,M92,Material,Agregate uk.5-10 & 10-15,m3,0.2882,25000
+AHSP-A.3.2.1.9,A.3.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m3 Batu Kosong (Aanstamping) untuk Pondasi Gedung,0.1,L.01,Labor,Pekerja,OH,0.15,150000
+AHSP-A.3.2.1.9,A.3.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m3 Batu Kosong (Aanstamping) untuk Pondasi Gedung,0.1,L.04,Labor,Mandor,OH,0.015,150000
+AHSP-A.3.2.1.9,A.3.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m3 Batu Kosong (Aanstamping) untuk Pondasi Gedung,0.1,MAT.0005,Material,Ijuk,kg,6,50000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,L.01,Labor,Pekerja,OH,1.65,150000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,L.02,Labor,Tukang batu/tembok,OH,0.275,150000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,L.03,Labor,Kepala tukang,OH,0.028,150000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,L.04,Labor,Mandor,OH,0.083,150000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,MAT.0001,Material,Semen Portland (PC),kg,247,50000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,MAT.0002,kg,Pasir beton,,869,100000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,MAT.0003,Material,Kerikil (Maks 30mm),kg,999,50000
+AHSP-A.3.2.1.10,A.3.2.1.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-250 (fc' 21 MPa),0.1,MAT.0004,Material,Air,Liter,215,50000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,L.01,Labor,Pekerja,OH,1.65,150000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,L.02,Labor,Tukang batu/tembok,OH,0.275,150000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,L.03,Labor,Kepala tukang,OH,0.028,150000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,L.04,Labor,Mandor,OH,0.083,150000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,MAT.0001,Material,Semen Portland (PC),kg,371,50000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,MAT.0002,kg,Pasir beton,,698,100000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,MAT.0003,Material,Kerikil (Maks 30mm),kg,1047,50000
+AHSP-A.3.2.1.11,A.3.2.1.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Mutu K-350 (fc' 29 MPa),0.1,MAT.0004,Material,Air,Liter,215,50000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,L.02,Labor,Tukang batu/tembok,OH,0.35,150000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,L.03,Labor,Kepala tukang,OH,0.035,150000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,L.04,Labor,Mandor,OH,0.105,150000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,MAT.0001,Material,Semen Portland (PC),kg,400,50000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,MAT.0002,kg,Pasir beton,,0.48,100000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,MAT.0003,Material,Kerikil (Maks 30mm),kg,0.8,50000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,MAT.0004,Material,Air,Liter,210,50000
+AHSP-A.3.2.1.12,A.3.2.1.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m3 Beton Struktur Kekedapan Air dengan Strorox-100,0.1,MAT.0006,Material,Strorox-100,kg,1.2,50000
+AHSP-A.4.1.2.5,A.4.1.2.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Bekisting untuk Pelat Beton Pracetak Komponen Modular Bangunan Gedung (5 kali pakai),0.1,L.01,Labor,Pekerja,OH,0.089,150000
+AHSP-A.4.1.2.5,A.4.1.2.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Bekisting untuk Pelat Beton Pracetak Komponen Modular Bangunan Gedung (5 kali pakai),0.1,L.02.k,Labor,Tukang kayu,OH,0.03,150000
+AHSP-A.4.1.2.5,A.4.1.2.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Bekisting untuk Pelat Beton Pracetak Komponen Modular Bangunan Gedung (5 kali pakai),0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.1.2.10,A.4.1.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan dan Membuka Cetakan 1 Buah Komponen Kolom Beton Pracetak,0.1,L.01,Labor,Pekerja,OH,0.071,150000
+AHSP-A.4.1.2.10,A.4.1.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan dan Membuka Cetakan 1 Buah Komponen Kolom Beton Pracetak,0.1,L.02.k,Labor,Tukang kayu,OH,0.024,150000
+AHSP-A.4.1.2.10,A.4.1.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan dan Membuka Cetakan 1 Buah Komponen Kolom Beton Pracetak,0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.1.2.11,A.4.1.2.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Pelat Beton Pracetak,0.1,L.01,Labor,Pekerja,OH,0.069,150000
+AHSP-A.4.1.2.11,A.4.1.2.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Pelat Beton Pracetak,0.1,L.02,Labor,Tukang batu/tembok,OH,0.242,150000
+AHSP-A.4.1.2.11,A.4.1.2.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Pelat Beton Pracetak,0.1,L.02.l,Labor,Tukang las,OH,0.138,150000
+AHSP-A.4.1.2.11,A.4.1.2.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Pelat Beton Pracetak,0.1,L.03,Labor,Kepala tukang,OH,0.037,150000
+AHSP-A.4.1.2.11,A.4.1.2.11,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Pelat Beton Pracetak,0.1,L.04,Labor,Mandor,OH,0.073,150000
+AHSP-A.4.1.2.13,A.4.1.2.13,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Kolom Beton Pracetak,0.1,L.01,Labor,Pekerja,OH,0.061,150000
+AHSP-A.4.1.2.13,A.4.1.2.13,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Kolom Beton Pracetak,0.1,L.02,Labor,Tukang batu/tembok,OH,0.213,150000
+AHSP-A.4.1.2.13,A.4.1.2.13,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Kolom Beton Pracetak,0.1,L.02.l,Labor,Tukang las,OH,0.122,150000
+AHSP-A.4.1.2.13,A.4.1.2.13,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Kolom Beton Pracetak,0.1,L.03,Labor,Kepala tukang,OH,0.033,150000
+AHSP-A.4.1.2.13,A.4.1.2.13,Analisis Harga Satuan Pekerjaan SNI,Analisis Penuangan/Menebar Beton 1 m3 untuk Kolom Beton Pracetak,0.1,L.04,Labor,Mandor,OH,0.073,150000
+AHSP-A.4.1.2.23,A.4.1.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 titik Bekisting Joint Pracetak,0.1,L.01,Labor,Pekerja,OH,0.147,150000
+AHSP-A.4.1.2.23,A.4.1.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 titik Bekisting Joint Pracetak,0.1,L.02.k,Labor,Tukang kayu,OH,0.147,150000
+AHSP-A.4.1.2.23,A.4.1.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 titik Bekisting Joint Pracetak,0.1,L.03,Labor,Kepala tukang,OH,0.015,150000
+AHSP-A.4.2.1.8,A.4.2.1.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Pintu Lipat Sunscreen Aluminium,0.1,L.01,Labor,Pekerja,OH,0.44,150000
+AHSP-A.4.2.1.8,A.4.2.1.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Pintu Lipat Sunscreen Aluminium,0.1,L.02,Labor,Tukang batu/tembok,OH,0.44,150000
+AHSP-A.4.2.1.8,A.4.2.1.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Pintu Lipat Sunscreen Aluminium,0.1,L.03,Labor,Kepala tukang,OH,0.044,150000
+AHSP-A.4.2.1.8,A.4.2.1.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Pintu Lipat Sunscreen Aluminium,0.1,L.04,Labor,Mandor,OH,0.022,150000
+AHSP-A.4.2.1.8,A.4.2.1.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Pintu Lipat Sunscreen Aluminium,0.1,MAT.0043,Material,Spring knip,buah,1,50000
+AHSP-A.4.2.1.9,A.4.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Sunscreen Aluminium,0.1,L.01,Labor,Pekerja,OH,1.67,150000
+AHSP-A.4.2.1.9,A.4.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Sunscreen Aluminium,0.1,L.02.l,Labor,Tukang las,OH,1.67,150000
+AHSP-A.4.2.1.9,A.4.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Sunscreen Aluminium,0.1,L.03,Labor,Kepala tukang,OH,0.167,150000
+AHSP-A.4.2.1.9,A.4.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Sunscreen Aluminium,0.1,L.04,Labor,Mandor,OH,0.083,150000
+AHSP-A.4.2.1.9,A.4.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Sunscreen Aluminium,0.1,MAT.0009,Material,Besi strip,kg,6.177,50000
+AHSP-A.4.2.1.9,A.4.2.1.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Sunscreen Aluminium,0.1,MAT.0010,Material,Pengelasan,cm,27.08,50000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,L.01,Labor,Pekerja,OH,0.6,150000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,L.02,Labor,Tukang batu/tembok,OH,0.2,150000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,L.03,Labor,Kepala tukang,OH,0.02,150000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,L.04,Labor,Mandor,OH,0.03,150000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,MAT.0001,Material,Semen Portland (PC),kg,22.2,50000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,MAT.0007,Material,Bata merah,buah,140,50000
+AHSP-A.4.4.1.1,A.4.4.1.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Merah Tebal 1/2 Batu,0.1,MAT.0008,Material,Pasir pasang,m3,0.102,50000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,L.01,Labor,Pekerja,OH,0.32,150000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,L.02,Labor,Tukang batu/tembok,OH,0.12,150000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,L.03,Labor,Kepala tukang,OH,0.012,150000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,L.04,Labor,Mandor,OH,0.016,150000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,MAT.0001,Material,Semen Portland (PC),kg,18.2,50000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,MAT.0008,Material,Pasir pasang,m3,0.582,50000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,MAT.0011,Material,HB-15 (Concrete block),buah,12.5,50000
+AHSP-A.4.4.1.2,A.4.4.1.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Hollow Block (HB-15) tebal 15cm,0.1,MAT.0012,Material,Besi angker diameter 8,kg,0.28,50000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,L.01,Labor,Pekerja,OH,0.3,150000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,L.02,Labor,Tukang batu/tembok,OH,0.1,150000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,L.03,Labor,Kepala tukang,OH,0.01,150000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,L.04,Labor,Mandor,OH,0.015,150000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,MAT.0001,Material,Semen Portland (PC),kg,11,50000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,MAT.0008,Material,Pasir pasang,m3,0.035,50000
+AHSP-A.4.4.1.3,A.4.4.1.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Dinding Bata Rooster,0.1,MAT.0013,Material,Bata rooster,buah,30,50000
+AHSP-A.4.4.1.4,A.4.4.1.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Bata Ringan Tebal 10cm,0.1,L.01,Labor,Pekerja,OH,0.671,150000
+AHSP-A.4.4.1.4,A.4.4.1.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Bata Ringan Tebal 10cm,0.1,L.02,Labor,Tukang batu/tembok,OH,0.13,150000
+AHSP-A.4.4.1.4,A.4.4.1.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Bata Ringan Tebal 10cm,0.1,L.03,Labor,Kepala tukang,OH,0.013,150000
+AHSP-A.4.4.1.4,A.4.4.1.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Bata Ringan Tebal 10cm,0.1,L.04,Labor,Mandor,OH,0.003,150000
+AHSP-A.4.4.1.4,A.4.4.1.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Bata Ringan Tebal 10cm,0.1,MAT.0014,Material,Bata ringan tebal 10cm,buah,8.4,50000
+AHSP-A.4.4.1.4,A.4.4.1.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Bata Ringan Tebal 10cm,0.1,MAT.0015,Material,Mortar Siap Pakai (Semen Instan),kg,0.063,50000
+AHSP-A.4.4.1.5,A.4.4.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 1.5 cm,0.1,L.01,Labor,Pekerja,OH,0.3,150000
+AHSP-A.4.4.1.5,A.4.4.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 1.5 cm,0.1,L.02,Labor,Tukang batu/tembok,OH,0.15,150000
+AHSP-A.4.4.1.5,A.4.4.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 1.5 cm,0.1,L.03,Labor,Kepala tukang,OH,0.015,150000
+AHSP-A.4.4.1.5,A.4.4.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 1.5 cm,0.1,L.04,Labor,Mandor,OH,0.015,150000
+AHSP-A.4.4.1.5,A.4.4.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 1.5 cm,0.1,MAT.0001,Material,Semen Portland (PC),kg,6.34,50000
+AHSP-A.4.4.1.5,A.4.4.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 1.5 cm,0.1,MAT.0008,Material,Pasir pasang,m3,0.012,50000
+AHSP-A.4.4.1.6,A.4.4.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 2.0 cm,0.1,L.01,Labor,Pekerja,OH,0.2,150000
+AHSP-A.4.4.1.6,A.4.4.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 2.0 cm,0.1,L.02,Labor,Tukang batu/tembok,OH,0.1,150000
+AHSP-A.4.4.1.6,A.4.4.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 2.0 cm,0.1,L.03,Labor,Kepala tukang,OH,0.01,150000
+AHSP-A.4.4.1.6,A.4.4.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 2.0 cm,0.1,L.04,Labor,Mandor,OH,0.0033,150000
+AHSP-A.4.4.1.6,A.4.4.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 2.0 cm,0.1,MAT.0001,Material,Semen Portland (PC),kg,5.184,50000
+AHSP-A.4.4.1.6,A.4.4.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Plesteran 1 m2 dengan Mortar tebal 2.0 cm,0.1,MAT.0008,Material,Pasir pasang,m3,0.026,50000
+AHSP-A.4.4.1.7,A.4.4.1.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Acian 1 m2,0.1,L.01,Labor,Pekerja,OH,0.1,150000
+AHSP-A.4.4.1.7,A.4.4.1.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Acian 1 m2,0.1,L.02,Labor,Tukang batu/tembok,OH,0.1,150000
+AHSP-A.4.4.1.7,A.4.4.1.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Acian 1 m2,0.1,L.03,Labor,Kepala tukang,OH,0.01,150000
+AHSP-A.4.4.1.7,A.4.4.1.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Acian 1 m2,0.1,L.04,Labor,Mandor,OH,0.0033,150000
+AHSP-A.4.4.1.7,A.4.4.1.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pekerjaan Acian 1 m2,0.1,MAT.0015,Material,Mortar Siap Pakai (Semen Instan),kg,2,50000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,L.01,Labor,Pekerja,OH,0.25,150000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,L.02,Labor,Tukang batu/tembok,OH,0.125,150000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,L.03,Labor,Kepala tukang,OH,0.013,150000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,L.04,Labor,Mandor,OH,0.013,150000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,MAT.0001,Material,Semen Portland (PC),kg,9.8,50000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,MAT.0008,Material,Pasir pasang,m3,0.045,50000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,MAT.0016,Material,Ubin Teraso,buah,6.63,50000
+AHSP-A.4.4.3.1,A.4.4.3.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Teraso,0.1,MAT.0017,Material,Semen Warna,kg,1.3,50000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,L.01,Labor,Pekerja,OH,0.09,150000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,L.02,Labor,Tukang batu/tembok,OH,0.09,150000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,L.03,Labor,Kepala tukang,OH,0.009,150000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,MAT.0001,Material,Semen Portland (PC),kg,1.14,50000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,MAT.0008,Material,Pasir pasang,m3,0.003,50000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,MAT.0017,Material,Semen Warna,kg,0.1,50000
+AHSP-A.4.4.3.2,A.4.4.3.2,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Warna,0.1,MAT.0018,Material,Plint Ubin warna,buah,5.3,50000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,L.01,Labor,Pekerja,OH,0.09,150000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,L.02,Labor,Tukang batu/tembok,OH,0.09,150000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,L.03,Labor,Kepala tukang,OH,0.009,150000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,MAT.0001,Material,Semen Portland (PC),kg,1.14,50000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,MAT.0008,Material,Pasir pasang,m3,0.003,50000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,MAT.0017,Material,Semen Warna,kg,0.1,50000
+AHSP-A.4.4.3.3,A.4.4.3.3,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Ubin Granit,0.1,MAT.0019,Material,Plint Ubin granit,buah,3.53,50000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,L.01,Labor,Pekerja,OH,0.09,150000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,L.02,Labor,Tukang batu/tembok,OH,0.09,150000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,L.03,Labor,Kepala tukang,OH,0.009,150000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,MAT.0001,Material,Semen Portland (PC),kg,1.14,50000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,MAT.0008,Material,Pasir pasang,m3,0.003,50000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,MAT.0017,Material,Semen Warna,kg,0.1,50000
+AHSP-A.4.4.3.4,A.4.4.3.4,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Plint Teralux Marmer,0.1,MAT.0020,Material,Plint Teralux marmer,buah,2.65,50000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,L.01,Labor,Pekerja,OH,0.7,150000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,L.02,Labor,Tukang batu/tembok,OH,0.35,150000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,L.03,Labor,Kepala tukang,OH,0.035,150000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,L.04,Labor,Mandor,OH,0.035,150000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,MAT.0001,Material,Semen Portland (PC),kg,10,50000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,MAT.0008,Material,Pasir pasang,m3,0.045,50000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,MAT.0017,Material,Semen Warna,kg,0.5,50000
+AHSP-A.4.4.3.5,A.4.4.3.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Keramik,0.1,MAT.0021,Material,Ubin Keramik,dus,1.05,50000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,L.01,Labor,Pekerja,OH,0.7,150000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,L.02,Labor,Tukang batu/tembok,OH,0.35,150000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,L.03,Labor,Kepala tukang,OH,0.035,150000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,L.04,Labor,Mandor,OH,0.035,150000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,MAT.0001,Material,Semen Portland (PC),kg,8.19,50000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,MAT.0008,Material,Pasir pasang,m3,0.045,50000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,MAT.0017,Material,Semen Warna,kg,0.134,50000
+AHSP-A.4.4.3.6,A.4.4.3.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Ubin Marmer,0.1,MAT.0022,Material,Marmer,buah,1.06,50000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,L.01,Labor,Pekerja,OH,0.9,150000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,L.02,Labor,Tukang batu/tembok,OH,0.45,150000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,L.03,Labor,Kepala tukang,OH,0.045,150000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,L.04,Labor,Mandor,OH,0.045,150000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,MAT.0001,Material,Semen Portland (PC),kg,9.3,50000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,MAT.0008,Material,Pasir pasang,m3,0.018,50000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,MAT.0017,Material,Semen Warna,kg,2.9,50000
+AHSP-A.4.4.3.7,A.4.4.3.7,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Keramik Artistik,0.1,MAT.0023,Material,Keramik Artistik,buah,104,50000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,L.01,Labor,Pekerja,OH,0.7,150000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,L.02,Labor,Tukang batu/tembok,OH,0.35,150000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,L.03,Labor,Kepala tukang,OH,0.035,150000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,L.04,Labor,Mandor,OH,0.035,150000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,MAT.0001,Material,Semen Portland (PC),kg,11.75,50000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,MAT.0008,Material,Pasir pasang,m3,0.035,50000
+AHSP-A.4.4.3.8,A.4.4.3.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Batu Paras,0.1,MAT.0024,Material,Batu paras,buah,1.1,50000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,L.01,Labor,Pekerja,OH,0.4,150000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,L.02.k,Labor,Tukang kayu,OH,0.2,150000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,L.03,Labor,Kepala tukang,OH,0.02,150000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,L.04,Labor,Mandor,OH,0.002,150000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,MAT.0001,Material,Semen Portland (PC),kg,8,50000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,MAT.0008,Material,Pasir pasang,m3,0.032,50000
+AHSP-A.4.5.2.1,A.4.5.2.1,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Genteng Bubung,0.1,MAT.0025,Material,Genteng Bubung,buah,5,50000
+AHSP-A.4.5.2.10,A.4.5.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 92cm x 180cm,0.1,L.01,Labor,Pekerja,OH,0.14,150000
+AHSP-A.4.5.2.10,A.4.5.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 92cm x 180cm,0.1,L.02.k,Labor,Tukang kayu,OH,0.07,150000
+AHSP-A.4.5.2.10,A.4.5.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 92cm x 180cm,0.1,L.03,Labor,Kepala tukang,OH,0.007,150000
+AHSP-A.4.5.2.10,A.4.5.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 92cm x 180cm,0.1,L.04,Labor,Mandor,OH,0.007,150000
+AHSP-A.4.5.2.10,A.4.5.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 92cm x 180cm,0.1,MAT.0026,Material,Serat semen gel 92x180,lembar,0.75,50000
+AHSP-A.4.5.2.10,A.4.5.2.10,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 92cm x 180cm,0.1,MAT.0027,Material,Paku pancing 6x23,kg,0.12,50000
+AHSP-A.4.5.2.12,A.4.5.2.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 105cm x 300cm,0.1,L.01,Labor,Pekerja,OH,0.14,150000
+AHSP-A.4.5.2.12,A.4.5.2.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 105cm x 300cm,0.1,L.02.k,Labor,Tukang kayu,OH,0.07,150000
+AHSP-A.4.5.2.12,A.4.5.2.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 105cm x 300cm,0.1,L.03,Labor,Kepala tukang,OH,0.007,150000
+AHSP-A.4.5.2.12,A.4.5.2.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 105cm x 300cm,0.1,L.04,Labor,Mandor,OH,0.007,150000
+AHSP-A.4.5.2.12,A.4.5.2.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 105cm x 300cm,0.1,MAT.0027,Material,Paku pancing 6x23,kg,0.12,50000
+AHSP-A.4.5.2.12,A.4.5.2.12,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 105cm x 300cm,0.1,MAT.0028,Material,Serat semen gel 105x300,lembar,0.35,50000
+AHSP-A.4.5.2.15,A.4.5.2.15,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 210cm,0.1,L.01,Labor,Pekerja,OH,0.14,150000
+AHSP-A.4.5.2.15,A.4.5.2.15,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 210cm,0.1,L.02.k,Labor,Tukang kayu,OH,0.07,150000
+AHSP-A.4.5.2.15,A.4.5.2.15,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 210cm,0.1,L.03,Labor,Kepala tukang,OH,0.007,150000
+AHSP-A.4.5.2.15,A.4.5.2.15,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 210cm,0.1,L.04,Labor,Mandor,OH,0.007,150000
+AHSP-A.4.5.2.15,A.4.5.2.15,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 210cm,0.1,MAT.0027,Material,Paku pancing 6x23,kg,0.12,50000
+AHSP-A.4.5.2.15,A.4.5.2.15,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 210cm,0.1,MAT.0029,Material,Serat Semen gel 108x210,lembar,0.49,50000
+AHSP-A.4.5.2.23,A.4.5.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 180cm,0.1,L.01,Labor,Pekerja,OH,0.14,150000
+AHSP-A.4.5.2.23,A.4.5.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 180cm,0.1,L.02.k,Labor,Tukang kayu,OH,0.07,150000
+AHSP-A.4.5.2.23,A.4.5.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 180cm,0.1,L.03,Labor,Kepala tukang,OH,0.007,150000
+AHSP-A.4.5.2.23,A.4.5.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 180cm,0.1,L.04,Labor,Mandor,OH,0.007,150000
+AHSP-A.4.5.2.23,A.4.5.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 180cm,0.1,MAT.0027,Material,Paku pancing 6x23,kg,0.12,50000
+AHSP-A.4.5.2.23,A.4.5.2.23,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Serat Semen Gelombang 108cm x 180cm,0.1,MAT.0030,Material,Serat semen gel 108x180,lembar,0.57,50000
+AHSP-A.4.5.2.28,A.4.5.2.28,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Nok/Bubung Paten 105cm,0.1,L.01,Labor,Pekerja,OH,0.084,150000
+AHSP-A.4.5.2.28,A.4.5.2.28,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Nok/Bubung Paten 105cm,0.1,L.02.k,Labor,Tukang kayu,OH,0.125,150000
+AHSP-A.4.5.2.28,A.4.5.2.28,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Nok/Bubung Paten 105cm,0.1,L.03,Labor,Kepala tukang,OH,0.013,150000
+AHSP-A.4.5.2.28,A.4.5.2.28,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Nok/Bubung Paten 105cm,0.1,L.04,Labor,Mandor,OH,0.004,150000
+AHSP-A.4.5.2.28,A.4.5.2.28,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Nok/Bubung Paten 105cm,0.1,MAT.0031,Material,Nok Bubung Paten 105cm,m',1.1,50000
+AHSP-A.4.5.2.29,A.4.5.2.29,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m2 Atap Seng Pelat 3""x6""",0.1,L.01,Labor,Pekerja,OH,0.15,150000
+AHSP-A.4.5.2.29,A.4.5.2.29,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m2 Atap Seng Pelat 3""x6""",0.1,L.02.k,Labor,Tukang kayu,OH,0.07,150000
+AHSP-A.4.5.2.29,A.4.5.2.29,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m2 Atap Seng Pelat 3""x6""",0.1,L.03,Labor,Kepala tukang,OH,0.007,150000
+AHSP-A.4.5.2.29,A.4.5.2.29,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m2 Atap Seng Pelat 3""x6""",0.1,L.04,Labor,Mandor,OH,0.006,150000
+AHSP-A.4.5.2.29,A.4.5.2.29,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m2 Atap Seng Pelat 3""x6""",0.1,MAT.0032,Material,"Seng pelat 3""x6"" bjls 28",lembar,0.3,50000
+AHSP-A.4.5.2.29,A.4.5.2.29,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m2 Atap Seng Pelat 3""x6""",0.1,MAT.0033,Material,"Paku biasa 1/2""-1""",kg,0.04,50000
+AHSP-A.4.5.2.42,A.4.5.2.42,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Aluminium Gelombang 95cm x 180cm,0.1,L.01,Labor,Pekerja,OH,0.15,150000
+AHSP-A.4.5.2.42,A.4.5.2.42,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Aluminium Gelombang 95cm x 180cm,0.1,L.02.k,Labor,Tukang kayu,OH,0.75,150000
+AHSP-A.4.5.2.42,A.4.5.2.42,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Aluminium Gelombang 95cm x 180cm,0.1,L.03,Labor,Kepala tukang,OH,0.08,150000
+AHSP-A.4.5.2.42,A.4.5.2.42,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Aluminium Gelombang 95cm x 180cm,0.1,L.04,Labor,Mandor,OH,0.006,150000
+AHSP-A.4.5.2.42,A.4.5.2.42,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Aluminium Gelombang 95cm x 180cm,0.1,MAT.0034,Material,Aluminium gel Ukuran 95cmx180cm,lembar,0.75,50000
+AHSP-A.4.5.2.42,A.4.5.2.42,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Atap Aluminium Gelombang 95cm x 180cm,0.1,MAT.0035,Material,Paku pancing,kg,0.02,50000
+AHSP-A.4.6.1.5,A.4.6.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Pintu Kayu Papan,0.1,L.01,Labor,Pekerja,OH,1,150000
+AHSP-A.4.6.1.5,A.4.6.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Pintu Kayu Papan,0.1,L.02.k,Labor,Tukang kayu,OH,3,150000
+AHSP-A.4.6.1.5,A.4.6.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Pintu Kayu Papan,0.1,L.03,Labor,Kepala tukang,OH,0.3,150000
+AHSP-A.4.6.1.5,A.4.6.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Pintu Kayu Papan,0.1,L.04,Labor,Mandor,OH,0.05,150000
+AHSP-A.4.6.1.5,A.4.6.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Pintu Kayu Papan,0.1,MAT.0036,Material,Papan kayu,m3,0.04,50000
+AHSP-A.4.6.1.5,A.4.6.1.5,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Pintu Kayu Papan,0.1,MAT.0037,Material,Lem kayu,kg,0.5,50000
+AHSP-A.4.6.1.6,A.4.6.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Konstruksi Rangka Dinding Kayu,0.1,L.01,Labor,Pekerja,OH,0.1,150000
+AHSP-A.4.6.1.6,A.4.6.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Konstruksi Rangka Dinding Kayu,0.1,L.02.k,Labor,Tukang kayu,OH,0.2,150000
+AHSP-A.4.6.1.6,A.4.6.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Konstruksi Rangka Dinding Kayu,0.1,L.03,Labor,Kepala tukang,OH,0.02,150000
+AHSP-A.4.6.1.6,A.4.6.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Konstruksi Rangka Dinding Kayu,0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.6.1.6,A.4.6.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Konstruksi Rangka Dinding Kayu,0.1,MAT.0036,Material,Papan kayu,m3,0.0108,50000
+AHSP-A.4.6.1.6,A.4.6.1.6,Analisis Harga Satuan Pekerjaan SNI,Analisis Pembuatan 1 m2 Konstruksi Rangka Dinding Kayu,0.1,MAT.0038,Material,Paku 5 dan 7 cm,kg,0.1,50000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,L.01,Labor,Pekerja,OH,0.1,150000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,L.02.k,Labor,Tukang kayu,OH,0.05,150000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,L.03,Labor,Kepala tukang,OH,0.005,150000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,L.04,Labor,Mandor,OH,0.005,150000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,MAT.0039,Material,Bilik bambu,m2,1.5,50000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,MAT.0040,Material,Kaso-kaso 5 cm x 7 cm,m3,0.014,50000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,MAT.0041,Material,Paku,kg,0.012,50000
+AHSP-A.4.6.1.22,A.4.6.1.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Rangka Dinding Bilik Bambu,0.1,MAT.0042,Material,List kayu 2cm x 4 cm,m3,0.003,50000
+AHSP-A.4.6.2.8,A.4.6.2.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Spring Knip untuk Jendela,0.1,L.01,Labor,Pekerja,OH,0.015,150000
+AHSP-A.4.6.2.8,A.4.6.2.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Spring Knip untuk Jendela,0.1,L.02.k,Labor,Tukang kayu,OH,0.15,150000
+AHSP-A.4.6.2.8,A.4.6.2.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Spring Knip untuk Jendela,0.1,L.03,Labor,Kepala tukang,OH,0.015,150000
+AHSP-A.4.6.2.8,A.4.6.2.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Spring Knip untuk Jendela,0.1,L.04,Labor,Mandor,OH,0.008,150000
+AHSP-A.4.6.2.8,A.4.6.2.8,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Spring Knip untuk Jendela,0.1,MAT.0043,Material,Spring knip,buah,1,50000
+AHSP-A.4.6.2.9,A.4.6.2.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Kait Angin,0.1,L.01,Labor,Pekerja,OH,0.015,150000
+AHSP-A.4.6.2.9,A.4.6.2.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Kait Angin,0.1,L.02.k,Labor,Tukang kayu,OH,0.15,150000
+AHSP-A.4.6.2.9,A.4.6.2.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Kait Angin,0.1,L.03,Labor,Kepala tukang,OH,0.015,150000
+AHSP-A.4.6.2.9,A.4.6.2.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Kait Angin,0.1,L.04,Labor,Mandor,OH,0.008,150000
+AHSP-A.4.6.2.9,A.4.6.2.9,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 Buah Kait Angin,0.1,MAT.0044,Material,Kait angin,buah,1,50000
+AHSP-A.4.6.2.22,A.4.6.2.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Kaca Cermin 5 mm,0.1,L.01,Labor,Pekerja,OH,0.015,150000
+AHSP-A.4.6.2.22,A.4.6.2.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Kaca Cermin 5 mm,0.1,L.02.k,Labor,Tukang kayu,OH,0.15,150000
+AHSP-A.4.6.2.22,A.4.6.2.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Kaca Cermin 5 mm,0.1,L.03,Labor,Kepala tukang,OH,0.015,150000
+AHSP-A.4.6.2.22,A.4.6.2.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Kaca Cermin 5 mm,0.1,L.04,Labor,Mandor,OH,0.008,150000
+AHSP-A.4.6.2.22,A.4.6.2.22,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m2 Kaca Cermin 5 mm,0.1,MAT.0045,Material,Kaca cermin 5 mm,m2,1.1,50000
+AHSP-A.5.1.1.21,A.5.1.1.21,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m' Pipa Galvanis diameter 3/4""",0.1,L.01,Labor,Pekerja,OH,0.054,150000
+AHSP-A.5.1.1.21,A.5.1.1.21,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m' Pipa Galvanis diameter 3/4""",0.1,L.02.p,Labor,Tukang pipa,OH,0.09,150000
+AHSP-A.5.1.1.21,A.5.1.1.21,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m' Pipa Galvanis diameter 3/4""",0.1,L.03,Labor,Kepala tukang,OH,0.009,150000
+AHSP-A.5.1.1.21,A.5.1.1.21,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m' Pipa Galvanis diameter 3/4""",0.1,L.04,Labor,Mandor,OH,0.027,150000
+AHSP-A.5.1.1.21,A.5.1.1.21,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m' Pipa Galvanis diameter 3/4""",0.1,MAT.0046,Material,"Pipa galvanis 3/4""",m',1.2,50000
+AHSP-A.5.1.1.21,A.5.1.1.21,Analisis Harga Satuan Pekerjaan SNI,"Analisis Pemasangan 1 m' Pipa Galvanis diameter 3/4""",0.1,MAT.0047,Material,Perlengkapan pipa,Ls,0.35,50000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,L.01,Labor,Pekerja,OH,0.06,150000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,L.02.p,Labor,Tukang pipa,OH,0.03,150000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,L.03,Labor,Kepala tukang,OH,0.003,150000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,L.04,Labor,Mandor,OH,0.003,150000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,MAT.0001,Material,Semen Portland (PC),kg,0.93,50000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,MAT.0008,Material,Pasir pasang,m3,0.013,50000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,MAT.0048,Material,Pipa Tanah dia 15,m',1.6,50000
+AHSP-A.5.1.1.39,A.5.1.1.39,Analisis Harga Satuan Pekerjaan SNI,Analisis Pemasangan 1 m' Pipa Tanah diameter 15 cm,0.1,MAT.0049,Material,Pasir Urug,m3,0.011,50000

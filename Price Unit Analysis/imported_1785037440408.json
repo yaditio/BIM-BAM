@@ -1,0 +1,3389 @@
+{
+  "classifications": [
+    {
+      "code": "A",
+      "description": "b",
+      "unit": "c",
+      "category": "Umum"
+    },
+    {
+      "code": "1.2",
+      "description": "Mobilisasi",
+      "unit": "LS",
+      "category": "DIVISI 1. UMUM"
+    },
+    {
+      "code": "1.20.(1)",
+      "description": "Pengeboran, termasuk SPT dan Laporan",
+      "unit": "M1",
+      "category": "DIVISI 1. UMUM"
+    },
+    {
+      "code": "1.20.(2)",
+      "description": "Sondir termasuk Laporan",
+      "unit": "M1",
+      "category": "DIVISI 1. UMUM"
+    },
+    {
+      "code": "2.1.(1)",
+      "description": "Galian untuk Selokan Drainase dan Saluran Air",
+      "unit": "M3",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.2.(1)",
+      "description": "Pasangan Batu dengan Mortar",
+      "unit": "M3",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(1)",
+      "description": "Gorong-gorong Pipa Beton Tanpa Tulangan diameter dalam 20 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(2)",
+      "description": "Gorong-gorong Pipa Beton Tanpa Tulangan diameter dalam 25 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(3)",
+      "description": "Gorong-gorong Pipa Beton Tanpa Tulangan diameter dalam 30 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(4)",
+      "description": "Gorong-gorong Pipa Beton Bertulang, diameter dalam 40 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(5)",
+      "description": "Gorong-gorong Pipa Beton Bertulang, diameter dalam 60 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(6)",
+      "description": "Gorong-gorong Pipa Beton Bertulang, diameter dalam 80 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(7)",
+      "description": "Gorong-gorong Pipa Beton Bertulang, diameter dalam 100 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(8)",
+      "description": "Gorong-gorong Pipa Beton Bertulang, diameter dalam 120 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(9)",
+      "description": "Gorong-gorong Pipa Beton Bertulang, diameter dalam 150 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(10)",
+      "description": "Gorong-gorong Pipa Baja Bergelombang",
+      "unit": "Ton",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(11)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 40 cm x 40 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(12)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 50 cm x 50 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(13)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 60 cm x 60 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(13) v2",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 60 cm x 60 cm dengan Precast dan Lean Concrete",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(14)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 80 cm x 80 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(14) v2",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 80 cm x 80 cm dengan Precast dan Lean Concrete",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(15)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 100 cm x 100 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(15) v2",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 100 cm x 100 cm (Variasi 2)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(16)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 120 cm x 120 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(17)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 140 cm x 140 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(18)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 150 cm x 150 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(18) v2",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 150 cm x 150 cm dengan Precast dan Lean Concrete",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(19)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 160 cm x 160 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(20)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 180 cm x 180 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(21)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 200 cm x 200 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(21) v2",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 200 cm x 200 cm dengan Precast dan Lean Concrete",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "SKh-1.2.3.(21b)",
+      "description": "Gorong-gorong Kotak Beton Bertulang, ukuran dalam 300 cm x300 cm",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(22)",
+      "description": "Saluran berbentuk U Tipe DS 1",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(22) v2",
+      "description": "Saluran berbentuk U Tipe DS 1 dengan Precast",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(23)",
+      "description": "Saluran berbentuk U Tipe DS 1a (dengan tutup)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(24)",
+      "description": "Saluran berbentuk U Tipe DS 2",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(24) v2",
+      "description": "Saluran berbentuk U Tipe DS 2 dengan Precast",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(25)",
+      "description": "Saluran berbentuk U Tipe DS 2a (dengan tutup)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(26)",
+      "description": "Saluran berbentuk U Tipe DS 3",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(26) v2",
+      "description": "Saluran berbentuk U Tipe DS 3 dengan Precast",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(27)",
+      "description": "Saluran berbentuk U Tipe DS 3a (dengan tutup)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(28)",
+      "description": "Saluran berbentuk U Tipe DS 4",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(28) v2",
+      "description": "Saluran berbentuk U Tipe DS 4 dengan Precast",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(29)",
+      "description": "Saluran berbentuk U Tipe DS 4a (dengan tutup)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(30)",
+      "description": "Saluran berbentuk U Tipe DS 5",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(30) v2",
+      "description": "Saluran berbentuk U Tipe DS 5 dengan Precast",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(31)",
+      "description": "Saluran berbentuk U Tipe DS 5a (dengan tutup)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(31) v2",
+      "description": "Saluran berbentuk U Tipe DS 5a (dengan tutup) Precast",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(32)",
+      "description": "Saluran berbentuk U Tipe DS 6",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(33)",
+      "description": "Saluran berbentuk U Tipe DS 6a (dengan tutup)",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.3.(34)",
+      "description": "Pasangan Batu tanpa Adukan (Aanstamping)",
+      "unit": "M3",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.4.(1)",
+      "description": "Bahan Drainase Porous atau Penyaring (Filter)",
+      "unit": "M3",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.4.(2)",
+      "description": "Pipa Berlubang Banyak (Perforated Pipe) untuk Pekerjaan Drainase Bawah Permukaan, diameter 4 inch",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.4.(3)",
+      "description": "Pipa Berlubang Banyak (Perforated Pipe) untuk Pekerjaan Drainase Bawah Permukaan, diameter 5 inch",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.4.(4)",
+      "description": "Pipa Berlubang Banyak (Perforated Pipe) untuk Pekerjaan Drainase Bawah Permukaan, diameter 6 inch",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "2.4.(5)",
+      "description": "Pipa Berlubang Banyak (Perforated Pipe) untuk Pekerjaan Drainase Bawah Permukaan, diameter 8 inch",
+      "unit": "M1",
+      "category": "DIVISI 2. DRAINASE"
+    },
+    {
+      "code": "3.1.(1)",
+      "description": "Galian Biasa",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(2)",
+      "description": "Galian Batu Lunak",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(3)",
+      "description": "Galian Batu",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(4)",
+      "description": "Galian Struktur dengan kedalaman 0 - 2 meter",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(5)",
+      "description": "Galian Struktur dengan kedalaman 2 - 4 meter",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(6)",
+      "description": "Galian Struktur dengan kedalaman 4 - 6 meter",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(7)",
+      "description": "Galian Perkerasan Beraspal dengan Cold Milling Machine",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(8)",
+      "description": "Galian Perkerasan Beraspal tanpa Cold Milling Machine",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(9)",
+      "description": "Galian Perkerasan berbutir",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.1.(10).",
+      "description": "Galian Perkerasan Beton",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(1a)",
+      "description": "Timbunan Biasa dari sumber galian",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(1b)",
+      "description": "Timbunan Biasa dari hasil galian",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(2a)",
+      "description": "Timbunan Pilihan dari sumber galian",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(2b)",
+      "description": "Timbunan Pilihan dari galian",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(3a)",
+      "description": "Timbunan Pilihan (diukur diatas bak truk)",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(3b)",
+      "description": "Timbunan Pilihan (diukur dengan rod & plate)",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.2.(4)",
+      "description": "Penimbunan Kembali Berbutir (Granular Backfill)",
+      "unit": "M3",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.3.(1)",
+      "description": "Penyiapan Badan Jalan",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.4.(1)",
+      "description": "Pembersihan dan Pengupasan Lahan",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.4.(2)",
+      "description": "Pemotongan Pohon Pilihan diameter 15 – 30 cm",
+      "unit": "buah",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.4.(3)",
+      "description": "Pemotongan Pohon Pilihan diameter > 30 – 50 cm",
+      "unit": "buah",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.4.(4)",
+      "description": "Pemotongan Pohon Pilihan diameter > 50 – 75 cm",
+      "unit": "buah",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.4.(5)",
+      "description": "Pemotongan Pohon Pilihan diameter > 75 cm",
+      "unit": "buah",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.5.(1)",
+      "description": "Geotekstil Filter untuk Drainage Bawah Permukaan (Kelas 2)",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.5.(2a)",
+      "description": "Geotekstil Separator Kelas 1",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.5.(2b)",
+      "description": "Geotekstil Separator Kelas 2",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.5.(2c)",
+      "description": "Geotekstil Separator Kelas 3",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "3.5.(3)",
+      "description": "Geotekstil Stabilisator (Kelas 1)",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.8.(1)",
+      "description": "Geomembran Jenis HDPE halus",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.11.(2)",
+      "description": "Geogrid Uniaxial Tipe 2",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.11.(6)",
+      "description": "Geogrid Biaxial Tipe 1",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.17.(1.a)",
+      "description": "Selimut Pengendali Erosi Tipe I",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.17.(1.b)",
+      "description": "Selimut Pengendali Erosi Tipe II",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.17.(2.b)",
+      "description": "Penanaman Biji Vegetasi dengen Teknik Taplok",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "SKh.1.3.23.(1)",
+      "description": "Geocell",
+      "unit": "M2",
+      "category": "DIVISI  3.  PEKERJAAN  TANAH DAN GEOSINTETIK"
+    },
+    {
+      "code": "4.1.(1)",
+      "description": "Pengabutan (Fog Seal) dengan Aspal Emulsi yang Mengikat Lambat (CSS-1h atau SS-1h)",
+      "unit": "Liter",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.1.(2)",
+      "description": "Pengabutan (Fog Seal) dengan Aspal Emulsi yang Mengikat Lebih Cepat (CQS-1h atau QS-1h)",
+      "unit": "Liter",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.1.(3)",
+      "description": "Pengabutan (Fog Seal) dengan Aspal Emulsi Modifikasi Polymer yang Mengikat Lebih Cepat (PMCQS-1h atau PMQS-1h)",
+      "unit": "Liter",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.2.(1)",
+      "description": "Laburan Aspal (Buras)",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.4.(1)",
+      "description": "Penghamparan lapis penutup bubur aspal emulsi, tipe 1, CSS-1h SS-1h",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.4.(2)",
+      "description": "Penghamparan lapis penutup bubur aspal emulsi, tipe 1, CQS-1h QS-1h",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.4.(3)",
+      "description": "Penghamparan lapis penutup bubur aspal emulsi, tipe 2, CSS-1h SS-1h",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.4.(4)",
+      "description": "Penghamparan lapis penutup bubur aspal emulsi, tipe 2, CQS-1h QS-1h",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.4.(5)",
+      "description": "Penghamparan lapis penutup bubur aspal emulsi, tipe 3, CSS-1h SS-1h",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.4.(6)",
+      "description": "Penghamparan lapis penutup bubur aspal emulsi, tipe 3, CQS-1h QS-1h",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.5.(1)",
+      "description": "Lapis Permukaan Mikro dengan aspal emulsi modifikasi  polymer  PMCQS-1h atau PMCQS-1h untuk Tipe 1",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.5.(2)",
+      "description": "Lapis Permukaan Mikro Perata dengan aspal emulsi modifikasi  polymer  PMCQS-1h atau PMCQS-1h untuk Tipe 1",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.5.(3)",
+      "description": "Lapis Permukaan Mikro dengan aspal emulsi modifikasi  polymer  PMCQS-1h atau PMCQS-1h untuk Tipe 2",
+      "unit": "M2",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.5.(4)",
+      "description": "Lapis Permukaan Mikro Perata dengan aspal emulsi modifikasi  polymer  PMCQS-1h atau PMCQS-1h untuk Tipe 2",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.6.(1)",
+      "description": "Latasir Kelas A (SS-A)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.6.(2)",
+      "description": "Latasir Kelas B (SS-B)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.6.(3)",
+      "description": "Latasir Kelas A Modifikasi (SS-A Mod)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.6.(4)",
+      "description": "Latasir Kelas B Modifikasi (SS-B Mod)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.7.(1)",
+      "description": "Lapis Tipis Beton Aspal - A (LTBA-A)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.7.(2)",
+      "description": "Lapis Tipis Beton Aspal - B Halus (LTBA-B Halus)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.7.(3)",
+      "description": "Lapis Tipis Beton Aspal - B Halus (LTBA-B Kasar)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.7.(4)",
+      "description": "Lapis Tipis Beton Aspal - B Halus Modifikasi Kasar (LTBA-B Mod Kasar)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.7.(5)",
+      "description": "Stone Matrix Asphalt Tipis (SMA Tipis)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.7.(6)",
+      "description": "Stone Matrix Asphalt Modifikasi Tipis (SMA Mod Tipis)",
+      "unit": "Ton",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.8.(1)",
+      "description": "Tambalan Dangkal dengan Beton Semen Cepat Mengeras untuk Pembbukaan Lalu Lintas Umur Beton < 24 jam",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.8.(2)",
+      "description": "Tambalan Dangkal dengan Beton Semen Cepat Mengeras untuk Pembukaan Lalu Lintas Umur Beton lebih dari 1 hari dan kurang dari 3 hari",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.8.(3)",
+      "description": "Tambahan Dangkal dengan Beton Semen Cepat Mengeras untuk Pembukaan Lalu Lintas Umur Beton lebih dari 3 hari dan kurang dari 7 hari",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.9.(1)",
+      "description": "Tambalan Penuh dengan Beton Semen Cepat Mengeras untuk Pembukaan Lalu Lintas Umur Beton < 24 jam",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.9.(2)",
+      "description": "Tambalan Penuh dengan Beton Semen Cepat Mengeras untuk Pembukaan Lalu Lintas Umur Beton lebih dari 1 hari dan kurang dari 3 hari",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.9.(3)",
+      "description": "Tambalan Penuh dengan Beton Semen Cepat Mengeras untuk Pembukaan Lalu Lintas Umur Beton lebih dari 3 hari dan kurang dari 7 hari",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.9.(3) v.2",
+      "description": "Tambalan Penuh dengan Beton Semen Cepat Mengeras untuk Pembukaan Lalu Lintas Umur Beton lebih dari 3 hari dan kurang dari 7 hari (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.9.(4)",
+      "description": "Pemasangan Ruji (Dowel)",
+      "unit": "Buah",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.9.(5)",
+      "description": "Pemasangan Sealant",
+      "unit": "M1",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.10.(1)",
+      "description": "Penambahan dan/atau Penggantian Ruji (Dowel) pada Perkerasan Beton Semen dengan Epoksi",
+      "unit": "Buah",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.11.(1)",
+      "description": "Penjahitan Melintang Tipe 1 (tabel pelat beton = 150 - 175 mm)",
+      "unit": "Buah",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.12.(1)",
+      "description": "Penutupan Sambungan Melintang (Termoplastik)",
+      "unit": "M1",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.12.(2)",
+      "description": "Penutupan Sambungan Melintang (Termoseting)",
+      "unit": "M1",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.12.(3)",
+      "description": "Penutupan Sambungan Melintang (Preformed)",
+      "unit": "M1",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.12.(7)",
+      "description": "Penutupan Retak (Termoplastik)",
+      "unit": "M1",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.13.(1)",
+      "description": "Pengeboran Lubang",
+      "unit": "Buah",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.13.(2)",
+      "description": "Material Injeksi Berbahan Dasar Semen",
+      "unit": "Kg",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "4.13.(3)",
+      "description": "Material Injeksi Berbahan Dasar Cellular",
+      "unit": "Kg",
+      "category": "DIVISI  4.  PEKERJAAN PREVENTIF"
+    },
+    {
+      "code": "5.1.(1)",
+      "description": "Lapis Pondasi Agregat Kelas A",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.1.(2)",
+      "description": "Lapis Pondasi Agregat Kelas B",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.1.(3a)",
+      "description": "Lapis Pondasi Agregat Kelas S",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.1.(3b)",
+      "description": "Lapis Pondasi Agregat Kelas C",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.1.(4)",
+      "description": "Lapis Drainase",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.2,(1)",
+      "description": "Lapis Permukaan Agregat Tanpa Penutup Aspal",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.2,(2)",
+      "description": "Lapis Pondasi Agregat Tanpa Penutup Aspal",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(1.a)",
+      "description": "Perkerasan Beton Semen",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(1.a) v.2",
+      "description": "Perkerasan Beton Semen (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(1.b)",
+      "description": "Perkerasan Beton Semen Fast Track 8 Jam",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(1.c)",
+      "description": "Perkerasan Beton Semen  Fast Track 24 Jam",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(1.d)",
+      "description": "Perkerasan Beton Semen Untuk Pembukaan Lalu lintas Umur Beton >3hari <7hari",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(2.a)",
+      "description": "Perkerasan Beton Semen dengan Anyaman Tulangan Tunggal",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(2.a) v.2",
+      "description": "Perkerasan Beton Semen dengan Anyaman Tulangan Tunggal (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(2.b)",
+      "description": "Perkerasan Beton Semen Fast Track 8 Jam dengan Anyaman Tulangan Tunggal",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(2.c)",
+      "description": "Perkerasan Beton Semen Fast Track 24 Jam dengan Anyaman Tulangan Tunggal",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(3)",
+      "description": "Lapis Pondasi bawah Beton Kurus",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.3.(3) v.2",
+      "description": "Lapis Pondasi bawah Beton Kurus (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.4.(1)",
+      "description": "Stabilisasi Tanah Dasar dengan Semen",
+      "unit": "Ton",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.4.(2)",
+      "description": "Lapis Fondasi Tanah Semen",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.5.(1)",
+      "description": "Lapis Fondasi Agregat Semen Kelas A (Cement Treated Base = CTB)",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "5.5.(2)",
+      "description": "Lapis Fondasi Agregat Semen Kelas B (Cement Treated Sub-Base = CTSB)",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "Skh-1.5.24.(1)",
+      "description": "Perkerasan Beton Semen fs' 3,5 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "Skh-1.5.24.(2)",
+      "description": "Perkerasan Beton Semen fs' 3,8 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "Skh-1.5.24.(3)",
+      "description": "Perkerasan Beton Semen fs' 4,5 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  5.  PERKERASAN  BERBUTIR"
+    },
+    {
+      "code": "6.1 (1)",
+      "description": "Lapis Resap Pengikat - Aspal Cair/Emulsi",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.1 (2a)",
+      "description": "Lapis Perekat - Aspal Cair/Emulsi",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.1 (2b)",
+      "description": "Lapis Perekat - Aspal Emulsi Modifikasi Polimer",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (1)",
+      "description": "Agregat Penutup BURTU",
+      "unit": "M2",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (2)",
+      "description": "Agregat Penutup BURDA",
+      "unit": "M2",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (3a)",
+      "description": "Bahan Aspal Keras untuk Pekerjaan Pelaburan",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (3b)",
+      "description": "Bahan Aspal Emulsi Modifikasi untuk Pekerjaan Pelaburan",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (4a)",
+      "description": "Aspal Cair untuk Precoated",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (4b)",
+      "description": "Aspal Emulsi untuk Precoated",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.2 (4c)",
+      "description": "Aspal Emulsi Modifikasi Polimer untuk Precoated",
+      "unit": "Liter",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3 (1a)",
+      "description": "Stone Matrix Asphalt Halus (SMA Halus)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3 (1b)",
+      "description": "Stone Matrix Asphalt Modifikasi Halus (SMA Mod Halus)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3 (2a)",
+      "description": "Stone Matrix Asphalt Kasar (SMA Kasar)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3 (2b)",
+      "description": "Stone Matrix Asphalt Modifikasi Kasar (SMA Mod Kasar)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(4a)",
+      "description": "Lataston Lapis Aus (HRS-WC)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3.(4b)",
+      "description": "Lataston Lapis Fondasi (HRS-Base)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(5a)",
+      "description": "Laston Lapis Aus (AC-WC)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(5b)",
+      "description": "Laston Lapis Aus Modifikasi (AC-WC Mod)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(6a)",
+      "description": "Laston Lapis Antara (AC-BC)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(6b)",
+      "description": "Laston Lapis Antara Modifikasi (AC-BC Mod)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(7a)",
+      "description": "Laston Lapis Fondasi (AC-Base)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3(7b)",
+      "description": "Laston Lapis Fondasi Modifikasi (AC-Base Mod)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.3.(8)",
+      "description": "Bahan anti pengelupasan",
+      "unit": "Kg",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.4.(1a)",
+      "description": "Laston Hangat Pen.60-70, WMAC Lapis Aus (WMAC-WC) dengan Zeolit",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.4.(1b)",
+      "description": "Laston Hangat Pen.60-70, WMAC Lapis Aus (WMAC-WC) dengan Wax",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.4.(2a)",
+      "description": "Laston Hangat Pen.60-70, WMAC Lapis Antara (WMAC-BC) dengan Zeolit",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.4.(2b)",
+      "description": "Laston Hangat Pen.60-70, WMAC Lapis Antara (WMAC-BC) dengan Wax",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.4.(3a)",
+      "description": "Laston Hangat Pen.60-70, WMAC Lapis Fondasi (WMAC-Base) dengan Zeolit",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.4.(3b)",
+      "description": "Laston Hangat Pen.60-70, WMAC Lapis Fondasi (WMAC-Base) dengan Wax",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.5.(1a)",
+      "description": "Laston Lapis Aus Asbuton Pracampur (AC-WC Asb Pracampur)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.5.(1b)",
+      "description": "Laston Lapis Aus Asbuton Butir (AC-WC Asb butir)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.5.(2a)",
+      "description": "Laston Lapis Antara Asbuton Pracampur (AC-BC Asb Pracampur)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.5.(2b)",
+      "description": "Laston Lapis Antara Asbuton Butir (AC-BC Asb Butir)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.5.(3b)",
+      "description": "Laston Lapis Fondasi Asbuton Butir (AC-Base Asb Butir)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.6.(1)",
+      "description": "CPHMA Kemasa Kantong",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.7.(1)",
+      "description": "Lapis Penetrasi Macadam",
+      "unit": "M3",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "6.7.(2)",
+      "description": "Lapis Penetrasi Macadam Asbuton",
+      "unit": "M3",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "SKh-1.6.25.(1)",
+      "description": "Campuran Beraspal Panas (Laston) Lapis Aus (AC-WCNR)",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "SKh-1.6.29.(1g)",
+      "description": "Laston Lapis Aus (AC-WC) Asbuton Murni",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "SKh-1.6.29.(1i)",
+      "description": "Laston Lapis Antara (AC-BC) Asbuton Murni",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "SKh-1.6.29.(1k)",
+      "description": "Laston Lapis Fondasi (AC-Base) Asbuton Murni",
+      "unit": "Ton",
+      "category": "DIVISI  6.  PERKERASAN  ASPAL"
+    },
+    {
+      "code": "7.1 (1)",
+      "description": "Beton struktur, fc’50 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (2)",
+      "description": "Beton struktur, fc’45 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (3)",
+      "description": "Beton struktur, fc’40 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (4)",
+      "description": "Beton struktur, fc’35 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (5a)",
+      "description": "Beton struktur, fc’30 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (5a) v.2",
+      "description": "Beton struktur, fc’30 Mpa (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (5b)",
+      "description": "Beton struktur bervolome besar, fc'30 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (5c)",
+      "description": "Beton struktur memadat sendiri, fc'30 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (6a)",
+      "description": "Beton struktur, fc’25 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (6b)",
+      "description": "Beton struktur bervolume besar, fc’25 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (6c)",
+      "description": "Beton struktur memadat sendiri, fc’25 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (7a)",
+      "description": "Beton strukur, fc’20 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (7a) v.2",
+      "description": "Beton strukur, fc’20 MPa (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (7a) v.3",
+      "description": "Beton strukur, fc’20 MPa (Variasi 3)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (7b)",
+      "description": "Beton strukur bervolume besar, fc’20 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (7c)",
+      "description": "Beton strukur memadat sendiri, fc’20 MPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (7d)",
+      "description": "Beton strukur, fc’20 MPa yang dilaksanakan di air",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (8)",
+      "description": "Beton , fc’15 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (9)",
+      "description": "Beton Siklop, fc’15 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (10)",
+      "description": "Beton, fc’10 Mpa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.1 (10) v.2",
+      "description": "Beton, fc’10 MPa (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1a)",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 16 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1b)",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 25 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1c).35",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 35 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1c).40",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 40 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1c).42",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 42.8 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1c).45",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 45 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (1c).50",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe I Bentang 50 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (2a)",
+      "description": "Pemasangan Unit Pracetak Gelagar Tipe I Bentang 16 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (2b)",
+      "description": "Pemasangan Unit Pracetak Gelagar Tipe I Bentang 25 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (2c).35",
+      "description": "Pemasangan Unit Pracetak Gelagar Tipe I Bentang 35 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (2c).42",
+      "description": "Pemasangan Unit Pracetak Gelagar Tipe I Bentang 42.8 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (3a)",
+      "description": "Penyediaan Unit Pracetak Gelagar Tipe U Bentang 16 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2 (4a)",
+      "description": "Pemasangan Unit Pracetak Gelagar Tipe U Bentang 16 meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(7)",
+      "description": "Baja Prategang",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(8)",
+      "description": "Penyediaan Pelat Berongga (Voided Slab) Pracetak bentang 5 Meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(9)",
+      "description": "Pemasangan Pelat Berongga (Voided Slab) Pracetak bentang 5 Meter",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(10)",
+      "description": "Beton Pratekan untuk Diafragma fc' 45 MPa termasuk Pekerjaan pasca-tarik (post-tension)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(10) v2",
+      "description": "Beton Pratekan untuk Diafragma fc' 45 MPa termasuk Pekerjaan pasca-tarik (post-tension) (Varias 2)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(12a)",
+      "description": "Penyediaan Panel Full Depth slab",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.2.(12b)",
+      "description": "Penmasangan Panel Full Depth slab",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (1)",
+      "description": "Baja Tulangan Polos-BjTP 280",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (2)",
+      "description": "Baja Tulangan Sirip BjTS 280",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (3)",
+      "description": "Baja Tulangan Sirip BjTS 420A",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (4)",
+      "description": "Baja Tulangan Sirip BjTS 420B",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (5)",
+      "description": "Baja Tulangan Sirip BjTS 520",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (6)",
+      "description": "Baja Tulangan Sirip BjTS 550",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (7)",
+      "description": "Baja Tulangan Sirip BjTS 700",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.3 (8)",
+      "description": "Anyaman Kawat Yang Dilas (Welded Wire Mesh)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (1a)",
+      "description": "Penyediaan Baja Struktur Grade 250 (Kuat Leleh 250 MPa)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (1b)",
+      "description": "Penyediaan Baja Struktur Grade 345 (Kuat Leleh 345 MPa)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (1c)",
+      "description": "Penyediaan Baja Struktur Grade 485 (Kuat Leleh 485 MPa)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (1d)",
+      "description": "Penyediaan Baja Struktur Grade 690 (Kuat Leleh 690 Mpa Untuk Tebal Pelat < 2,5)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (1e)",
+      "description": "Penyediaan Baja Struktur Grade 690 (Kuat Leleh 620 Mpa Untuk Tebal Pelat < 2,5-4,0 inch)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (2)",
+      "description": "Pemasangan Baja Struktur",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (2) v2",
+      "description": "Pemasangan Baja Struktur (dengan pengelasan)",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (3)",
+      "description": "Penyediaan Struktur Jembatan Rangka Baja Standar …… m",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (3).40",
+      "description": "Penyediaan Struktur Jembatan Rangka Baja Standar 40 m",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (3).80",
+      "description": "Penyediaan Struktur Jembatan Rangka Baja Standar 80 m",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (4)",
+      "description": "Pemasangan Jembatan Rangka Baja Standar Panjang ….. M",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (4).80",
+      "description": "Pemasangan Jembatan Rangka Baja Standar Panjang 80 M",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (5a)",
+      "description": "Pemasangan Jembatan Rangka Baja yang disediakan Pengguna Jasa",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.4 (5b)",
+      "description": "Pengangkutan Bahan Jembatan yang disediakan Pengguna Jasa",
+      "unit": "Kg",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(1)",
+      "description": "Tiang bor sekan primer diameter 80 cm (fc' > 15 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(2)",
+      "description": "Tiang bor sekan sekunder diameter 80 cm (fc' > 30 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(3)",
+      "description": "Tiang bor sekan primer  diameter 100 cm (fc' > 15MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(4)",
+      "description": "Tiang bor sekan sekunder diameter 100 cm (fc' > 30 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(5)",
+      "description": "Tiang bor sekan primer diameter 120 cm (fc' > 15 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(6)",
+      "description": "Tiang bor sekan sekunder diameter 120 cm (fc' > 30 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(7)",
+      "description": "Tiang bor sekan primer diameter 150 cm (fc' > 15 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.5.(8)",
+      "description": "Tiang bor sekan sekunder diameter 150 cm (fc' > 30 MPa)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (1)",
+      "description": "Fondasi Cerucuk, Penyediaan dan Pemancangan",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (1).v2",
+      "description": "Fondasi Cerucuk, Penyediaan dan Pemancangan (dengan Excavator)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (2)",
+      "description": "Dinding Turap Kayu Tanpa Pengawetan, Penyediaan dan Pemancangan",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(3)",
+      "description": "Dinding Turap Kayu Dengan Pengawetan, Penyediaan dan Pemancangan",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(4)",
+      "description": "Dinding Turap Baja, Penyediaan dan Pemancangan",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(5)",
+      "description": "Dinding Turap Beton, Penyediaan dan Pemancangan",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(6)",
+      "description": "Penyediaan Tiang Pancang Kayu Tanpa Pengawetan Ukuran…… mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(7)",
+      "description": "Penyediaan Tiang Pancang Kayu Dengan Pengawetan Ukuran…… mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (8a)",
+      "description": "Penyediaan Tiang Pancang Baja Diameter 500 mm tebal 10 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (8c).800.t16",
+      "description": "Penyediaan Tiang Pancang Baja Diameter 800 mm tebal 16 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (8a).1000.t12",
+      "description": "Penyediaan Tiang Pancang Baja Diameter 1000 mm tebal 12 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(9a)",
+      "description": "Penyediaan Tiang Pancang Baja H Beam Ukuran 300 mm x 300 mm x 10 mm x 15 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(10a)",
+      "description": "Penyediaan Tiang Pancang Beton Bertulang Pracetak ukuran 350 mm x 350 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(10b).250",
+      "description": "Penyediaan Tiang Pancang Beton Bertulang Pracetak ukuran 250 mm x 250 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(11a)",
+      "description": "Penyediaan Tiang Pancang Beton Pratekan Pracetak ukuran 400 mm x 400  mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(12a)",
+      "description": "Penyediaan Tiang Pancang Beton Pratekan Pracetak diameter 450 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(12b).400",
+      "description": "Penyediaan Tiang Pancang Beton Pratekan Pracetak diameter 400 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(12b).500",
+      "description": "Penyediaan Tiang Pancang Beton Pratekan Pracetak diameter 500 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(12b).600",
+      "description": "Penyediaan Tiang Pancang Beton Pratekan Pracetak diameter 600 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(13)",
+      "description": "Pemancangan Tiang Pancang Kayu Ukuran ….. Mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(14a)",
+      "description": "Pemancangan Tiang Pancang Baja Diameter 500 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(14b).800",
+      "description": "Pemancangan Tiang Pancang Baja Diameter 800 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(14b).1000",
+      "description": "Pemancangan Tiang Pancang Baja Diameter 1000 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(15a)",
+      "description": "Pemancangan Tiang Pancang Baja H beam Ukuran 300 mm x 300 mm x 10 mm x 15 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(16a)",
+      "description": "Pemancangan Tiang Pancang Beton Bertulang Pracetak ukuran 350 mm x 350 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(16b).250",
+      "description": "Pemancangan Tiang Pancang Beton Bertulang Pracetak ukuran 250 mm x 250 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(17a)",
+      "description": "Pemancangan Tiang Pancang Beton Pratekan Pracetak ukuran 400 mm x 400 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(18a)",
+      "description": "Pemancangan Tiang Pancang Beton Pratekan Pracetak diameter 450 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(18b).400",
+      "description": "Pemancangan Tiang Pancang Beton Pratekan Pracetak diameter 400 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(18b).500",
+      "description": "Pemancangan Tiang Pancang Beton Pratekan Pracetak diameter 500 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(18b).600",
+      "description": "Pemancangan Tiang Pancang Beton Pratekan Pracetak diameter 600 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(19a)",
+      "description": "Tiang Bor Beton, diameter 800 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(19a).v2",
+      "description": "Tiang Bor Beton, diameter 800 mm (Variasi 2)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(19b).400",
+      "description": "Tiang Bor Beton, diameter 400 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(19b).500",
+      "description": "Tiang Bor Beton, diameter 500 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(19b).600",
+      "description": "Tiang Bor Beton, diameter 600 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(19b).1000",
+      "description": "Tiang Bor Beton, diameter 1000 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(20)",
+      "description": "Tambahan Biaya untuk Nomor Mata Pembayaran 7.6.(13)s/d 7.6.(18) bila Tiang Pancang dikerjakan di tempat Yang Berair",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6.(21)",
+      "description": "Tambahan Biaya untuk Nomor Mata Pembayaran 7.6.(19) Bila Tiang Bor Beton dikerjakan ditempat Yang Berair",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (27a).600",
+      "description": "Pengujian Crosshole Sonic Logging (CSL) pada Tiang Bor Beton diameter 600 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (27a).800",
+      "description": "Pengujian Crosshole Sonic Logging (CSL) pada Tiang Bor Beton diameter 800 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (27a).1200",
+      "description": "Pengujian Crosshole Sonic Logging (CSL) pada Tiang Bor Beton diameter 1200 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (27b).500",
+      "description": "Pengujian Pembebanan Dinamis Jenis PDLT (Pile Dynamic Load Testing) pada Tiang ukuran / diameter 500 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (27b).800",
+      "description": "Pengujian Pembebanan Dinamis Jenis PDLT (Pile Dynamic Load Testing) pada Tiang ukuran / diameter 800 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (27b).1200",
+      "description": "Pengujian Pembebanan Dinamis Jenis PDLT (Pile Dynamic Load Testing) pada Tiang ukuran / diameter 1200 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.6 (28)",
+      "description": "Pengujian Keutuhan Tiang dengan Pile Integrated Test (PIT)",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.7.(1)",
+      "description": "Dinding Sumuran Silinder terpasang, Diameter …………….",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.9.(1)",
+      "description": "Pasangan Batu",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.9.(1).v2",
+      "description": "Pasangan Batu (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.10.(1)",
+      "description": "Pasangan Batu Kosong yang Diisi Adukan",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.10.(2)",
+      "description": "Pasangan Batu Kosong",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.10.(3a)",
+      "description": "Bronjong dengan kawat yang dilapisi Galvanis",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.10.(3b)",
+      "description": "Bronjong dengan kawat yang dilapisi PVC",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.10.(4)",
+      "description": "Tambahan Biaya  untuk Anyaman Penulangan Tanah dengan Kawat yang Dilapisi PVC",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(1a)",
+      "description": "Sambungan Siar Muai Tipe Asphaltic Plug, Fixed",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(1b)",
+      "description": "Sabungan Siar Muai Tipe Asphaltic Plug, Movable",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(2)",
+      "description": "Sambungan Siar Muai Tipe Silicone Seal",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(3)",
+      "description": "Sambungan Siar Muai Tipe Strip seal",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(4)",
+      "description": "Sambungan Siar Muai Tipe Compression Seal",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(5)",
+      "description": "Sambungan Siar Muai Expansion Joint Tipe Modular",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(6)",
+      "description": "Sambungan Siar Muai Expansion Joint Tipe Finger Plate",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(7)",
+      "description": "Sambungan Siar Muai Expansion Tipe Karet dengan Lebar Celah …….. Cm",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(8)",
+      "description": "Joint Filler untuk Sambungan Konstruksi",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.11.(9)",
+      "description": "Sambungan Siar Muai Tipe Modular",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(1a)",
+      "description": "Landasan Logam Tipe Fixed",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(1b)",
+      "description": "Landasan Logam Tipe Moveable",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(2).250",
+      "description": "Landasan Elastomerik Karet Alam Berlapis Baja Ukuran 250 mm x 250 mm x 40 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(2).350",
+      "description": "Landasan Elastomerik Karet Alam Berlapis Baja Ukuran 350 mm x 350 mm x 30 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(2).400",
+      "description": "Landasan Elastomerik Karet Alam Berlapis Baja Ukuran 400 mm x 400 mm x 80 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(2).450",
+      "description": "Landasan Elastomerik Karet Alam Berlapis Baja Ukuran 450 mm x 400 mm x 45 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(2).600",
+      "description": "Landasan Elastomerik Karet Alam Berlapis Baja Ukuran 600 mm x 600 mm x 80 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(3).200",
+      "description": "Landasan Elastomerik Karet Sintetis Berlapis Baja Ukuran 200 mm x 300 mm x 40 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(3).450.45",
+      "description": "Landasan Elastomerik Karet Sintetis Berlapis Baja Ukuran 450 mm x 400 mm x 45 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(3).450.73",
+      "description": "Landasan Elastomerik Karet Sintetis Berlapis Baja Ukuran 450 mm x 400 mm x 73 mm",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(4)",
+      "description": "Landasan karet Strip",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(5)",
+      "description": "Landasan Tipe Logam Berongga (Pot Bearing)",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.12.(6)",
+      "description": "Landasan Tipe Logam Jenis Spherical",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.13.(1)",
+      "description": "Sandaran (Railing)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.14.(1)",
+      "description": "Papan Nama Jembatan",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(1)",
+      "description": "Pembongkaran Pasangan Batu",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(2)",
+      "description": "Pembongkaran Beton",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(3)",
+      "description": "Pembongkaran Beton Pratekan",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(4)",
+      "description": "Pembongkaran Bangunan Gedung",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(5)",
+      "description": "Pembongkaran  Rangka Baja",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(6)",
+      "description": "Pembongkaran Balok Baja (Steel Stingers)",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(7)",
+      "description": "Pembongkaran Lantai Jembatan Kayu",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.15.(8)",
+      "description": "Pembongkaran Jembatan Kayu",
+      "unit": "M2",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.16.(1)",
+      "description": "Dreck drain",
+      "unit": "Buah",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.16.(2a)",
+      "description": "Pipa Drainase Baja diameter 150 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.16.(3a)",
+      "description": "Pipa Drainase PVC diameter 150 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "7.16.(4)",
+      "description": "Pipa Penyalur PVC",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "SKh-3.7.18 (a)",
+      "description": "Beton semprot dengan perkuatan Wiremesh, tebal = 10 cm",
+      "unit": "Buah Jembatan",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "SKh-2.7.19.(a)",
+      "description": "Soil Nailing dengan nail bar BJTS 420A (grade 60) Diameter = 32 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "SKh-2.7.19.(c)",
+      "description": "Soil Nailing dengan nail bar grade 150 Diameter = 32 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "SKh-2.7.21.(1)",
+      "description": "Material Ringan Mortar-Busa UCS 800 kPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "SKh-2.7.21.(2)",
+      "description": "Material Ringan Mortar-Busa UCS 2000 kPa",
+      "unit": "M3",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "SKh-1.7.57.(1)",
+      "description": "Pipa Penyalur HDPE diameter 150 mm",
+      "unit": "M1",
+      "category": "DIVISI  7.  STRUKTUR"
+    },
+    {
+      "code": "8.1 (1)",
+      "description": "Cairan Perekat (Epoksi resin)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.1 (1).v2",
+      "description": "Cairan Perekat (Epoksi resin) (Variasi 2)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.1 (2)",
+      "description": "Bahan Penutup (Sealant)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.1 (2).v2",
+      "description": "Bahan Penutup (Sealant) (Variasi 2)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.1 (3a)",
+      "description": "Tabung Penyuntik, penyediaan",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.1 (3b)",
+      "description": "Tabung Penyuntik, penggunan",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.2.(1)",
+      "description": "Penambahan (Patching)",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.2.(1).v2",
+      "description": "Penambahan (Patching) (Variasi 2)",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.2.(2)",
+      "description": "Perbaikan Dengan Cara Graut",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.3.(1a)",
+      "description": "Pengecetan protektif pada elemen struktur beton, tebal 200µm",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.3.(2a)",
+      "description": "Pengecetan dekoratif pada elemen struktur beton, tebal : 100 µm",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(1)",
+      "description": "Perkuatan struktur dengan bahan FRP jenis e- glass per lapis pada daerah kering",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(2)",
+      "description": "Perkuatan Struktur dengan bahan FRP jenis e- glass-per lapis pada daerah basah",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(3)",
+      "description": "Perkuatan Struktur dengan bahan FRP Laminasi jenis glass pada daerah kering",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(4)",
+      "description": "Perkuatan Struktur dengan bahan FRP Jenis carbon per lapis pada daerah kering",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(5)",
+      "description": "Perkuatan struktur dengan bahan FRP jenis carbon per lapis pada daerah basah",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(7)",
+      "description": "Pemasangan Perkuatan Pelat Lantai dengan Steel Plate Bonding",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.4.(8)",
+      "description": "Perkuatan external stressing jembatan beton bentang 30 m",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(1a)",
+      "description": "Penggantian Baut Mutu Tinggi A325 Tipe 1 diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(2a)",
+      "description": "Penggantian Baut Mutu Tinggi A490 Tipe 1 diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(3a)",
+      "description": "Penggantian Baut Biasa Grade A diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(4a)",
+      "description": "Penggantian Baut Biasa Grade B diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(5a)",
+      "description": "Penggantian Baut Biasa Grade C untuk anchor bolts diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(6a)",
+      "description": "Pengencangan Baut Biasa Grade A diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.5.(7a)",
+      "description": "Pengencangan Baut Biasa Grade B diameter M25",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.6.(1a)",
+      "description": "Pengelasan SMAW pada baja Grade 30",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.6.(2a)",
+      "description": "Pengelasan SAW pada baja Grade 30",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.6.(3a)",
+      "description": "Pengelasan GMAW pada baja Grade 30",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.6.(4a)",
+      "description": "Pengelasan FCAW pada baja Grade 30",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.7.(1a)",
+      "description": "Pengecatan struktur baja pada daerah kering tebal 80 mikron",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.7.(1b)",
+      "description": "Pengecatan struktur baja pada daerah kering tebal 240 mikron",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.7.(2a)",
+      "description": "Pengecatan struktur baja pada daerah basah/pasang surut 360 mikron",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.7.(2b)",
+      "description": "Pengecatan struktur baja pada daerah basah/pasang surut 500 mikron",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.7.(3a)",
+      "description": "Pengecatan pada elemen sandaran dan/atau pagar pengaman (gruard rail) 80 mikron",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.7.(3b)",
+      "description": "Pengecatan pada elemen sandaran dan/atau pagar pengaman (gruard rail) 160 mikron",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.8.(1)",
+      "description": "Perbaikan Elemen Struktur Baja dengan Cara Pelurusan",
+      "unit": "LS",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.8.(2)",
+      "description": "Penggantian Elemen Struktur Baja Grade 250 (Kuat Leleh 250 Mpa)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.8.(3)",
+      "description": "Penggantian Elemen Struktur Baja Grade 345 (Kuat Leleh 345 Mpa)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.8.(4)",
+      "description": "Penggantian Elemen Struktur Baja Grade 485 (Kuat Leleh 485 Mpa)",
+      "unit": "Kg",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.9.(1)",
+      "description": "Pekuatan dengan external stressing untuk jembatan baja dengan bentang 30 m",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(1)",
+      "description": "Penggantian Lantai Kayu",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(2)",
+      "description": "Perbaikan Lantai Kayu",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(3)",
+      "description": "Penggantian Gelegar Kayu",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(4)",
+      "description": "Perbaikan Gelegar Kayu",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(5)",
+      "description": "Penggantian Balok Kepala Tiang",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(6)",
+      "description": "Perbaikan Papan Lajur Kendaraan",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(7)",
+      "description": "Pengantian Papan Lajur Kendaraan",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(8)",
+      "description": "Perbaikan dan/atau Penggantian kerb kayu",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(9)",
+      "description": "Perbaikan dan/atau Penggantian sandaran Kayu",
+      "unit": "M3",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(10)",
+      "description": "Pengecatan/Perlindungan Gelegar",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(11)",
+      "description": "Pengecatan/Perlindungan Lantai Kayu",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(12)",
+      "description": "Pengecatan/Perlindungan Tiang Pancang Kayu",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(13)",
+      "description": "Pengecatan/Perlindungan Balok Kepala Kayu",
+      "unit": "M2",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.10.(14)",
+      "description": "Pengecatan/Perlindungan Sandaran",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(1)",
+      "description": "Penggantian dan Perbaikan Sambungan Siar Muai Tipe Asphaltic Plug",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(2)",
+      "description": "Penggantian dan Perbaikan Sambungan Siar Muai Tipe Silicone Seal",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(3)",
+      "description": "Penggantian Karet Pengisi Sambungan Siar Muai Tipe Strip Seal",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(4)",
+      "description": "Penggantian Karet Pengisi Sambungan Siar Muai Tipe Compression Seal",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(5)",
+      "description": "Penggantian Sambungan Siar Muai Tipe Modular, lebar 200 mm",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(6)",
+      "description": "Penggantian Sambungan Siar Muai Tipe Finger Plate, lebar 200 mm",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.11.(7)",
+      "description": "Penggantian Sambungan Siar Muai Tipe Dobel Siku dengan Penutup Karet Neoprene",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(2)",
+      "description": "Penggantian Landasan Elastomer Karet Alam Berlapis Baja Ukuruan 500 mm x 500 mm x 100 mm",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(2).v2",
+      "description": "Penggantian Landasan Elastomer Karet Alam Berlapis Baja Ukuruan 800 mm x 800 mm x 600 mm",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(3)",
+      "description": "Penggantian Landasan Elastomer Sintetis Berlapis Baja Ukuran 500 mm x 500 mm x 100 mm",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(4)",
+      "description": "Penggantian Landasan Karet Strip tebal 100 mm",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(5)",
+      "description": "Penggantian Landasan Logam Berongga (Pot Bearing)",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(6)",
+      "description": "Penggantian Landasan Logam Jenis Spherical",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.12.(7)",
+      "description": "Penggantian Stopper Lateral dan Horisontal",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.13.(1)",
+      "description": "Perbaikan Sandaran Baja",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.13.(2)",
+      "description": "Penggantian Sandaran Baja",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.13.(3)",
+      "description": "Perbaikan Tembok Sandaran Beton",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.13.(4)",
+      "description": "Perbaikan Sandaran Beton-Baja",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.13.(5)",
+      "description": "Penggantian Sandaran Beton-Baja",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.14.(1)",
+      "description": "Penggantian Deck Drain",
+      "unit": "Buah",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.14.(2)",
+      "description": "Penggantian Pipa Penyalur, Pipa Cucuran PVC diamter 150 mm",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "8.14.(3)",
+      "description": "Penggantian Pipa Penyalur, Pipa Cucuran Baja diamter 150 mm",
+      "unit": "M1",
+      "category": "DIVISI  8.  REHABILITASI JEMBATAN"
+    },
+    {
+      "code": "9.1.(1)",
+      "description": "Mandor",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(2)",
+      "description": "Pekerja Biasa",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(3)",
+      "description": "Tukang Kayu, Tukang Batu, dsb",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(4) a",
+      "description": "Dump Truck, kapasitas 3 - 4 m³",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(4) b",
+      "description": "Dump Truck, kapasitas 6 - 8 m³",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(5) a",
+      "description": "Truk Bak Datar 3 - 4 ton",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(5) b",
+      "description": "Truk Bak Datar 6 - 8 ton",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(6)",
+      "description": "Truk Tangki 3000 - 4500 Liter",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(7)",
+      "description": "Bulldozer 100 - 150 PK",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(8)",
+      "description": "Motor Grader min 100 PK",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(9)",
+      "description": "Loader Roda Karet 1.0 - 1.6 M3",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(10)",
+      "description": "Loader Roda Berantai 75 - 100 PK",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(11)",
+      "description": "Alat Penggali (Excavator) 80 - 140 PK",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(12)",
+      "description": "Crane 10 - 15 Ton",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(13)",
+      "description": "Penggilas Roda Besi 6 - 9 Ton",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(14)",
+      "description": "Penggilas Bervibrasi  5 - 8  Ton",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(15)",
+      "description": "Pemadat Bervibrasi 1.5 - 3.0 PK",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(16)",
+      "description": "Penggilas Roda Karet 8 - 10 Ton",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(17)",
+      "description": "Kompresor 4000 - 6500 Ltr/mnt",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(18)",
+      "description": "Mesin Pengaduk beton (Molen) 0.3 - 0.6 M3",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(19)",
+      "description": "Pompa Air 70 - 100 mm",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.1.(20)",
+      "description": "Jack Hammer",
+      "unit": "Jam",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(1)",
+      "description": "Marka Jalan Termoplastik",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(1).v2",
+      "description": "Marka Jalan Termoplastik (Variasi 2)",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(2)",
+      "description": "Marka Jalan Bukan Termoplastik",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(3a)",
+      "description": "Rambu Jalan Tunggal dengan Permukaan Pemantul Engineering Grade",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(3b)",
+      "description": "Rambu Jalan Ganda dengan Permukaan Pemantul Engineering Grade",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(4a)",
+      "description": "Rambu Jalan Tunggal dengan Pemantul High Intensity Grade",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(4b)",
+      "description": "Rambu Jalan Ganda dengan Pemantul High Intensity Grade",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(5)",
+      "description": "Patok Pengarah",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(5a)",
+      "description": "Patok Pengarah (PE/Plastic)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(6a)",
+      "description": "Patok Kilometer",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(6b)",
+      "description": "Patok Hektometer",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(7)",
+      "description": "Rel Pengaman",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(8)",
+      "description": "Paku Jalan Tidak Memantul",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(9a)",
+      "description": "Paku Jalan Memantul Bujur Sangkar",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(9b)",
+      "description": "Paku Jalan Memantul Persegi panjang",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(9c)",
+      "description": "Paku Jalan Memantul Bulat",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2(10a)",
+      "description": "Kerb Pracetak Jenis 1 (Peninggi/Mountable)",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10b)",
+      "description": "Kereb Pracetak Jenis 2 (Penghalang/Barrier)",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10c)",
+      "description": "Kereb Pracetak Jenis 3 (Kereb Berparit/Gutter)",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10d)",
+      "description": "Kereb Pracetak Jenis 4 (Penghalang Berparit / Barrier Gutter) t = 20 cm",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10e)",
+      "description": "Kereb Pracetak Jenis 5 (Penghalang Berparit / Barrier Gutter) t = 30 cm",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10f)",
+      "description": "Kereb Pracetak Jenis 6 (Kereb dengan Bukaan)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10g)",
+      "description": "Kereb Pracetak Jenis 7 (Kereb pada Pelandaian Trotoar)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10h)",
+      "description": "Kereb Pracetak Jenis 8 (Kereb pada Pelandaian Trotoar)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(10i)",
+      "description": "Kereb Pracetak Jenis 9 (Kereb pada Pelandaian Trotoar)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(11)",
+      "description": "Kereb yang digunakan kembali",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(12a)",
+      "description": "Perkerasan Blok Beton pada Trotoar dan Median",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(12b)",
+      "description": "Pembengkokan Ubin Eksisting atau Perkerasan Blok Beton Eksisting pada Trotoar atau Median",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(13)",
+      "description": "Beton Pemisah Jalur (Concrete Barrier)",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(14)",
+      "description": "Unit Lampu Penerangan Jalan Lengan Tunggal, Tipe LED",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(15)",
+      "description": "Unit Lampu Penerangan Jalan Lengan Ganda, Tipe LED",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(16)",
+      "description": "Unit Lampu Penerangan Jalan Lengan Tunggal, Tipe Merkuri 250 Watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(17)",
+      "description": "Unit Lampu Penerangan Jalan Lengan Ganda, Tipe Merkuri 250 Watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(18)",
+      "description": "Unit Lampu Penerangan Jalan Lengan Tunggal, Tipe Merkuri 400 Watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(19)",
+      "description": "Unit Lampu Penerangan Jalan Lengan Ganda, Tipe Merkuri 400 Watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(20)",
+      "description": "Pagar Pemisah Pedestrian Carbon Steel",
+      "unit": "M'",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(21)",
+      "description": "Pagar Pemisah Pedestrian Galvanised",
+      "unit": "M'",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(22a)",
+      "description": "Stabilisasi dengan Tanaman",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(22b)",
+      "description": "Stabilisasi dengan Tanaman VS",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(23)",
+      "description": "Semak / Perdu",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(24)",
+      "description": "Pohon Jenis",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "9.2.(24).a",
+      "description": "Pohon Jenis Mahoni",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "Skh-1.9.7.(1)",
+      "description": "Unit Lampu Penerangan Jalan Tenaga Surya (PJU-TS) Lengan Tunggal",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.3(10)",
+      "description": "Unit Drain Grate Besi Cor (cast iron)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-3.9.3(11b)",
+      "description": "Unit Lampu Sorot Outdoor Tipe LED Waterproof 100 watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3.(2b)",
+      "description": "Perkerasan pada Trotoar dan Median Tipe Guiding Block Go Difabel Stainless Steel Landasan Andesit Bintik Bakar Ukuran 30 cm x 30 cm Tebal 3 cm",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(1b)",
+      "description": "Perkerasan pada Trotoar dan Median Tipe Andesit Bintik Bakar Ukuran 30 x 30 cm tebal 3 cm",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(1c))",
+      "description": "Perkerasan pada Trotoar dan Median Tipe Andesit Bintik Bakar Ukuran 30x30 cm tebal 5 cm",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3( 3d)",
+      "description": "Unit Manhole cover untuk Drainase Kotak Ukuran ..100 x 100 cm",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(4a))",
+      "description": "Unit Kisi Pohon (Tree grate) Diameter 60cm",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(6a))",
+      "description": "Unit Tempat Sampah yang digalvanisasi (Galvanized)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(7a)",
+      "description": "Unit Bangku/Kursi beton",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(10b)",
+      "description": "Unit Lampu Penerangan Pedestrian Tipe LED 18 watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(10f))",
+      "description": "Unit Lampu Penerangan Jalan gandeng Pedestrian Lengan Ganda Tipe LED 100 Watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(11c)",
+      "description": "Unit Lampu Outdoor Tipe Strip LED 8 watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(11d)",
+      "description": "Unit Lampu Lantai (Uplight) LED Tanam Waterprroof 13 Watt",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(12a)",
+      "description": "Pengaman Trotoar (Bollard Jalan) Dengan Lampu",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(15c))",
+      "description": "Ornamen Jembatan Pelengkung",
+      "unit": "M2",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(16a)",
+      "description": "Papan Petunjuk Arah Lalu Lintas",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(16b)",
+      "description": "Papan Informasi Digital (Digital Signage)",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(25)",
+      "description": "Pagar Dekoratif Tinggi 2 meter",
+      "unit": "M'",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-6.9.3(28)",
+      "description": "Tangga Inspeksi",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(13)",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 50 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(23)",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 70 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(24)",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 95 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(25)",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 2,5 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(28) a",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 4 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(28) b",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 6 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(28) c",
+      "description": "Kabel Elektrikal Tipe NYFGBY Ukuran 4 × 16 mm²",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(48)",
+      "description": "Cable Ladder (Tray 200 x 100 mm)",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(49) b",
+      "description": "Kabel Penerangan Tipe NYM Ukuran 3 × 2,5 mm",
+      "unit": "M1",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "SKh-1.9.20.(74)",
+      "description": "Slotted Drainage",
+      "unit": "Buah",
+      "category": "DIVISI  9.  PEKERJAAN  HARIAN & PEKERJAAN LAIN-LAIN"
+    },
+    {
+      "code": "10.1.(1)",
+      "description": "Galian pada Saluran Air atau Lereng untuk Pemeliharaan",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(2)",
+      "description": "Timbunan Pilihan pada Lereng Tepi Saluran untuk Pemeliharaan",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(3)",
+      "description": "Pebaikan Pasangan Batu dengan Mortar",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(4)",
+      "description": "Perbaikan Lapis Fondasi Agregat Kelas A",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(5)",
+      "description": "Perbaikan Lapis Fondasi Agregat Kelas B",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(6)",
+      "description": "Perbaikan Lapis Fondasi Agregat Kelas S",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(7)",
+      "description": "Perbaikan dan Perataan Permukaan JalanTanah",
+      "unit": "M2",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(8)",
+      "description": "Perbaikan dan Perataan Permukan Perkerasan Berbutir Tanpa Penutup Aspal",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(9)",
+      "description": "Perbaikan Campuran Aspal Panas",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(9a)",
+      "description": "Perbaikan Campuran Aspal Panas (dengan HRS)",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(10)",
+      "description": "Perbaikan Campuran Aspal Panas dengan Asbuton",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(10.a)",
+      "description": "Perbaikan Campuran Aspal Panas dengan Asbuton B 50/30",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(11)",
+      "description": "Perbaikan Asbuton Campuran Panas Hampar Dingin",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(12)",
+      "description": "Perbaikan Lapis Penetrasi Macadam tanpa atau dengan Asbuton",
+      "unit": "Liter",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(13)",
+      "description": "Residu Bitumen untuk Pemeliharaan",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(14)",
+      "description": "Perbaikan Perkerasan Beton Semen",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(15)",
+      "description": "Perbaikan Lapis Fondasi Bawah Beton Kurus",
+      "unit": "M3",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(16)",
+      "description": "Perbaikan Pasangan Batu",
+      "unit": "M2",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(17)",
+      "description": "Pengecatan Kereb pada Trotoar atau Median",
+      "unit": "M1",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(18)",
+      "description": "Perbaikan Rel Pengaman",
+      "unit": "M1",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(19.a)",
+      "description": "Pengecatan Patok",
+      "unit": "Buah",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(19.b)",
+      "description": "Pembersihan Patok",
+      "unit": "Buah",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(20.a)",
+      "description": "Pengecatan  Rambu",
+      "unit": "Buah",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(20)",
+      "description": "Pembersihan Rambu",
+      "unit": "Buah",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(21)",
+      "description": "Pembersihan Drainase",
+      "unit": "Buah",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    },
+    {
+      "code": "10.1.(22)",
+      "description": "Pengendalian Tanaman",
+      "unit": "M2",
+      "category": "DIVISI  10.  PEKERJAAN PEMELIHARAAN KINERJA"
+    }
+  ],
+  "prices": []
+}
