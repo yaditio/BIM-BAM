@@ -1,0 +1,356 @@
+{
+  "classifications": [
+    {
+      "code": "1.1.4.2",
+      "description": "Pasangan 1 m’ Bouwplank",
+      "unit": "m'",
+      "category": "Pekerjaan Persiapan",
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "1.3.2.2",
+      "description": "Timbunan dan Pemadatan Sirtu secara manual",
+      "unit": "m3",
+      "category": "Pekerjaan Tanah",
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "2.1.2.6",
+      "description": "Pemasangan 1 m2 Rangka Atap Sirap, Kayu Kelas II",
+      "unit": "m2",
+      "category": "Pekerjaan Struktur",
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "2.2.1.9.1",
+      "description": "Menggenangi 1 m2 permukaan beton dengan air selama 4 hari",
+      "unit": "m2",
+      "category": "Pekerjaan Struktur",
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "2.7.4",
+      "description": "Pemasangan 1 m2 Finishing Siar Pasangan Batu Kali, Campuran 1SP : 2PP",
+      "unit": "m2",
+      "category": "Pekerjaan Struktur",
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    }
+  ],
+  "resources": [
+    {
+      "id": "L.01",
+      "category": "Labor",
+      "description": "Pekerja",
+      "unit": "OH"
+    },
+    {
+      "id": "L.02.k",
+      "category": "Labor",
+      "description": "Tukang Kayu",
+      "unit": "OH"
+    },
+    {
+      "id": "L.02.b",
+      "category": "Labor",
+      "description": "Tukang Batu/Tembok",
+      "unit": "OH"
+    },
+    {
+      "id": "L.03",
+      "category": "Labor",
+      "description": "Kepala Tukang",
+      "unit": "OH"
+    },
+    {
+      "id": "L.04",
+      "category": "Labor",
+      "description": "Mandor",
+      "unit": "OH"
+    },
+    {
+      "id": "MAT.CK.001",
+      "category": "Material",
+      "description": "Kayu Kaso 5/7 kelas II",
+      "unit": "m3"
+    },
+    {
+      "id": "MAT.CK.002",
+      "category": "Material",
+      "description": "Paku biasa 2\"-5\"",
+      "unit": "kg"
+    },
+    {
+      "id": "MAT.CK.003",
+      "category": "Material",
+      "description": "Papan kayu 3/20 kelas II",
+      "unit": "m3"
+    },
+    {
+      "id": "MAT.CK.004",
+      "category": "Material",
+      "description": "Sirtu",
+      "unit": "m3"
+    },
+    {
+      "id": "MAT.CK.005",
+      "category": "Material",
+      "description": "Kayu Kelas II",
+      "unit": "batang"
+    },
+    {
+      "id": "MAT.CK.006",
+      "category": "Material",
+      "description": "Paku 5 cm - 10 cm",
+      "unit": "kg"
+    },
+    {
+      "id": "MAT.CK.007",
+      "category": "Material",
+      "description": "Pasir Pasang",
+      "unit": "m3"
+    },
+    {
+      "id": "MAT.CK.008",
+      "category": "Material",
+      "description": "Semen Portland",
+      "unit": "kg"
+    }
+  ],
+  "resource_prices": [
+    {
+      "id": "R-PRC-CK-001",
+      "resource_id": "L.01",
+      "region_id": "R-DEFAULT",
+      "price": 150000,
+      "effective_date": "2023-01-01"
+    },
+    {
+      "id": "R-PRC-CK-002",
+      "resource_id": "L.04",
+      "region_id": "R-DEFAULT",
+      "price": 200000,
+      "effective_date": "2023-01-01"
+    }
+  ],
+  "ahsp_analyses": [
+    {
+      "code": "AHSP-1.1.4.2",
+      "classification_code": "1.1.4.2",
+      "description": "Analisis Pasangan 1 m’ Bouwplank",
+      "overhead_factor": 0.15,
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "AHSP-1.3.2.2",
+      "classification_code": "1.3.2.2",
+      "description": "Analisis Timbunan dan Pemadatan Sirtu secara manual",
+      "overhead_factor": 0.15,
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "AHSP-2.1.2.6",
+      "classification_code": "2.1.2.6",
+      "description": "Analisis Pemasangan 1 m2 Rangka Atap Sirap, Kayu Kelas II",
+      "overhead_factor": 0.15,
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "AHSP-2.2.1.9.1",
+      "classification_code": "2.2.1.9.1",
+      "description": "Analisis Menggenangi 1 m2 permukaan beton dengan air selama 4 hari",
+      "overhead_factor": 0.15,
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    },
+    {
+      "code": "AHSP-2.7.4",
+      "classification_code": "2.7.4",
+      "description": "Analisis Pemasangan 1 m2 Finishing Siar Pasangan Batu Kali, Campuran 1SP : 2PP",
+      "overhead_factor": 0.15,
+      "source_title": "Analisis Harga Satuan Pekerjaan (AHSP) Bidang Cipta Karya"
+    }
+  ],
+  "ahsp_details": [
+    {
+      "id": "D-CK-NEW-001",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "L.01",
+      "coefficient": 0.1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-002",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "L.02.k",
+      "coefficient": 0.1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-003",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "L.03",
+      "coefficient": 0.01,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-004",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "L.04",
+      "coefficient": 0.005,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-005",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "MAT.CK.001",
+      "coefficient": 0.012,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-006",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "MAT.CK.002",
+      "coefficient": 0.02,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-007",
+      "ahsp_code": "AHSP-1.1.4.2",
+      "resource_id": "MAT.CK.003",
+      "coefficient": 0.007,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-008",
+      "ahsp_code": "AHSP-1.3.2.2",
+      "resource_id": "L.01",
+      "coefficient": 0.25,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-009",
+      "ahsp_code": "AHSP-1.3.2.2",
+      "resource_id": "L.04",
+      "coefficient": 0.013,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-010",
+      "ahsp_code": "AHSP-1.3.2.2",
+      "resource_id": "MAT.CK.004",
+      "coefficient": 1.2,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-011",
+      "ahsp_code": "AHSP-2.1.2.6",
+      "resource_id": "L.01",
+      "coefficient": 0.12,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-012",
+      "ahsp_code": "AHSP-2.1.2.6",
+      "resource_id": "L.02.k",
+      "coefficient": 0.12,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-013",
+      "ahsp_code": "AHSP-2.1.2.6",
+      "resource_id": "L.03",
+      "coefficient": 0.012,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-014",
+      "ahsp_code": "AHSP-2.1.2.6",
+      "resource_id": "L.04",
+      "coefficient": 0.004,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-015",
+      "ahsp_code": "AHSP-2.1.2.6",
+      "resource_id": "MAT.CK.005",
+      "coefficient": 0.165,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-016",
+      "ahsp_code": "AHSP-2.1.2.6",
+      "resource_id": "MAT.CK.006",
+      "coefficient": 0.2,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-017",
+      "ahsp_code": "AHSP-2.2.1.9.1",
+      "resource_id": "L.01",
+      "coefficient": 0.008,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-018",
+      "ahsp_code": "AHSP-2.2.1.9.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0004,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-019",
+      "ahsp_code": "AHSP-2.2.1.9.1",
+      "resource_id": "MAT.CK.007",
+      "coefficient": 0.0055,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-020",
+      "ahsp_code": "AHSP-2.2.1.9.1",
+      "resource_id": "MAT.CK.008",
+      "coefficient": 0.55,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-021",
+      "ahsp_code": "AHSP-2.7.4",
+      "resource_id": "L.01",
+      "coefficient": 0.3,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-022",
+      "ahsp_code": "AHSP-2.7.4",
+      "resource_id": "L.02.b",
+      "coefficient": 0.15,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-023",
+      "ahsp_code": "AHSP-2.7.4",
+      "resource_id": "L.03",
+      "coefficient": 0.015,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-024",
+      "ahsp_code": "AHSP-2.7.4",
+      "resource_id": "L.04",
+      "coefficient": 0.015,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-025",
+      "ahsp_code": "AHSP-2.7.4",
+      "resource_id": "MAT.CK.008",
+      "coefficient": 6.34,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-CK-NEW-026",
+      "ahsp_code": "AHSP-2.7.4",
+      "resource_id": "MAT.CK.007",
+      "coefficient": 0.012,
+      "waste_factor": 1
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "classifications": [
+    {
+      "code": "test-ahsp-json-1",
+      "description": "Test Classification from JSON",
+      "unit": "m3",
+      "category": "General"
+    }
+  ]
+}

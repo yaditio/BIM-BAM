@@ -355,7 +355,6 @@ async function initIfcOpenShell() {
 async function initWebIfc() {
   if (webIfcInitialized) return;
   
-  showLoader("Initializing web-ifc", "Loading WASM modules...", 30);
   const IfcAPI = new WebIFC.IfcAPI();
   IfcAPI.SetWasmPath("https://cdn.jsdelivr.net/npm/web-ifc@0.0.51/");
   await IfcAPI.Init();
@@ -366,7 +365,6 @@ async function initWebIfc() {
   });
   
   webIfcInitialized = true;
-  updateLoaderProgress(100, "web-ifc WASM Ready!");
 }
 
 // --- Load Model Router ---
@@ -3014,6 +3012,13 @@ function renderRulesMapping() {
   const tbody = document.getElementById('rulesTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
+
+  // Populate classifications/analyses select dynamically
+  fetch(`/api/ahsp?regionId=${window.selectedRegionId || 'R-JKT'}`)
+    .then(r => r.json())
+    .then(analyses => {
+      updateRuleClassCodeSelect(analyses);
+    });
   
   fetch('/api/rules')
     .then(r => r.json())
@@ -3024,7 +3029,7 @@ function renderRulesMapping() {
           <td><strong>${r.rule_name}</strong></td>
           <td>${r.ifc_type}</td>
           <td>${r.material_filter || '<span style="color: var(--text-muted); font-size: 11px;">Any</span>'}</td>
-          <td><strong style="color: var(--accent);" title="${r.classification_desc || ''}">${r.analysis_code ? `${r.analysis_code} (${r.classification_code})` : r.classification_code}</strong></td>
+          <td><strong style="color: var(--accent);" title="${r.classification_desc || ''}">${r.analysis_code && r.analysis_code !== r.classification_display_code ? `${r.analysis_code} (${r.classification_display_code})` : (r.classification_display_code || r.classification_code)}</strong></td>
           <td><code>${r.quantity_expression}</code></td>
           <td style="text-align: center;">${r.priority}</td>
           <td style="text-align: center;">
@@ -3153,7 +3158,7 @@ function updateRuleClassCodeSelect(filteredAnalyses) {
   
   filteredAnalyses.forEach(a => {
     const opt = document.createElement('option');
-    opt.value = a.classification_code;
+    opt.value = a.code;
     opt.textContent = a.classification_code !== a.code 
       ? `${a.code} (${a.classification_code}) - ${a.description}` 
       : `${a.code} - ${a.description}`;
@@ -3946,14 +3951,15 @@ geoModelSelect.addEventListener('change', (e) => {
 
 // --- Model Tree view helper functions ---
 function buildTree() {
+  if (!treeContainer) return;
   treeContainer.innerHTML = "";
 
-  if (loadedModels.length === 0 || !viewer.metaScene) {
-    modelTreeSection.style.display = "none";
+  if (loadedModels.length === 0 || !viewer || !viewer.metaScene) {
+    if (modelTreeSection) modelTreeSection.style.display = "none";
     return;
   }
 
-  modelTreeSection.style.display = "block";
+  if (modelTreeSection) modelTreeSection.style.display = "block";
   const rootUl = document.createElement("ul");
   rootUl.className = "tree-children";
 
@@ -4072,6 +4078,7 @@ function buildTree() {
   });
 
   treeContainer.appendChild(rootUl);
+  buildFilterSelectionList();
 }
 
 function createTreeNodeElement(metaObj) {
@@ -5954,11 +5961,172 @@ function initCollapsiblePanels() {
   });
 }
 
+// --- Theme Toggle Setup (#FCF0DA Day Mode / #425B9A Night Mode) ---
+function setupThemeToggle() {
+  const btnThemeToggle = document.getElementById('btnThemeToggle');
+  if (!btnThemeToggle) return;
+
+  const currentTheme = localStorage.getItem('theme') || 'dark';
+  if (currentTheme === 'light') {
+    document.body.classList.add('light-theme');
+    btnThemeToggle.innerHTML = '<i class="fa-solid fa-moon"></i> Night Mode';
+  } else {
+    document.body.classList.remove('light-theme');
+    btnThemeToggle.innerHTML = '<i class="fa-solid fa-sun"></i> Day Mode';
+  }
+
+  btnThemeToggle.addEventListener('click', () => {
+    const isLight = document.body.classList.toggle('light-theme');
+    if (isLight) {
+      localStorage.setItem('theme', 'light');
+      btnThemeToggle.innerHTML = '<i class="fa-solid fa-moon"></i> Night Mode';
+    } else {
+      localStorage.setItem('theme', 'dark');
+      btnThemeToggle.innerHTML = '<i class="fa-solid fa-sun"></i> Day Mode';
+    }
+  });
+}
+
+// --- AI Left Sidebar Collapse / Expand Toggle ---
+function setupAiSidebarToggle() {
+  const btnToggle = document.getElementById('btnToggleAiSidebar');
+  const aiSidebar = document.getElementById('aiAgentSidebar');
+  const appWorkspace = document.querySelector('.app-main-workspace');
+
+  if (!btnToggle || !aiSidebar) return;
+
+  btnToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isCollapsed = aiSidebar.classList.toggle('collapsed');
+    if (appWorkspace) {
+      if (isCollapsed) {
+        appWorkspace.style.gridTemplateColumns = '36px 1fr var(--sidebar-w-right)';
+        btnToggle.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
+      } else {
+        appWorkspace.style.gridTemplateColumns = 'var(--sidebar-w-left) 1fr var(--sidebar-w-right)';
+        btnToggle.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
+      }
+    }
+  });
+}
+
+// --- Right Sidebar Revit-Style Bottom Tabs Setup ---
+function setupRightSidebarTabs() {
+  const tabBtns = document.querySelectorAll('.right-tab-btn');
+  const tabPanes = document.querySelectorAll('.right-tab-pane');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.rightTab;
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+      });
+
+      btn.classList.add('active');
+      const pane = document.getElementById(target);
+      if (pane) {
+        pane.classList.add('active');
+        pane.style.display = 'flex';
+        if (target === 'right-tab-filter') {
+          buildFilterSelectionList();
+        }
+      }
+    });
+  });
+}
+
+// --- Filter Selection Auto IFC Class Harvester & Highlight ---
+function buildFilterSelectionList() {
+  const container = document.getElementById('filterSelectionList');
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (loadedModels.length === 0 || !viewer || !viewer.metaScene) {
+    container.innerHTML = `<div class="no-selection-prompt"><i class="fa-solid fa-filter"></i><p>No model loaded to extract IFC classes.</p></div>`;
+    return;
+  }
+
+  const classCounts = {};
+  const metaObjs = viewer.metaScene.metaObjects || {};
+
+  Object.values(metaObjs).forEach(meta => {
+    if (meta && meta.type) {
+      classCounts[meta.type] = (classCounts[meta.type] || 0) + 1;
+    }
+  });
+
+  const types = Object.keys(classCounts).sort();
+
+  if (types.length === 0) {
+    container.innerHTML = `<div class="no-selection-prompt"><i class="fa-solid fa-info-circle"></i><p>No IFC classes found in model metadata.</p></div>`;
+    return;
+  }
+
+  const listUl = document.createElement('div');
+  listUl.className = 'ifc-class-list';
+
+  types.forEach(type => {
+    const item = document.createElement('div');
+    item.className = 'ifc-class-item';
+    item.dataset.ifcType = type;
+    item.innerHTML = `
+      <div class="ifc-class-info">
+        <i class="fa-solid fa-cube class-icon"></i>
+        <span class="class-name">${type}</span>
+      </div>
+      <span class="class-count">${classCounts[type]}</span>
+    `;
+
+    item.addEventListener('click', () => {
+      container.querySelectorAll('.ifc-class-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+
+      const ids = viewer.metaScene.getObjectIDsByType(type);
+      if (!ids || ids.length === 0) return;
+
+      viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+      viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+
+      viewer.scene.setObjectsSelected(ids, true);
+      viewer.scene.setObjectsHighlighted(ids, true);
+
+      const aabb = viewer.scene.getAABB(ids);
+      if (aabb) {
+        viewer.cameraFlight.flyTo(aabb);
+      }
+
+      updateStatus(`Selected and highlighted ${ids.length} objects of class ${type}`);
+    });
+
+    listUl.appendChild(item);
+  });
+
+  container.appendChild(listUl);
+
+  // Live filter search for class list
+  const filterClassSearch = document.getElementById('filterClassSearch');
+  if (filterClassSearch) {
+    filterClassSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const items = container.querySelectorAll('.ifc-class-item');
+      items.forEach(item => {
+        const text = (item.dataset.ifcType || '').toLowerCase();
+        item.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    });
+  }
+}
+
 // --- Initialize App ---
 function startApp() {
-  initCollapsiblePanels();
-  initViewer();
-  setupIfcOpenShellTools();
+  try { initCollapsiblePanels(); } catch (e) { console.error("Error initCollapsiblePanels:", e); }
+  try { initViewer(); } catch (e) { console.error("Error initViewer:", e); }
+  try { setupIfcOpenShellTools(); } catch (e) { console.error("Error setupIfcOpenShellTools:", e); }
+  try { setupThemeToggle(); } catch (e) { console.error("Error setupThemeToggle:", e); }
+  try { setupAiSidebarToggle(); } catch (e) { console.error("Error setupAiSidebarToggle:", e); }
+  try { setupRightSidebarTabs(); } catch (e) { console.error("Error setupRightSidebarTabs:", e); }
 
   // Register AI agent control APIs
   window.bimBamApi = {
@@ -6275,21 +6443,25 @@ function startApp() {
 function setupIfcOpenShellTools() {
   console.log("[IfcOpenShell Tools] Initializing frontend tools...");
 
-  // 1. Tab switching logic
-  const tabButtons = document.querySelectorAll('.sidebar-tab');
-  const tabPanes = document.querySelectorAll('.tab-pane');
+  // 1. Ribbon & Sidebar Tab switching logic
+  const tabButtons = document.querySelectorAll('.ribbon-tab, .sidebar-tab');
+  const tabPanes = document.querySelectorAll('.ribbon-pane, .tab-pane');
 
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const targetTab = btn.dataset.tab;
       
       tabButtons.forEach(b => b.classList.remove('active'));
-      tabPanes.forEach(p => p.style.display = 'none');
+      tabPanes.forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+      });
 
       btn.classList.add('active');
       const activePane = document.getElementById(targetTab);
       if (activePane) {
-        activePane.style.display = 'block';
+        activePane.classList.add('active');
+        activePane.style.display = 'flex';
       }
     });
   });
@@ -6940,6 +7112,7 @@ function setupIfcCsvTool() {
 
   // Populate a <select> dropdown with property names
   function populateParamSelect(selectEl) {
+    if (!selectEl) return;
     const currentVal = selectEl.value;
     selectEl.innerHTML = '<option value="">-- Select Property --</option>';
     allPropertyNames.forEach(name => {
@@ -6956,16 +7129,19 @@ function setupIfcCsvTool() {
 
   // Refresh all selects when model changes
   function refreshCsvUi() {
+    if (!csvModelSelect) return;
     const modelId = csvModelSelect.value || null;
     allPropertyNames = gatherPropertyNames(modelId);
 
     // Populate first select
-    populateParamSelect(csvParamSelect0);
+    if (csvParamSelect0) populateParamSelect(csvParamSelect0);
 
     // Populate all dynamic selects
-    csvParamRows.querySelectorAll('.csv-param-select').forEach(sel => {
-      populateParamSelect(sel);
-    });
+    if (csvParamRows) {
+      csvParamRows.querySelectorAll('.csv-param-select').forEach(sel => {
+        populateParamSelect(sel);
+      });
+    }
 
     // Populate IFC class filter
     const classes = gatherIfcClasses(modelId);
@@ -7019,11 +7195,12 @@ function setupIfcCsvTool() {
 
   // Count how many rows would be exported
   function updatePreviewCount() {
+    if (!csvPreviewCount) return;
     if (!viewer || !viewer.metaScene) {
       csvPreviewCount.style.display = 'none';
       return;
     }
-    const modelId = csvModelSelect.value || null;
+    const modelId = csvModelSelect ? (csvModelSelect.value || null) : null;
     const classFilter = csvIfcClassFilter.value || null;
     let count = 0;
     const metaObjects = viewer.metaScene.metaObjects;
@@ -7098,13 +7275,15 @@ function setupIfcCsvTool() {
   }
 
   // Wire up the first (static) "+" button
-  csvBtnAdd0.addEventListener('click', () => {
-    addParamRow(csvParamSelect0.value);
-  });
+  if (csvBtnAdd0) {
+    csvBtnAdd0.addEventListener('click', () => {
+      addParamRow(csvParamSelect0 ? csvParamSelect0.value : '');
+    });
+  }
 
   // Refresh on model select change
-  csvModelSelect.addEventListener('change', refreshCsvUi);
-  csvIfcClassFilter.addEventListener('change', updatePreviewCount);
+  if (csvModelSelect) csvModelSelect.addEventListener('change', refreshCsvUi);
+  if (csvIfcClassFilter) csvIfcClassFilter.addEventListener('change', updatePreviewCount);
 
   // Listen for model load events to refresh CSV property/class dropdowns
   window.addEventListener('ifcModelsUpdated', () => {
@@ -7112,11 +7291,18 @@ function setupIfcCsvTool() {
   });
 
   // CSV Generation and Download
-  btnExportIfcCsv.addEventListener('click', () => {
-    if (!viewer || !viewer.metaScene) {
-      alert('No model loaded. Please load an IFC model first.');
-      return;
-    }
+  if (btnExportIfcCsv) {
+    btnExportIfcCsv.addEventListener('click', () => {
+      if (!viewer || !viewer.metaScene) {
+        alert('No model loaded. Please load an IFC model first.');
+        return;
+      }
+      exportModelToCsv();
+    });
+  }
+
+  function exportModelToCsv() {
+    if (!csvModelSelect || !csvIfcClassFilter || !csvColName || !csvColType || !csvColId) return;
 
     const modelId = csvModelSelect.value || null;
     const classFilter = csvIfcClassFilter.value || null;
@@ -7209,14 +7395,62 @@ function setupIfcCsvTool() {
     URL.revokeObjectURL(url);
 
     updateStatus(`CSV exported: ${rows.length} objects, ${headers.length} columns.`);
-  });
+  }
 } // end setupIfcCsvTool
 
 // --- JSON Backup & Manual Classification Overrides Tool ---
 function setupBackupAndOverrideTools() {
-  const btnExportRules = document.getElementById('btnExportRules');
-  if (btnExportRules) {
-    btnExportRules.addEventListener('click', () => {
+  const exportTableToCsv = (tableId, filename) => {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    const rows = [];
+    const headerCells = table.querySelectorAll('thead th');
+    const headers = [];
+    headerCells.forEach(th => {
+      if (th.textContent.trim().toLowerCase() !== 'action') {
+        headers.push(th.textContent.trim());
+      }
+    });
+    rows.push(headers);
+
+    const bodyRows = table.querySelectorAll('tbody tr');
+    bodyRows.forEach(tr => {
+      const row = [];
+      const cells = tr.querySelectorAll('td');
+      if (cells.length === 0) return;
+      for (let i = 0; i < cells.length; i++) {
+        const th = headerCells[i];
+        if (th && th.textContent.trim().toLowerCase() === 'action') continue;
+        let text = cells[i].textContent.trim();
+        text = text.replace(/\s+/g, ' ');
+        row.push(text);
+      }
+      rows.push(row);
+    });
+
+    const escapeCell = (val) => {
+      const str = String(val);
+      if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const csvContent = rows.map(r => r.map(escapeCell).join(',')).join('\r\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const btnExportRulesJson = document.getElementById('btnExportRulesJson');
+  if (btnExportRulesJson) {
+    btnExportRulesJson.addEventListener('click', () => {
       fetch('/api/rules/export')
         .then(r => r.json())
         .then(rules => {
@@ -7234,11 +7468,19 @@ function setupBackupAndOverrideTools() {
     });
   }
 
-  const btnImportRules = document.getElementById('btnImportRules');
-  const rulesFileInput = document.getElementById('rulesFileInput');
-  if (btnImportRules && rulesFileInput) {
-    btnImportRules.addEventListener('click', () => rulesFileInput.click());
-    rulesFileInput.addEventListener('change', (e) => {
+  const btnExportRulesCsv = document.getElementById('btnExportRulesCsv');
+  if (btnExportRulesCsv) {
+    btnExportRulesCsv.addEventListener('click', () => {
+      exportTableToCsv('rulesTable', `rules_backup_${Date.now()}.csv`);
+      updateStatus("Exported classification rules mapping CSV from table.");
+    });
+  }
+
+  const btnImportRulesJson = document.getElementById('btnImportRulesJson');
+  const rulesFileInputJson = document.getElementById('rulesFileInputJson');
+  if (btnImportRulesJson && rulesFileInputJson) {
+    btnImportRulesJson.addEventListener('click', () => rulesFileInputJson.click());
+    rulesFileInputJson.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -7253,7 +7495,7 @@ function setupBackupAndOverrideTools() {
           .then(r => r.json())
           .then(data => {
             if (data.success) {
-              updateStatus(`Imported ${data.count} mapping rules successfully.`);
+              updateStatus(`Imported ${data.count} mapping rules successfully from JSON.`);
               if (typeof renderRulesMapping === 'function') {
                 renderRulesMapping();
               }
@@ -7270,31 +7512,113 @@ function setupBackupAndOverrideTools() {
     });
   }
 
-  const btnExportAhsp = document.getElementById('btnExportAhsp');
-  if (btnExportAhsp) {
-    btnExportAhsp.addEventListener('click', () => {
-      fetch('/api/ahsp/export')
-        .then(r => r.text())
-        .then(csvText => {
-          const blob = new Blob([csvText], { type: 'text/csv' });
+  const btnImportRulesCsv = document.getElementById('btnImportRulesCsv');
+  const rulesFileInputCsv = document.getElementById('rulesFileInputCsv');
+  if (btnImportRulesCsv && rulesFileInputCsv) {
+    btnImportRulesCsv.addEventListener('click', () => rulesFileInputCsv.click());
+    rulesFileInputCsv.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const csvText = evt.target.result;
+        fetch('/api/rules/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csvText })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            updateStatus(`Imported ${data.count} mapping rules successfully from CSV.`);
+            if (typeof renderRulesMapping === 'function') {
+              renderRulesMapping();
+            }
+            if (activeModel) {
+              triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+            }
+          } else {
+            alert("Import failed: " + data.error);
+          }
+        })
+        .catch(err => alert("Import request failed: " + err.message));
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  const btnExportAhspJson = document.getElementById('btnExportAhspJson');
+  if (btnExportAhspJson) {
+    btnExportAhspJson.addEventListener('click', () => {
+      fetch('/api/ahsp/export?format=json')
+        .then(r => r.json())
+        .then(jsonData => {
+          const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `ahsp_library_backup_${Date.now()}.csv`;
+          a.download = `ahsp_library_backup_${Date.now()}.json`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
-          updateStatus("Exported AHSP standards catalog CSV.");
+          updateStatus("Exported AHSP standards catalog JSON.");
         });
     });
   }
 
-  const btnImportAhsp = document.getElementById('btnImportAhsp');
-  const ahspFileInput = document.getElementById('ahspFileInput');
-  if (btnImportAhsp && ahspFileInput) {
-    btnImportAhsp.addEventListener('click', () => ahspFileInput.click());
-    ahspFileInput.addEventListener('change', (e) => {
+  const btnExportAhspCsv = document.getElementById('btnExportAhspCsv');
+  if (btnExportAhspCsv) {
+    btnExportAhspCsv.addEventListener('click', () => {
+      exportTableToCsv('ahspTable', `ahsp_library_backup_${Date.now()}.csv`);
+      updateStatus("Exported AHSP standards catalog CSV from table.");
+    });
+  }
+
+  const btnImportAhspJson = document.getElementById('btnImportAhspJson');
+  const ahspFileInputJson = document.getElementById('ahspFileInputJson');
+  if (btnImportAhspJson && ahspFileInputJson) {
+    btnImportAhspJson.addEventListener('click', () => ahspFileInputJson.click());
+    ahspFileInputJson.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const jsonData = JSON.parse(evt.target.result);
+          fetch('/api/ahsp/import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonData })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              updateStatus("Imported AHSP catalog library successfully from JSON.");
+              if (typeof renderAhspLibrary === 'function') {
+                renderAhspLibrary();
+              }
+              if (activeModel) {
+                triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+              }
+            } else {
+              alert("Import failed: " + data.error);
+            }
+          })
+          .catch(err => alert("Import request failed: " + err.message));
+        } catch (err) {
+          alert("Failed to parse JSON file: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  const btnImportAhspCsv = document.getElementById('btnImportAhspCsv');
+  const ahspFileInputCsv = document.getElementById('ahspFileInputCsv');
+  if (btnImportAhspCsv && ahspFileInputCsv) {
+    btnImportAhspCsv.addEventListener('click', () => ahspFileInputCsv.click());
+    ahspFileInputCsv.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -7568,8 +7892,4 @@ function setupBackupAndOverrideTools() {
   }
 }
 
-if (document.readyState === "complete" || document.readyState === "interactive") {
-  startApp();
-} else {
-  document.addEventListener('DOMContentLoaded', startApp);
-}
+startApp();

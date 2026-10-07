@@ -1,723 +1,694 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BIM BAM - Premium IFC & XKT Viewer</title>
+    <title>BIM BAM - Ribbon IFC &amp; XKT Viewer</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Premium Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <!-- Pako for XKT loader decompression -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <!-- Pyodide for IfcOpenShell loader -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.28.0a3/full/pyodide.js"></script>
-    
     <!-- Proj4 for EPSG coordinate transformations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
-    
-    <!-- CesiumJS for 3D globe streaming (unpkg CDN) -->
+    <!-- CesiumJS for 3D globe streaming -->
     <link href="https://unpkg.com/cesium@1.119.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
     <script>
         window.CESIUM_BASE_URL = 'https://unpkg.com/cesium@1.119.0/Build/Cesium/';
     </script>
     <script src="https://unpkg.com/cesium@1.119.0/Build/Cesium/Cesium.js"></script>
-    
     <!-- Chart.js for data visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
     <div class="app-container">
-        <!-- Sidebar: Controls -->
-        <aside class="sidebar control-panel">
-            <div class="brand">
-                <i class="fa-solid fa-cubes brand-icon"></i>
-                <div class="brand-text">
-                    <h2>BIM BAM</h2>
-                    <span>BIM Viewer</span>
+        <!-- Top Ribbon Header & Toolbar -->
+        <header class="ribbon-bar">
+            <!-- Top Line: Brand Logo Left, Theme Toggle Right -->
+            <div class="ribbon-top-line">
+                <div class="brand">
+                    <i class="fa-solid fa-cubes brand-icon"></i>
+                    <div class="brand-text">
+                        <h2>BIM BAM</h2>
+                        <span>BIM Viewer</span>
+                    </div>
+                </div>
+
+                <div class="ribbon-header-right">
+                    <button class="theme-toggle-btn" id="btnThemeToggle" title="Toggle Day/Night Mode">
+                        <i class="fa-solid fa-sun"></i> Day Mode
+                    </button>
                 </div>
             </div>
 
-            <div class="sidebar-tabs">
-                <button class="sidebar-tab active" data-tab="viewer-tab"><i class="fa-solid fa-eye"></i> Viewer</button>
-                <button class="sidebar-tab" data-tab="ifcopenshell-tab"><i class="fa-brands fa-python"></i> IfcOpenShell</button>
-                <button class="sidebar-tab" data-tab="boq-tab"><i class="fa-solid fa-file-invoice-dollar"></i> 5D BOQ</button>
-            </div>
-
-            <div id="viewer-tab" class="tab-pane active">
-                <!-- Upload Zone -->
-                <section class="panel-section">
-                <h3><i class="fa-solid fa-file-arrow-up"></i> Load Model</h3>
-                <div class="upload-area" id="dropZone">
-                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                    <p>Drag & Drop files here</p>
-                    <span>or click to browse</span>
-                    <input type="file" id="fileInput" accept=".ifc,.xkt,.las,.laz,.gltf,.glb,.json" multiple>
-                </div>
-                <button class="btn btn-secondary btn-full" id="btnLoadDemo" style="margin-top: 8px;">
-                    <i class="fa-solid fa-play"></i> Load Demo House IFC
+            <!-- Ribbon Tabs Line: Placed directly under BIM BAM logo on left -->
+            <nav class="ribbon-tabs">
+                <button class="ribbon-tab active" data-tab="ribbon-home">
+                    <i class="fa-solid fa-house"></i> Home
                 </button>
-                <div class="file-info-bar" id="fileInfoBar" style="display: none;">
-                    <i class="fa-solid fa-file-code file-icon"></i>
-                    <span id="fileName">No file selected</span>
-                </div>
-            </section>
-
-            <!-- RVT to XKT Converter Tool -->
-            <section class="panel-section" id="rvtConverterSection">
-                <h3><i class="fa-solid fa-cloud-arrow-up"></i> RVT to XKT Converter</h3>
-                <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Convert Revit (.rvt) files to xeokit-optimized format (.xkt) using Creoox Xeokit Data Engine.</p>
-                
-                <div class="form-group">
-                    <label for="xdesApiUrl">XDES API URL</label>
-                    <input type="text" id="xdesApiUrl" class="form-input" value="https://jobs.xeo.vision" placeholder="e.g. https://jobs.xeo.vision">
-                </div>
-                
-                <div class="form-group">
-                    <label for="xdesClientId">XDES Client ID</label>
-                    <input type="text" id="xdesClientId" class="form-input" placeholder="Client ID...">
-                </div>
-                
-                <div class="form-group">
-                    <label for="xdesClientSecret">XDES Client Secret</label>
-                    <input type="password" id="xdesClientSecret" class="form-input" placeholder="Client Secret...">
-                </div>
-                
-                <div class="form-group">
-                    <label for="rvtFileInput">Revit (.rvt) File</label>
-                    <input type="file" id="rvtFileInput" accept=".rvt" class="form-input">
-                </div>
-                
-                <button class="btn btn-primary btn-full" id="btnConvertRvt">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Convert &amp; Load Model
+                <button class="ribbon-tab" data-tab="ribbon-view">
+                    <i class="fa-solid fa-eye"></i> View
                 </button>
-            </section>
-
-            <!-- Loading Settings -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-sliders"></i> Loading Options</h3>
-                <div class="form-group">
-                    <label>IFC Parser / Engine</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="ifcEngine" value="web-ifc" checked>
-                            <span>web-ifc (WASM)</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="ifcEngine" value="ifcopenshell">
-                            <span>IfcOpenShell (Pyodide)</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group checkbox-group">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="convertToXktOpt">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="label-text">Convert IFC to XKT (Backend)</span>
-                </div>
-                <div class="form-group checkbox-group" style="margin-top: 10px;">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="chkAppendModel">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="label-text">Append model (Keep existing)</span>
-                </div>
-                <div class="form-group" style="margin-top: 12px; border-top: 1px dashed var(--border-color); padding-top: 12px;">
-                    <label for="pointSkip" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Point Cloud Load Step (Skip)</label>
-                    <input type="number" id="pointSkip" class="form-input" min="1" max="100" value="5" style="font-size: 11px; padding: 4px; width: 100%; box-sizing: border-box;">
-                    <span style="font-size: 9px; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.2;">Higher values load point clouds faster (e.g. 5 loads every 5th point). Set to 1 for full density.</span>
-                </div>
-                <button class="btn btn-primary btn-full" id="btnDownloadXkt" disabled style="margin-top: 12px;">
-                    <i class="fa-solid fa-download"></i> Download converted XKT
+                <button class="ribbon-tab" data-tab="ribbon-geo">
+                    <i class="fa-solid fa-earth-americas"></i> Georeferencing
                 </button>
-            </section>
-
-            <!-- Model Tree Section -->
-            <section class="panel-section" id="modelTreeSection" style="display: none;">
-                <h3><i class="fa-solid fa-sitemap"></i> Model Tree</h3>
-                <div class="tree-container" id="treeContainer"></div>
-            </section>
-
-            <!-- Cutting Plane Section -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-scissors"></i> Section Cut Planes</h3>
-                <div class="btn-grid">
-                    <button class="btn btn-secondary" id="btnAddPlaneInteractive" title="Click on model surface to place plane">
-                        <i class="fa-solid fa-mouse-pointer"></i> Add Plane (Click)
-                    </button>
-                    <button class="btn btn-secondary" id="btnAddPlaneCenter" title="Add plane at model center">
-                        <i class="fa-solid fa-align-center"></i> Add Plane (Center)
-                    </button>
-                </div>
-                <div class="form-group checkbox-group" style="margin-top: 10px;">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="chkShowGizmos" checked>
-                        <span class="slider"></span>
-                    </label>
-                    <span class="label-text">Show Plane Gizmos</span>
-                </div>
-                <button class="btn btn-danger btn-full" id="btnClearPlanes">
-                    <i class="fa-solid fa-trash-can"></i> Clear All Planes
+                <button class="ribbon-tab" data-tab="ribbon-qto">
+                    <i class="fa-solid fa-calculator"></i> QTO &amp; 5D BOQ
                 </button>
-            </section>
-
-            <!-- Visibility Controls -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-eye"></i> Visibility Controls</h3>
-                <button class="btn btn-secondary btn-full" id="btnShowAllGlobal">
-                    <i class="fa-solid fa-eye"></i> Show All Objects
+                <button class="ribbon-tab" data-tab="ribbon-ifc">
+                    <i class="fa-brands fa-python"></i> IfcOpenShell
                 </button>
-            </section>
+            </nav>
 
-            <!-- Property Filter -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-filter"></i> Property Filter</h3>
-                
-                <!-- Quick Search -->
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="propertySearch" placeholder="Quick search name, type...">
-                    <button id="btnClearSearch" class="btn-clear-search" style="display: none;">
-                        <i class="fa-solid fa-circle-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Property Query Builder -->
-                <div class="query-builder" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px;">
-                    <div class="form-group">
-                        <label>Property Name</label>
-                        <select id="filterPropName" class="form-input">
-                            <option value="">-- Select Property --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Operator</label>
-                        <select id="filterOperator" class="form-input">
-                            <option value="equals">Equals (=)</option>
-                            <option value="contains">Contains</option>
-                            <option value="gt">Greater Than (&gt;)</option>
-                            <option value="lt">Less Than (&lt;)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Value</label>
-                        <input type="text" id="filterPropVal" class="form-input" placeholder="Property value...">
-                    </div>
-                    <div class="btn-grid">
-                        <button id="btnApplyPropFilter" class="btn btn-primary">Apply</button>
-                        <button id="btnResetPropFilter" class="btn btn-secondary">Reset</button>
-                    </div>
-                </div>
-
-                <div id="filterResultCount" class="result-count" style="margin-top: 10px;"></div>
-            </section>
-
-            <!-- Quantity Take-Off -->
-            <section class="panel-section">
-                <h3><i class="fa-solid fa-calculator"></i> Quantity Take-Off</h3>
-                <button class="btn btn-primary btn-full" id="btnOpenQto">
-                    <i class="fa-solid fa-table"></i> Open Quantity Take-Off
-                </button>
-            </section>
-
-            </div> <!-- End of viewer-tab -->
-
-            <div id="ifcopenshell-tab" class="tab-pane" style="display: none;">
-                <!-- IFC Diff Tool -->
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-code-compare"></i> IFC Diff</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Compare two IFC files to identify added, deleted, and changed elements.</p>
-                    <div class="form-group">
-                        <label for="diffOldModelSelect">Old IFC Model</label>
-                        <select id="diffOldModelSelect" class="form-input">
-                            <option value="">-- Select Model --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="diffNewModelSelect">New IFC Model</label>
-                        <select id="diffNewModelSelect" class="form-input">
-                            <option value="">-- Select Model --</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary btn-full" id="btnRunDiff">
-                        <i class="fa-solid fa-play"></i> Compare Models
-                    </button>
-                    <div id="diffResults" class="tool-results" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-                        <h4 class="results-title" style="font-size: 13px; margin-bottom: 8px;">Diff Results</h4>
-                        <div class="diff-summary-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;">
-                            <div class="diff-stat added" id="diffAddedStat" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 8px 4px; text-align: center;">
-                                <div style="font-size: 16px; font-weight: bold; color: var(--success);" id="diffAddedVal">0</div>
-                                <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Added</span>
+            <!-- Ribbon Content Panes -->
+            <div class="ribbon-content">
+                <!-- 1. HOME TAB -->
+                <div id="ribbon-home" class="ribbon-pane active">
+                    <!-- Group 1: Load Model -->
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-file-arrow-up"></i> Load Model</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <div class="upload-area-mini" id="dropZone" title="Click or drop model file">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <span>Browse / Drop File</span>
+                                    <input type="file" id="fileInput" accept=".ifc,.xkt,.las,.laz,.gltf,.glb,.json"
+                                        multiple>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" id="btnLoadDemo" title="Load Duplex Demo IFC">
+                                    <i class="fa-solid fa-play"></i> Demo Model
+                                </button>
                             </div>
-                            <div class="diff-stat deleted" id="diffDeletedStat" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 8px 4px; text-align: center;">
-                                <div style="font-size: 16px; font-weight: bold; color: var(--danger);" id="diffDeletedVal">0</div>
-                                <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Deleted</span>
-                            </div>
-                            <div class="diff-stat changed" id="diffChangedStat" style="background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: 6px; padding: 8px 4px; text-align: center;">
-                                <div style="font-size: 16px; font-weight: bold; color: #eab308;" id="diffChangedVal">0</div>
-                                <span class="label" style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Changed</span>
+                            <div class="ribbon-row">
+                                <div class="file-info-bar-mini" id="fileInfoBar" style="display: none;">
+                                    <i class="fa-solid fa-file-code file-icon"></i>
+                                    <span id="fileName">No file</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="btn-grid" style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <button class="btn btn-secondary" id="btnHighlightDiff" style="padding: 6px 8px; font-size: 11px;">
-                                <i class="fa-solid fa-highlighter"></i> Highlight Diff
-                            </button>
-                            <button class="btn btn-secondary" id="btnClearDiff" style="padding: 6px 8px; font-size: 11px;">
-                                <i class="fa-solid fa-rotate-left"></i> Reset View
-                            </button>
-                        </div>
-                        <div class="diff-lists-container" style="margin-top: 12px; max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 8px; border: 1px solid var(--border-color);">
-                            <ul class="diff-list" id="diffList" style="list-style: none; font-size: 11px; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px;"></ul>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- BCF Reader Tool -->
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-book-open"></i> BCF Reader</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Upload a BIM Collaboration Format (.bcf) file to view registered issues, snapshots, and viewpoints.</p>
-                    <div class="form-group">
-                        <label for="bcfFileInput">BCF File</label>
-                        <input type="file" id="bcfFileInput" accept=".bcf" class="form-input">
-                    </div>
-                    <button class="btn btn-primary btn-full" id="btnRunBcfReader">
-                        <i class="fa-solid fa-folder-open"></i> Read BCF
-                    </button>
-                    <div id="bcfResults" class="tool-results" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-                        <h4 class="results-title" style="font-size: 13px; margin-bottom: 8px;">BCF Topics</h4>
-                        <div class="bcf-topics-list" id="bcfTopicsList" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;"></div>
-                    </div>
-                </section>
-
-                <!-- IFC Clash Tool -->
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-triangle-exclamation"></i> IFC Clash</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Check for collision clashes within a single model or between two models. Results exportable to BCF.</p>
-                    <div class="form-group">
-                        <label for="clashModelASelect">Model A (Required)</label>
-                        <select id="clashModelASelect" class="form-input">
-                            <option value="">-- Select Model A --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="clashModelBSelect">Model B (Optional)</label>
-                        <select id="clashModelBSelect" class="form-input">
-                            <option value="">-- Select Model B (Optional) --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="clashToleranceInput">Tolerance (meters)</label>
-                        <input type="number" id="clashToleranceInput" class="form-input" value="0.0" step="0.01" min="0">
-                    </div>
-                    <button class="btn btn-primary btn-full" id="btnRunClash">
-                        <i class="fa-solid fa-bolt"></i> Detect Clashes
-                    </button>
-                    <div id="clashResults" class="tool-results" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 15px;">
-                        <h4 class="results-title" id="clashCountTitle" style="font-size: 13px; margin-bottom: 8px;">0 Clashes Found</h4>
-                        <div class="btn-grid" style="margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                            <a class="btn btn-primary" id="btnDownloadClashBcf" style="text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 8px; font-size: 11px;">
-                                <i class="fa-solid fa-download"></i> Download BCF
-                            </a>
-                            <button class="btn btn-secondary" id="btnClearClashes" style="padding: 6px 8px; font-size: 11px;">
-                                <i class="fa-solid fa-rotate-left"></i> Clear View
-                            </button>
-                        </div>
-                        <div class="clash-list-container" style="max-height: 150px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 8px; border: 1px solid var(--border-color);">
-                            <ul class="clash-list" id="clashList" style="list-style: none; font-size: 11px; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px;"></ul>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- IFC Convert Tool -->
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-file-export"></i> IFC Convert</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Convert an IFC file to OBJ, DAE, GLB, STP, or IGS using IfcConvert.</p>
-                    <div class="form-group">
-                        <label for="convertModelSelect">IFC Model</label>
-                        <select id="convertModelSelect" class="form-input">
-                            <option value="">-- Select Model --</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="convertFormatSelect">Target Format</label>
-                        <select id="convertFormatSelect" class="form-input">
-                            <option value="glb">GLTF Binary (.glb)</option>
-                            <option value="obj">Wavefront OBJ (.obj)</option>
-                            <option value="dae">Collada DAE (.dae)</option>
-                            <option value="stp">STEP (.stp)</option>
-                            <option value="igs">IGES (.igs)</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary btn-full" id="btnRunConvert">
-                        <i class="fa-solid fa-file-export"></i> Convert & Download
-                    </button>
-                </section>
-
-                <!-- IFC CSV Export Tool -->
-                <section class="panel-section" id="ifcCsvSection">
-                    <h3><i class="fa-solid fa-file-csv"></i> IFC CSV Export</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Extract IFC object properties to a downloadable CSV table. Select columns from available parameters.</p>
-
-                    <div class="form-group">
-                        <label for="csvModelSelect">IFC Model</label>
-                        <select id="csvModelSelect" class="form-input">
-                            <option value="">-- Select Model --</option>
-                        </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="csvIfcClassFilter">IFC Class Filter</label>
-                        <select id="csvIfcClassFilter" class="form-input">
-                            <option value="">-- All Classes --</option>
-                        </select>
-                    </div>
-
-                    <!-- Built-in columns toggles -->
-                    <div class="csv-builtin-cols">
-                        <label class="csv-builtin-label">Always include:</label>
-                        <div class="csv-builtin-checks">
-                            <label class="csv-check-item">
-                                <input type="checkbox" id="csvColName" checked> Name
-                            </label>
-                            <label class="csv-check-item">
-                                <input type="checkbox" id="csvColType" checked> IFC Class
-                            </label>
-                            <label class="csv-check-item">
-                                <input type="checkbox" id="csvColId"> GlobalId
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Parameter selector area -->
-                    <div class="csv-param-section">
-                        <label class="csv-param-label">
-                            <i class="fa-solid fa-table-columns"></i> Add Property Columns
-                        </label>
-                        <div id="csvParamRows" class="csv-param-rows">
-                            <!-- Dynamic parameter rows inserted here -->
-                        </div>
-                        <!-- First row template (always visible) -->
-                        <div class="csv-param-row" id="csvFirstParamRow">
-                            <select id="csvParamSelect0" class="form-input csv-param-select">
-                                <option value="">-- Select Property --</option>
-                            </select>
-                            <button class="btn-csv-add" id="csvBtnAdd0" title="Add this column">
-                                <i class="fa-solid fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Selected columns chips -->
-                    <div id="csvSelectedCols" class="csv-selected-cols" style="display:none;">
-                        <label class="csv-param-label"><i class="fa-solid fa-list-check"></i> Selected Columns:</label>
-                        <div id="csvColChips" class="csv-col-chips"></div>
-                    </div>
-
-                    <!-- Preview count -->
-                    <div id="csvPreviewCount" class="csv-preview-count" style="display:none;"></div>
-
-                    <button class="btn btn-primary btn-full" id="btnExportIfcCsv" style="margin-top: 12px;">
-                        <i class="fa-solid fa-download"></i> Export & Download CSV
-                    </button>
-                 </section>
-            </div> <!-- End of ifcopenshell-tab -->
-
-            <!-- 5D BOQ Estimating Tab -->
-            <div id="boq-tab" class="tab-pane" style="display: none;">
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-file-invoice-dollar"></i> Cost Estimating</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Automatically map BIM quantities to Work Packages and regional AHSP unit rates.</p>
-                    
-                    <div class="form-group">
-                        <label for="boqRegionSelect">Estimating Region</label>
-                        <select id="boqRegionSelect" class="form-input">
-                            <option value="R-JKT">Jakarta</option>
-                            <option value="R-BDG">Bandung</option>
-                            <option value="R-SBY">Surabaya</option>
-                            <option value="R-PAP">Papua</option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-primary btn-full" id="btnOpenBoqModal" style="margin-top: 10px;">
-                        <i class="fa-solid fa-calculator"></i> Open 5D BOQ Sheet
-                    </button>
-                </section>
-
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-coins"></i> Resource Rates Editor</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">Adjust raw material, labor, and machine prices for the selected region.</p>
-                    
-                    <div class="form-group">
-                        <label for="rateResourceSelect">Select Resource</label>
-                        <select id="rateResourceSelect" class="form-input">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="rateResourcePrice">Unit Price (Rp)</label>
-                        <input type="number" id="rateResourcePrice" class="form-input" placeholder="Price in IDR...">
-                    </div>
-                    
-                    <button class="btn btn-secondary btn-full" id="btnUpdateResourceRate">
-                        <i class="fa-solid fa-floppy-disk"></i> Save Rate Change
-                    </button>
-                </section>
-
-                <section class="panel-section">
-                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Quantity Overrides</h3>
-                    <p class="panel-desc" style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; margin-top: -8px;">View active manual quantity overrides applied by construction engineers.</p>
-                    <div id="overridesList" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; font-size: 11px; background: rgba(0,0,0,0.2);">
-                        <p style="color: var(--text-muted); text-align: center; margin: 10px 0;">No active overrides.</p>
-                    </div>
-                </section>
-            </div>
-        </aside>
-
-        <!-- Main Viewer Canvas Area -->
-        <main class="viewer-container">
-            <div id="cesiumContainer"></div>
-            <canvas id="myCanvas"></canvas>
-            <canvas id="myNavCubeCanvas"></canvas>
-
-            <!-- Measurement and Spot Elevation Overlay -->
-            <svg id="measurementOverlay" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3;"></svg>
-            <div id="elevationOverlay" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4;"></div>
-
-            <!-- Measurement Toolbar -->
-            <div class="measurement-toolbar" id="measurementToolbar">
-                <button class="tool-btn" id="btnMeasureDistance" title="Measure Distance">
-                    <i class="fa-solid fa-ruler"></i> Distance
-                </button>
-                <button class="tool-btn" id="btnMeasureMultiline" title="Measure Multiline Distance">
-                    <i class="fa-solid fa-route"></i> Multiline
-                </button>
-                <button class="tool-btn" id="btnMeasureAngle" title="Measure Angle">
-                    <i class="fa-solid fa-angle"></i> Angle
-                </button>
-                <button class="tool-btn" id="btnMeasureArea" title="Measure Area">
-                    <i class="fa-solid fa-draw-polygon"></i> Area
-                </button>
-                <button class="tool-btn" id="btnSpotElevation" title="Inquire Spot Elevation">
-                    <i class="fa-solid fa-location-crosshairs"></i> Spot Elevation
-                </button>
-                <div class="toolbar-divider"></div>
-                <label class="tool-checkbox-label" title="Enable snapping to vertices/edges">
-                    <input type="checkbox" id="chkMeasurementSnap" checked> Snap
-                </label>
-                <div class="toolbar-divider"></div>
-                <button class="tool-btn danger" id="btnClearMeasurements" title="Clear all measurements">
-                    <i class="fa-solid fa-trash-can"></i> Clear
-                </button>
-            </div>
-
-            <!-- Interactive Add Section Plane Warning -->
-            <div id="planePlacementPrompt" class="prompt-alert" style="display: none;">
-                <i class="fa-solid fa-info-circle"></i> Click anywhere on the model to place a section plane.
-            </div>
-
-            <!-- Loader / Progress Dialog -->
-            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-                <div class="loading-card">
-                    <div class="spinner-container">
-                        <div class="custom-spinner"></div>
-                        <i class="fa-solid fa-cubes spinner-center-icon"></i>
-                    </div>
-                    <h3 id="loaderTitle">Loading Model...</h3>
-                    <p id="loaderMessage">Initializing viewports and loaders.</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
-                    </div>
-                    <span id="progressBarText">0%</span>
-                </div>
-            </div>
-
-            <!-- AI Agent Bottom Chatbox -->
-            <div id="aiAgentChatContainer" class="ai-agent-chat-container collapsed">
-                <div id="aiAgentChatHeader" class="ai-agent-chat-header">
-                    <h3><i class="fa-solid fa-robot"></i> AI Agent Chatbox</h3>
-                    <i id="aiAgentChatToggle" class="fa-solid fa-chevron-up toggle-icon"></i>
-                </div>
-                <div class="ai-agent-chat-body">
-                    <!-- Config Column -->
-                    <div class="ai-agent-chat-config">
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <label for="aiProviderSelect" style="margin-bottom: 6px;">AI Provider</label>
-                             <select id="aiProviderSelect" class="form-input" style="width: 100%;">
-                                <option value="gemini">Google Gemini</option>
-                                <option value="openai">OpenAI (GPT)</option>
-                                <option value="anthropic">Anthropic Claude</option>
-                                <option value="ollama">Ollama (Local)</option>
-                            </select>
-                        </div>
-                        <!-- API Key Inputs -->
-                        <div class="form-group" id="geminiKeyGroup" style="margin-bottom: 0;">
-                            <label for="geminiApiKey" style="margin-bottom: 6px;">Gemini API Key</label>
-                            <input type="password" id="geminiApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
-                        </div>
-                        <div class="form-group" id="openaiKeyGroup" style="display: none; margin-bottom: 0;">
-                            <label for="openaiApiKey" style="margin-bottom: 6px;">OpenAI API Key</label>
-                            <input type="password" id="openaiApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
-                        </div>
-                        <div class="form-group" id="anthropicKeyGroup" style="display: none; margin-bottom: 0;">
-                            <label for="anthropicApiKey" style="margin-bottom: 6px;">Anthropic API Key</label>
-                            <input type="password" id="anthropicApiKey" class="form-input" placeholder="Enter key..." style="width: 100%;">
-                        </div>
-                        <div class="form-group" id="ollamaModelGroup" style="display: none; margin-bottom: 0;">
-                            <label for="ollamaModelSelect" style="margin-bottom: 6px;">Ollama Model</label>
-                            <select id="ollamaModelSelect" class="form-input" style="width: 100%;">
-                                <option value="">Loading models...</option>
-                            </select>
-                        </div>
-                    </div>
-                    <!-- Chat Interface Column -->
-                    <div class="ai-chatbox-main" style="display: flex; flex-direction: column; height: 100%; justify-content: space-between; flex: 1; min-width: 0;">
-                        <div id="aiChatHistory" class="ai-chat-history">
-                            <div class="ai-message system">
-                                Enter your API key on the left and ask the AI Agent to control the viewer.
+                    <!-- Group 2: Loading Options -->
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-sliders"></i> Loading Options</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <div class="radio-group-sm">
+                                    <label class="radio-label">
+                                        <input type="radio" name="ifcEngine" value="web-ifc" checked>
+                                        <span>web-ifc</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="ifcEngine" value="ifcopenshell">
+                                        <span>IfcOpenShell</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="ribbon-row">
+                                <label class="toggle-sm"><input type="checkbox" id="convertToXktOpt"> Convert
+                                    XKT</label>
+                                <label class="toggle-sm"><input type="checkbox" id="chkAppendModel"> Append</label>
+                                <div class="input-inline">
+                                    <span>Skip:</span>
+                                    <input type="number" id="pointSkip" class="form-input form-input-sm" min="1"
+                                        max="100" value="5" style="width: 40px;">
+                                </div>
+                                <button class="btn btn-primary btn-sm" id="btnDownloadXkt" disabled
+                                    title="Download converted XKT file">
+                                    <i class="fa-solid fa-download"></i> XKT
+                                </button>
                             </div>
                         </div>
-                        <div class="ai-chat-input-wrapper">
-                            <input type="text" id="aiChatInput" class="form-input" placeholder="Ask agent to control model...">
-                            <button id="btnSendAiChat" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+
+                    <!-- Group 3: RVT Converter -->
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-wand-magic-sparkles"></i> RVT Converter
+                        </div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <input type="text" id="xdesApiUrl" class="form-input form-input-sm"
+                                    value="https://jobs.xeo.vision" placeholder="API URL" style="width: 120px;">
+                                <input type="text" id="xdesClientId" class="form-input form-input-sm"
+                                    placeholder="Client ID" style="width: 80px;">
+                                <input type="password" id="xdesClientSecret" class="form-input form-input-sm"
+                                    placeholder="Secret" style="width: 80px;">
+                            </div>
+                            <div class="ribbon-row">
+                                <input type="file" id="rvtFileInput" accept=".rvt" class="form-input form-input-sm"
+                                    style="width: 140px;">
+                                <button class="btn btn-primary btn-sm" id="btnConvertRvt">
+                                    <i class="fa-solid fa-bolt"></i> Convert RVT
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 4: Section & Measurement -->
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-ruler-combined"></i> Section &amp;
+                            Measurement</div>
+                        <div class="ribbon-group-content vertical-stack" id="measurementToolbar">
+                            <div class="ribbon-row">
+                                <span
+                                    style="font-size: 10px; color: var(--text-muted); font-weight: 600; width: 48px;">Section:</span>
+                                <button class="btn btn-secondary btn-icon-sm" id="btnAddPlaneInteractive"
+                                    title="Add Cut Plane by Surface Click">
+                                    <i class="fa-solid fa-scissors"></i> Cut Click
+                                </button>
+                                <button class="btn btn-secondary btn-icon-sm" id="btnAddPlaneCenter"
+                                    title="Add Cut Plane at Center">
+                                    <i class="fa-solid fa-crosshairs"></i> Cut Center
+                                </button>
+                                <label class="toggle-sm"><input type="checkbox" id="chkShowGizmos" checked>
+                                    Gizmos</label>
+                                <button class="btn btn-danger btn-icon-sm" id="btnClearPlanes"
+                                    title="Clear All Cut Planes">
+                                    <i class="fa-solid fa-trash-can"></i> Clear Planes
+                                </button>
+                            </div>
+                            <div class="ribbon-row">
+                                <span
+                                    style="font-size: 10px; color: var(--text-muted); font-weight: 600; width: 48px;">Measure:</span>
+                                <button class="tool-btn btn-icon-sm" id="btnMeasureDistance" title="Distance">
+                                    <i class="fa-solid fa-ruler-horizontal"></i> Distance
+                                </button>
+                                <button class="tool-btn btn-icon-sm" id="btnMeasureMultiline" title="Multiline Path">
+                                    <i class="fa-solid fa-route"></i> Path
+                                </button>
+                                <button class="tool-btn btn-icon-sm" id="btnMeasureAngle" title="Angle">
+                                    <i class="fa-solid fa-angle"></i> Angle
+                                </button>
+                                <button class="tool-btn btn-icon-sm" id="btnMeasureArea" title="Area">
+                                    <i class="fa-solid fa-draw-polygon"></i> Area
+                                </button>
+                                <button class="tool-btn btn-icon-sm" id="btnSpotElevation" title="Spot Elevation">
+                                    <i class="fa-solid fa-location-crosshairs"></i> Elevation
+                                </button>
+                                <label class="toggle-sm"><input type="checkbox" id="chkMeasurementSnap" checked>
+                                    Snap</label>
+                                <button class="tool-btn btn-icon-sm danger" id="btnClearMeasurements"
+                                    title="Clear All Measurements">
+                                    <i class="fa-solid fa-eraser"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. VIEW TAB -->
+                <div id="ribbon-view" class="ribbon-pane">
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-eye"></i> Visibility Controls</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <button class="btn btn-secondary btn-sm" id="btnShowAllGlobal"
+                                    title="Show All Hidden Objects"><i class="fa-solid fa-eye"></i> Show All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-filter"></i> Property Filter &amp; Search
+                        </div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <div class="search-box-sm">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    <input type="text" id="propertySearch" placeholder="Quick search name, type..."
+                                        class="form-input form-input-sm" style="width: 170px;">
+                                    <button id="btnClearSearch" class="btn-clear-search" style="display: none;"><i
+                                            class="fa-solid fa-circle-xmark"></i></button>
+                                </div>
+                                <span id="filterResultCount" class="result-count-sm"></span>
+                            </div>
+                            <div class="ribbon-row">
+                                <select id="filterPropName" class="form-input form-input-sm" style="width: 130px;">
+                                    <option value="">-- Property --</option>
+                                </select>
+                                <select id="filterOperator" class="form-input form-input-sm" style="width: 90px;">
+                                    <option value="equals">=</option>
+                                    <option value="contains">Contains</option>
+                                    <option value="gt">&gt;</option>
+                                    <option value="lt">&lt;</option>
+                                </select>
+                                <input type="text" id="filterPropVal" class="form-input form-input-sm"
+                                    placeholder="Value..." style="width: 100px;">
+                                <button id="btnApplyPropFilter" class="btn btn-primary btn-sm">Apply</button>
+                                <button id="btnResetPropFilter" class="btn btn-secondary btn-sm">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. GEOREFERENCING TAB -->
+                <div id="ribbon-geo" class="ribbon-pane">
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-earth-americas"></i> Georeferencing Block
+                        </div>
+                        <div class="ribbon-group-content vertical-stack" id="georeferencePanel">
+                            <div class="ribbon-row">
+                                <span class="georeference-status no-geo" id="geoStatusText">No model</span>
+                                <div id="geoModelSelectGroup" style="display: none;">
+                                    <select id="geoModelSelect" class="form-input form-input-sm"
+                                        style="width: 95px;"></select>
+                                </div>
+                                <input type="number" step="any" id="geoEasting" class="form-input form-input-sm"
+                                    placeholder="Easting (X)" disabled style="width: 90px;">
+                                <input type="number" step="any" id="geoNorthing" class="form-input form-input-sm"
+                                    placeholder="Northing (Y)" disabled style="width: 90px;">
+                                <input type="number" step="any" id="geoTrueNorth" class="form-input form-input-sm"
+                                    placeholder="North (°)" disabled style="width: 70px;">
+                                <input type="text" id="geoEPSG" class="form-input form-input-sm" placeholder="EPSG"
+                                    disabled style="width: 80px;">
+                                <input type="text" id="geoVerticalDatum" class="form-input form-input-sm"
+                                    placeholder="Datum" disabled style="width: 75px;">
+                            </div>
+                            <div class="ribbon-row">
+                                <input type="text" id="geoCesiumToken" class="form-input form-input-sm"
+                                    placeholder="Cesium Ion Token..." disabled style="width: 160px;">
+                                <button class="btn btn-secondary btn-sm" id="btnEditGeoreference" disabled><i
+                                        class="fa-solid fa-lock"></i> Edit Geo</button>
+                                <button class="btn btn-secondary btn-sm" id="btnToggleCesium" disabled><i
+                                        class="fa-solid fa-globe"></i> Cesium Globe</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-sun"></i> Solar Position &amp; Lighting
+                        </div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <label class="toggle-sm"><input type="checkbox" id="chkEnableSunPosition"> Enable Sun
+                                    Position Light</label>
+                            </div>
+                            <div class="ribbon-row" id="sunParamsContainer" style="display: none;">
+                                <input type="datetime-local" id="sunDateTime" class="form-input form-input-sm"
+                                    style="width: 155px;">
+                                <span style="font-size: 11px;">Sky:</span>
+                                <input type="color" id="sunSkyColor" class="form-input-color-sm" value="#d0e0ff">
+                                <span style="font-size: 11px;">Ground:</span>
+                                <input type="color" id="sunGroundColor" class="form-input-color-sm" value="#3a3530">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. QTO & 5D BOQ TAB -->
+                <div id="ribbon-qto" class="ribbon-pane">
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-calculator"></i> Quantity Take-Off</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <button class="btn btn-primary btn-sm" id="btnOpenQto"><i class="fa-solid fa-table"></i>
+                                    Open QTO Table</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-file-invoice-dollar"></i> 5D Cost
+                            Estimating (BOQ)</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <span style="font-size: 11px;">Region:</span>
+                                <select id="boqRegionSelect" class="form-input form-input-sm" style="width: 90px;">
+                                    <option value="R-JKT">Jakarta</option>
+                                    <option value="R-BDG">Bandung</option>
+                                    <option value="R-SBY">Surabaya</option>
+                                    <option value="R-PAP">Papua</option>
+                                </select>
+                            </div>
+                            <div class="ribbon-row">
+                                <button class="btn btn-primary btn-sm" id="btnOpenBoqModal"><i
+                                        class="fa-solid fa-calculator"></i> Open 5D BOQ Sheet</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-coins"></i> Resource Rates Editor</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <select id="rateResourceSelect" class="form-input form-input-sm"
+                                    style="width: 130px;"></select>
+                            </div>
+                            <div class="ribbon-row">
+                                <input type="number" id="rateResourcePrice" class="form-input form-input-sm"
+                                    placeholder="Price (IDR)" style="width: 90px;">
+                                <button class="btn btn-secondary btn-sm" id="btnUpdateResourceRate"><i
+                                        class="fa-solid fa-floppy-disk"></i> Save Rate</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-clock-rotate-left"></i> Active Overrides
+                        </div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div id="overridesList" style="max-height: 40px; overflow-y: auto; font-size: 11px;">
+                                <p style="color: var(--text-muted); margin: 0;">No active overrides.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. IFC OPENSHELL TAB -->
+                <div id="ribbon-ifc" class="ribbon-pane">
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-code-compare"></i> IFC Diff</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <select id="diffOldModelSelect" class="form-input form-input-sm" style="width: 110px;">
+                                    <option value="">Old Model</option>
+                                </select>
+                                <select id="diffNewModelSelect" class="form-input form-input-sm" style="width: 110px;">
+                                    <option value="">New Model</option>
+                                </select>
+                            </div>
+                            <div class="ribbon-row">
+                                <button class="btn btn-primary btn-sm" id="btnRunDiff"><i class="fa-solid fa-play"></i>
+                                    Compare</button>
+                                <button class="btn btn-secondary btn-sm" id="btnHighlightDiff" style="display:none;"><i
+                                        class="fa-solid fa-highlighter"></i> Highlight</button>
+                                <button class="btn btn-secondary btn-sm" id="btnClearDiff" style="display:none;"><i
+                                        class="fa-solid fa-rotate-left"></i> Reset</button>
+                                <div id="diffResults" class="tool-results-mini" style="display: none;">
+                                    <span style="color: var(--success);" id="diffAddedVal">0</span>+ /
+                                    <span style="color: var(--danger);" id="diffDeletedVal">0</span>- /
+                                    <span style="color: #eab308;" id="diffChangedVal">0</span>~
+                                    <ul id="diffList" style="display:none;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-book-open"></i> BCF Reader</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <input type="file" id="bcfFileInput" accept=".bcf" class="form-input form-input-sm"
+                                    style="width: 130px;">
+                            </div>
+                            <div class="ribbon-row">
+                                <button class="btn btn-primary btn-sm" id="btnRunBcfReader"><i
+                                        class="fa-solid fa-folder-open"></i> Read BCF</button>
+                                <div id="bcfResults" class="tool-results-mini" style="display: none;">
+                                    <div class="bcf-topics-list" id="bcfTopicsList"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-triangle-exclamation"></i> IFC Clash</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <select id="clashModelASelect" class="form-input form-input-sm" style="width: 105px;">
+                                    <option value="">Model A</option>
+                                </select>
+                                <select id="clashModelBSelect" class="form-input form-input-sm" style="width: 105px;">
+                                    <option value="">Model B</option>
+                                </select>
+                                <input type="number" id="clashToleranceInput" class="form-input form-input-sm"
+                                    value="0.0" step="0.01" min="0" style="width: 60px;">
+                            </div>
+                            <div class="ribbon-row">
+                                <button class="btn btn-primary btn-sm" id="btnRunClash"><i class="fa-solid fa-bolt"></i>
+                                    Clash</button>
+                                <div id="clashResults" class="tool-results-mini" style="display: none;">
+                                    <span id="clashCountTitle" style="font-size: 11px;">0 Clashes</span>
+                                    <a class="btn btn-secondary btn-sm" id="btnDownloadClashBcf"><i
+                                            class="fa-solid fa-download"></i> BCF</a>
+                                    <button class="btn btn-secondary btn-sm" id="btnClearClashes"><i
+                                            class="fa-solid fa-rotate-left"></i> Clear</button>
+                                    <ul id="clashList" style="display:none;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-file-export"></i> IFC Convert</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <select id="convertModelSelect" class="form-input form-input-sm" style="width: 105px;">
+                                    <option value="">Model</option>
+                                </select>
+                                <select id="convertFormatSelect" class="form-input form-input-sm" style="width: 80px;">
+                                    <option value="glb">GLB</option>
+                                    <option value="obj">OBJ</option>
+                                    <option value="dae">DAE</option>
+                                    <option value="stp">STEP</option>
+                                    <option value="igs">IGES</option>
+                                </select>
+                            </div>
+                            <div class="ribbon-row">
+                                <button class="btn btn-primary btn-sm" id="btnRunConvert"><i
+                                        class="fa-solid fa-file-export"></i> Convert</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ribbon-group" id="ifcCsvSection">
+                        <div class="ribbon-group-title"><i class="fa-solid fa-file-csv"></i> IFC CSV Export</div>
+                        <div class="ribbon-group-content vertical-stack">
+                            <div class="ribbon-row">
+                                <select id="csvModelSelect" class="form-input form-input-sm" style="width: 105px;">
+                                    <option value="">Model</option>
+                                </select>
+                                <select id="csvIfcClassFilter" class="form-input form-input-sm" style="width: 110px;">
+                                    <option value="">All Classes</option>
+                                </select>
+                            </div>
+                            <div class="ribbon-row">
+                                <label class="toggle-sm"><input type="checkbox" id="csvColName" checked> Name</label>
+                                <label class="toggle-sm"><input type="checkbox" id="csvColType" checked> Class</label>
+                                <label class="toggle-sm"><input type="checkbox" id="csvColId"> ID</label>
+                                <button class="btn btn-primary btn-sm" id="btnExportIfcCsv"><i
+                                        class="fa-solid fa-download"></i> Export CSV</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <!-- Status Indicator -->
-            <div class="status-bar" id="statusBar">
-                <span id="statusMessage"><i class="fa-solid fa-circle-info"></i> Ready. Drag an IFC/XKT model or upload to start viewing.</span>
-            </div>
-        </main>
-
-        <!-- Sidebar: Properties Inspector -->
-        <aside class="sidebar properties-panel" id="propertiesPanel">
-            <div class="properties-inspector">
-                <div class="panel-header">
-                    <h3><i class="fa-solid fa-circle-info"></i> Properties</h3>
-                </div>
-                
-                <!-- Selection Prompt -->
-                <div class="no-selection-prompt" id="noSelectionPrompt">
-                    <i class="fa-solid fa-mouse-pointer"></i>
-                    <p>Click on any object in the viewer to inspect its IFC attributes & property sets.</p>
-                </div>
-
-                <!-- Properties Content -->
-                <div class="properties-content" id="propertiesContent" style="display: none;">
-                    <!-- Header/Quick Info -->
-                    <div class="object-summary-card">
-                        <h4 id="propObjName">Wall Standard Case</h4>
-                        <span id="propObjType" class="badge">IfcWallStandardCase</span>
-                        <span id="propObjId" class="id-badge">ID: --</span>
-                        
-                        <button class="btn btn-secondary btn-full" id="btnSelectSimilar" style="margin-top: 12px;">
-                            <i class="fa-solid fa-clone"></i> Select Similar Type
+        <!-- Workspace Container (Left Sidebar, Main Canvas, Right Sidebar) -->
+        <div class="app-main-workspace">
+            <!-- Left Sidebar: AI Agent Function (Expandable / Collapsible) -->
+            <aside class="sidebar left-sidebar" id="aiAgentSidebar">
+                <div id="aiAgentChatContainer" class="ai-agent-sidebar-container">
+                    <div id="aiAgentChatHeader" class="sidebar-panel-header">
+                        <h3><i class="fa-solid fa-robot"></i> <span>AI Agent Assistant</span></h3>
+                        <button id="btnToggleAiSidebar" class="sidebar-collapse-btn" title="Toggle AI Sidebar">
+                            <i class="fa-solid fa-chevron-left"></i>
                         </button>
-                        <div class="btn-grid" style="margin-top: 8px; grid-template-columns: repeat(3, 1fr);">
-                            <button class="btn btn-secondary" id="btnHideObject" title="Hide selected object">
-                                <i class="fa-solid fa-eye-slash"></i> Hide
-                            </button>
-                            <button class="btn btn-secondary" id="btnIsolateObject" title="Isolate selected object">
-                                <i class="fa-solid fa-expand"></i> Isolate
-                            </button>
-                            <button class="btn btn-secondary" id="btnXrayObject" title="X-Ray selected object">
-                                <i class="fa-solid fa-x-ray"></i> X-Ray
-                            </button>
+                    </div>
+                    <div class="ai-agent-chat-body">
+                        <div class="ai-agent-chat-config">
+                            <div class="form-group">
+                                <label for="aiProviderSelect">AI Provider</label>
+                                <select id="aiProviderSelect" class="form-input" style="width: 100%;">
+                                    <option value="gemini">Google Gemini</option>
+                                    <option value="openai">OpenAI (GPT)</option>
+                                    <option value="anthropic">Anthropic Claude</option>
+                                    <option value="ollama">Ollama (Local)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="geminiKeyGroup">
+                                <label for="geminiApiKey">Gemini API Key</label>
+                                <input type="password" id="geminiApiKey" class="form-input" placeholder="Enter key..."
+                                    style="width: 100%;">
+                            </div>
+                            <div class="form-group" id="openaiKeyGroup" style="display: none;">
+                                <label for="openaiApiKey">OpenAI API Key</label>
+                                <input type="password" id="openaiApiKey" class="form-input" placeholder="Enter key..."
+                                    style="width: 100%;">
+                            </div>
+                            <div class="form-group" id="anthropicKeyGroup" style="display: none;">
+                                <label for="anthropicApiKey">Anthropic API Key</label>
+                                <input type="password" id="anthropicApiKey" class="form-input"
+                                    placeholder="Enter key..." style="width: 100%;">
+                            </div>
+                            <div class="form-group" id="ollamaModelGroup" style="display: none;">
+                                <label for="ollamaModelSelect">Ollama Model</label>
+                                <select id="ollamaModelSelect" class="form-input" style="width: 100%;">
+                                    <option value="">Loading models...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="ai-chatbox-main">
+                            <div id="aiChatHistory" class="ai-chat-history">
+                                <div class="ai-message system">
+                                    Enter your API key above and ask the AI Agent to inspect or control the viewer.
+                                </div>
+                            </div>
+                            <div class="ai-chat-input-wrapper">
+                                <input type="text" id="aiChatInput" class="form-input"
+                                    placeholder="Ask AI agent to control model...">
+                                <button id="btnSendAiChat" class="btn btn-primary"><i
+                                        class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center 3D Viewer Canvas -->
+            <main class="viewer-container">
+                <div id="cesiumContainer"></div>
+                <canvas id="myCanvas"></canvas>
+                <canvas id="myNavCubeCanvas"></canvas>
+
+                <svg id="measurementOverlay"
+                    style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3;"></svg>
+                <div id="elevationOverlay"
+                    style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4;">
+                </div>
+
+                <div id="planePlacementPrompt" class="prompt-alert" style="display: none;">
+                    <i class="fa-solid fa-info-circle"></i> Click anywhere on the model to place a section plane.
+                </div>
+
+                <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                    <div class="loading-card">
+                        <div class="spinner-container">
+                            <div class="custom-spinner"></div>
+                            <i class="fa-solid fa-cubes spinner-center-icon"></i>
+                        </div>
+                        <h3 id="loaderTitle">Loading Model...</h3>
+                        <p id="loaderMessage">Initializing viewports and loaders.</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+                        </div>
+                        <span id="progressBarText">0%</span>
+                    </div>
+                </div>
+
+                <div class="status-bar" id="statusBar">
+                    <span id="statusMessage"><i class="fa-solid fa-circle-info"></i> Ready. Drag an IFC/XKT model or
+                        upload to start viewing.</span>
+                </div>
+            </main>
+
+            <!-- Right Sidebar: Revit-Style Bottom Tabs Container (Filter selection | Properties | Model Tree) -->
+            <aside class="sidebar right-sidebar" id="rightSidebar">
+                <div class="right-sidebar-content">
+                    <!-- Tab Pane 1: Filter Selection (Auto IFC Classes) -->
+                    <div id="right-tab-filter" class="right-tab-pane">
+                        <div class="panel-header">
+                            <h3><i class="fa-solid fa-filter"></i> Filter Selection</h3>
+                        </div>
+                        <div class="filter-search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="filterClassSearch" class="form-input form-input-sm"
+                                placeholder="Search IFC Class (e.g. IfcWall)...">
+                        </div>
+                        <div class="filter-selection-container" id="filterSelectionList">
+                            <div class="no-selection-prompt">
+                                <i class="fa-solid fa-filter"></i>
+                                <p>Load a model to view IFC element classes.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Tabs/Accordions of property sets -->
-                    <div class="property-sets-container" id="propertySetsContainer">
-                        <!-- Dynamic property lists go here -->
-                    </div>
-                </div>
-            </div>
+                    <!-- Tab Pane 2: Properties Inspector (Active by default) -->
+                    <div id="right-tab-properties" class="right-tab-pane active">
+                        <div class="properties-inspector">
+                            <div class="panel-header">
+                                <h3><i class="fa-solid fa-circle-info"></i> Properties Inspector</h3>
+                            </div>
+                            <div class="no-selection-prompt" id="noSelectionPrompt">
+                                <i class="fa-solid fa-mouse-pointer"></i>
+                                <p>Click on any object in the viewer to inspect attributes &amp; property sets.</p>
+                            </div>
 
-            <!-- Georeference Panel -->
-            <div class="georeference-panel panel-section" id="georeferencePanel">
-                <h3><i class="fa-solid fa-earth-americas"></i> Georeferencing</h3>
-                <div class="georeference-status no-geo" id="geoStatusText">No model loaded.</div>
-                <div class="form-group geo-group" id="geoModelSelectGroup" style="display: none; margin-top: 10px;">
-                    <label for="geoModelSelect">Select Model</label>
-                    <select id="geoModelSelect" class="form-input"></select>
+                            <div class="properties-content" id="propertiesContent" style="display: none;">
+                                <div class="object-summary-card">
+                                    <h4 id="propObjName">Wall Standard Case</h4>
+                                    <span id="propObjType" class="badge">IfcWallStandardCase</span>
+                                    <span id="propObjId" class="id-badge">ID: --</span>
+
+                                    <button class="btn btn-secondary btn-full" id="btnSelectSimilar"
+                                        style="margin-top: 10px;">
+                                        <i class="fa-solid fa-clone"></i> Select Similar Type
+                                    </button>
+                                    <div class="btn-grid"
+                                        style="margin-top: 8px; grid-template-columns: repeat(3, 1fr);">
+                                        <button class="btn btn-secondary" id="btnHideObject"
+                                            title="Hide selected object">
+                                            <i class="fa-solid fa-eye-slash"></i> Hide
+                                        </button>
+                                        <button class="btn btn-secondary" id="btnIsolateObject"
+                                            title="Isolate selected object">
+                                            <i class="fa-solid fa-expand"></i> Isolate
+                                        </button>
+                                        <button class="btn btn-secondary" id="btnXrayObject"
+                                            title="X-Ray selected object">
+                                            <i class="fa-solid fa-x-ray"></i> X-Ray
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="property-sets-container" id="propertySetsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Pane 3: Model Tree Hierarchy -->
+                    <div id="right-tab-tree" class="right-tab-pane">
+                        <div class="panel-header">
+                            <h3><i class="fa-solid fa-sitemap"></i> Model Tree Hierarchy</h3>
+                        </div>
+                        <div class="tree-container" id="treeContainer"></div>
+                    </div>
                 </div>
-                <div class="georeference-inputs">
-                    <div class="form-group geo-group">
-                        <label for="geoEasting">Easting (X)</label>
-                        <input type="number" step="any" id="geoEasting" class="form-input" placeholder="e.g. 500000.0" disabled>
-                    </div>
-                    <div class="form-group geo-group">
-                        <label for="geoNorthing">Northing (Y)</label>
-                        <input type="number" step="any" id="geoNorthing" class="form-input" placeholder="e.g. 5000000.0" disabled>
-                    </div>
-                    <div class="form-group geo-group">
-                        <label for="geoTrueNorth">True North Angle (°)</label>
-                        <input type="number" step="any" id="geoTrueNorth" class="form-input" placeholder="e.g. 45.0" disabled>
-                    </div>
-                    <div class="form-group geo-group">
-                        <label for="geoEPSG">EPSG Code</label>
-                        <input type="text" id="geoEPSG" class="form-input" placeholder="e.g. EPSG:4326" disabled>
-                    </div>
-                    <div class="form-group geo-group">
-                        <label for="geoVerticalDatum">Vertical Datum</label>
-                        <input type="text" id="geoVerticalDatum" class="form-input" placeholder="e.g. EPSG:5111" disabled>
-                    </div>
-                    <div class="form-group geo-group">
-                        <label for="geoCesiumToken">Cesium Ion Token</label>
-                        <input type="text" id="geoCesiumToken" class="form-input" placeholder="Optional. Paste Ion token..." disabled>
-                    </div>
-                </div>
-                <button class="btn btn-secondary btn-full" id="btnEditGeoreference" disabled>
-                    <i class="fa-solid fa-lock"></i> Edit Georeference
-                </button>
-                <button class="btn btn-secondary btn-full" id="btnToggleCesium" disabled style="margin-top: 8px;">
-                    <i class="fa-solid fa-earth-americas"></i> Activate Cesium Globe
-                </button>
-                
-                <div class="sun-position-section" style="border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
-                    <h4 style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; margin: 4px 0 8px 0;"><i class="fa-solid fa-sun" style="color: var(--accent-color, #06b6d4);"></i> Solar Position &amp; Lighting</h4>
-                    <div class="form-group checkbox-group" style="margin-bottom: 8px;">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="chkEnableSunPosition">
-                            <span class="slider"></span>
-                        </label>
-                        <span class="label-text">Enable Sun Position Light</span>
-                    </div>
-                    <div id="sunParamsContainer" style="display: none; flex-direction: column; gap: 8px;">
-                        <div class="form-group" style="margin-bottom: 8px;">
-                            <label for="sunDateTime" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Date &amp; Time</label>
-                            <input type="datetime-local" id="sunDateTime" class="form-input" style="width: 100%; box-sizing: border-box;">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 8px;">
-                            <label for="sunSkyColor" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Sky Color (Hemisphere Top)</label>
-                            <input type="color" id="sunSkyColor" class="form-input-color" value="#d0e0ff" style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 6px; padding: 2px; box-sizing: border-box; background: none;">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 8px;">
-                            <label for="sunGroundColor" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Ground Color (Hemisphere Bottom)</label>
-                            <input type="color" id="sunGroundColor" class="form-input-color" value="#3a3530" style="width: 100%; height: 36px; border: 1px solid var(--border-color); border-radius: 6px; padding: 2px; box-sizing: border-box; background: none;">
-                        </div>
-            </div>
-        </aside>
+
+                <!-- Revit-Style Bottom Tabs Bar -->
+                <nav class="right-sidebar-bottom-tabs">
+                    <button class="right-tab-btn" data-right-tab="right-tab-filter" title="Filter Selection">
+                        Filter selection
+                    </button>
+                    <button class="right-tab-btn active" data-right-tab="right-tab-properties"
+                        title="Properties Inspector">
+                        Properties
+                    </button>
+                    <button class="right-tab-btn" data-right-tab="right-tab-tree" title="Model Tree Hierarchy">
+                        Model Tree
+                    </button>
+                </nav>
+            </aside>
+        </div>
     </div>
 
     <!-- Quantity Take-Off (QTO) Modal Panel -->
     <div id="qtoModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card" style="width: 90%; max-width: 1400px; height: 85vh; display: flex; flex-direction: column;">
+        <div class="modal-card"
+            style="width: 90%; max-width: 1400px; height: 85vh; display: flex; flex-direction: column;">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-table"></i> Quantity Take-Off (QTO)</h3>
                 <button class="btn-close" id="btnCloseQto"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-controls" style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
                 <div class="search-box" style="flex: 1; position: relative;">
-                    <i class="fa-solid fa-magnifying-glass search-icon" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
-                    <input type="text" id="qtoSearch" placeholder="Search quantities, types or classes..." style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,0.2); color: var(--text-color);">
+                    <i class="fa-solid fa-magnifying-glass search-icon"
+                        style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="qtoSearch" placeholder="Search quantities, types or classes..."
+                        style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,0.2); color: var(--text-color);">
                 </div>
                 <button class="btn btn-primary" id="btnExportCsv">
                     <i class="fa-solid fa-file-csv"></i> Export CSV
@@ -738,22 +709,25 @@
                                 <th>Total Price</th>
                             </tr>
                         </thead>
-                        <tbody id="qtoTableBody">
-                            <!-- Dynamically generated rows -->
-                        </tbody>
+                        <tbody id="qtoTableBody"></tbody>
                     </table>
                 </div>
-                <div class="qto-charts-container" style="flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
-                    <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
-                        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Budget Distribution by Category</h4>
+                <div class="qto-charts-container"
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
+                    <div class="qto-chart-wrapper"
+                        style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">
+                            Budget Distribution by Category</h4>
                         <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
                             <canvas id="qtoPieChart"></canvas>
                         </div>
                     </div>
-                    <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
-                        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Accumulated Price by Category</h4>
+                    <div class="qto-chart-wrapper"
+                        style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">
+                            Accumulated Price by Category</h4>
                         <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
-                            <canvas id="qtoBarChart"></canvas>
+                            <canvas id="boqBarChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -766,44 +740,69 @@
 
     <!-- 5D Cost Estimate & BOQ Modal Panel -->
     <div id="boqModal" class="modal-overlay" style="display: none;">
-        <div class="modal-card boq-modal-card" style="width: 90%; max-width: 1400px; height: 85vh; display: flex; flex-direction: column;">
+        <div class="modal-card boq-modal-card"
+            style="width: 90%; max-width: 1400px; height: 85vh; display: flex; flex-direction: column;">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-file-invoice-dollar"></i> 5D BIM Cost Estimation & BOQ</h3>
+                <h3><i class="fa-solid fa-file-invoice-dollar"></i> 5D BIM Cost Estimation &amp; BOQ</h3>
                 <button class="btn-close" id="btnCloseBoq"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <!-- Modal Tabs Navigation -->
-            <div class="modal-tabs" style="display: flex; gap: 10px; padding: 10px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
-                <button class="modal-tab-btn active" data-modal-tab="boq-summary-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-list-check"></i> Bill of Quantities (BOQ)</button>
-                <button class="modal-tab-btn" data-modal-tab="element-qto-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-calculator"></i> Element QTO &amp; Overrides</button>
-                <button class="modal-tab-btn" data-modal-tab="rules-mapping-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-gears"></i> Mappings &amp; Rules</button>
-                <button class="modal-tab-btn" data-modal-tab="ahsp-library-tab" style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i class="fa-solid fa-book"></i> Price Unit Analysis</button>
+
+            <div class="modal-tabs"
+                style="display: flex; gap: 10px; padding: 10px 20px; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.15);">
+                <button class="modal-tab-btn active" data-modal-tab="boq-summary-tab"
+                    style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i
+                        class="fa-solid fa-list-check"></i> Bill of Quantities (BOQ)</button>
+                <button class="modal-tab-btn" data-modal-tab="element-qto-tab"
+                    style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i
+                        class="fa-solid fa-calculator"></i> Element QTO &amp; Overrides</button>
+                <button class="modal-tab-btn" data-modal-tab="rules-mapping-tab"
+                    style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i
+                        class="fa-solid fa-gears"></i> Mappings &amp; Rules</button>
+                <button class="modal-tab-btn" data-modal-tab="ahsp-library-tab"
+                    style="padding: 8px 16px; border: none; border-radius: 4px; background: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-family: 'Inter', sans-serif;"><i
+                        class="fa-solid fa-book"></i> Price Unit Analysis</button>
             </div>
 
-            <!-- Tab Content: 1. BOQ Summary & Dashboard -->
-            <div id="boq-summary-tab" class="modal-tab-content" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
-                <!-- Cost Summary Cards -->
-                <div class="cost-summary-cards" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
-                    <div class="summary-card" style="background: linear-gradient(135deg, #4f46e5, #3730a3); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: #c7d2fe; letter-spacing: 0.5px;">Total Project Cost</h4>
-                        <span id="summaryTotalCost" style="font-size: 20px; font-weight: 700; color: #ffffff;">Rp 0</span>
+            <!-- Tab Content: 1. BOQ Summary -->
+            <div id="boq-summary-tab" class="modal-tab-content"
+                style="display: flex; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+                <div class="cost-summary-cards"
+                    style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">
+                    <div class="summary-card"
+                        style="background: linear-gradient(135deg, #4f46e5, #3730a3); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <h4
+                            style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: #c7d2fe; letter-spacing: 0.5px;">
+                            Total Project Cost</h4>
+                        <span id="summaryTotalCost" style="font-size: 20px; font-weight: 700; color: #ffffff;">Rp
+                            0</span>
                     </div>
-                    <div class="summary-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Labor Cost</h4>
-                        <span id="summaryLaborCost" style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
+                    <div class="summary-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                        <h4
+                            style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">
+                            Labor Cost</h4>
+                        <span id="summaryLaborCost"
+                            style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
                     </div>
-                    <div class="summary-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Material Cost</h4>
-                        <span id="summaryMaterialCost" style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
+                    <div class="summary-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                        <h4
+                            style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">
+                            Material Cost</h4>
+                        <span id="summaryMaterialCost"
+                            style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
                     </div>
-                    <div class="summary-card" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
-                        <h4 style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Equipment Cost</h4>
-                        <span id="summaryEquipmentCost" style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
+                    <div class="summary-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+                        <h4
+                            style="margin: 0 0 5px 0; font-size: 11px; text-transform: uppercase; color: var(--text-muted);">
+                            Equipment Cost</h4>
+                        <span id="summaryEquipmentCost"
+                            style="font-size: 18px; font-weight: 600; color: var(--text-color);">Rp 0</span>
                     </div>
                 </div>
 
                 <div class="qto-split-container" style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
-                    <!-- BOQ Table -->
                     <div class="table-container" style="flex: 1.5; overflow-y: auto;">
                         <table class="qto-table" id="boqTable">
                             <thead>
@@ -819,21 +818,25 @@
                                     <th style="width: 80px; text-align: center;">Highlight</th>
                                 </tr>
                             </thead>
-                            <tbody id="boqTableBody">
-                                <!-- Generated Dynamically -->
-                            </tbody>
+                            <tbody id="boqTableBody"></tbody>
                         </table>
                     </div>
-                    <!-- Cost Charts & Pareto Analysis -->
-                    <div class="qto-charts-container" style="flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
-                        <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
-                            <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Budget Distribution by Category</h4>
+                    <div class="qto-charts-container"
+                        style="flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y: auto;">
+                        <div class="qto-chart-wrapper"
+                            style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                            <h4
+                                style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">
+                                Budget Distribution by Category</h4>
                             <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
                                 <canvas id="boqPieChart"></canvas>
                             </div>
                         </div>
-                        <div class="qto-chart-wrapper" style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
-                            <h4 style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">Pareto Analysis (Cost Breakdown)</h4>
+                        <div class="qto-chart-wrapper"
+                            style="height: 220px; background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; flex-direction: column;">
+                            <h4
+                                style="margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted); font-weight: 500;">
+                                Pareto Analysis (Cost Breakdown)</h4>
                             <div class="qto-chart-canvas-holder" style="flex: 1; position: relative;">
                                 <canvas id="boqBarChart"></canvas>
                             </div>
@@ -843,15 +846,23 @@
             </div>
 
             <!-- Tab Content: 2. Element QTO & Overrides -->
-            <div id="element-qto-tab" class="modal-tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+            <div id="element-qto-tab" class="modal-tab-content"
+                style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
                 <div class="modal-controls" style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center;">
                     <div class="search-box" style="flex: 1; position: relative;">
-                        <i class="fa-solid fa-magnifying-glass search-icon" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
-                        <input type="text" id="elementQtoSearch" placeholder="Search elements by name, category, or IFC class..." style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,0.2); color: var(--text-color);">
+                        <i class="fa-solid fa-magnifying-glass search-icon"
+                            style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                        <input type="text" id="elementQtoSearch"
+                            placeholder="Search elements by name, category, or IFC class..."
+                            style="width: 100%; padding: 8px 12px 8px 35px; border: 1px solid var(--border-color); border-radius: 6px; background: rgba(0,0,0,0.2); color: var(--text-color);">
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-secondary" id="btnExportQto" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export QTO JSON</button>
-                        <button class="btn btn-secondary" id="btnImportQto" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import QTO JSON</button>
+                        <button class="btn btn-secondary" id="btnExportQto"
+                            style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export QTO
+                            JSON</button>
+                        <button class="btn btn-secondary" id="btnImportQto"
+                            style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import QTO
+                            JSON</button>
                         <input type="file" id="qtoFileInput" accept=".json" style="display: none;">
                     </div>
                 </div>
@@ -872,25 +883,38 @@
                                 <th style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="elementQtoTableBody">
-                            <!-- Generated Dynamically -->
-                        </tbody>
+                        <tbody id="elementQtoTableBody"></tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Tab Content: 3. Mappings & Rules -->
-            <div id="rules-mapping-tab" class="modal-tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+            <div id="rules-mapping-tab" class="modal-tab-content"
+                style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
                 <div style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
-                    <!-- Rules List -->
                     <div style="flex: 1.5; display: flex; flex-direction: column; overflow: hidden;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h4 style="margin: 0; color: var(--text-color); font-size: 13px; font-weight: 500;">Active Classification Mapping Rules</h4>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color); font-size: 13px; font-weight: 500;">Active
+                                Classification Mapping Rules</h4>
                             <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-secondary danger" id="btnClearRules" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-trash"></i> Clear Database</button>
-                                <button class="btn btn-secondary" id="btnExportRules" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export Rules</button>
-                                <button class="btn btn-secondary" id="btnImportRules" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import Rules</button>
-                                <input type="file" id="rulesFileInput" accept=".json" style="display: none;">
+                                <button class="btn btn-secondary danger" id="btnClearRules"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-trash"></i> Clear
+                                    Database</button>
+                                <button class="btn btn-secondary" id="btnExportRulesJson"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i>
+                                    Export JSON</button>
+                                <button class="btn btn-secondary" id="btnExportRulesCsv"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i>
+                                    Export CSV</button>
+                                <button class="btn btn-secondary" id="btnImportRulesJson"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import
+                                    JSON</button>
+                                <button class="btn btn-secondary" id="btnImportRulesCsv"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import
+                                    CSV</button>
+                                <input type="file" id="rulesFileInputJson" accept=".json" style="display: none;">
+                                <input type="file" id="rulesFileInputCsv" accept=".csv" style="display: none;">
                             </div>
                         </div>
                         <div class="table-container" style="flex: 1; overflow-y: auto;">
@@ -906,52 +930,57 @@
                                         <th style="width: 80px; text-align: center;">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="rulesTableBody">
-                                    <!-- Generated Dynamically -->
-                                </tbody>
+                                <tbody id="rulesTableBody"></tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- Add Rule Form -->
-                    <div style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; overflow-y: auto;">
-                        <h4 style="margin: 0 0 15px 0; color: var(--text-color); font-size: 13px; font-weight: 500;"><i class="fa-solid fa-plus"></i> Add Mappings Rule</h4>
-                        
+                    <div
+                        style="flex: 1; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; overflow-y: auto;">
+                        <h4 style="margin: 0 0 15px 0; color: var(--text-color); font-size: 13px; font-weight: 500;"><i
+                                class="fa-solid fa-plus"></i> Add Mappings Rule</h4>
+
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Rule Name</label>
-                            <input type="text" id="ruleNameInput" class="form-input" placeholder="e.g. Concrete Slab Volume">
+                            <label
+                                style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Rule
+                                Name</label>
+                            <input type="text" id="ruleNameInput" class="form-input"
+                                placeholder="e.g. Concrete Slab Volume">
                         </div>
-                        
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">IFC Class Type</label>
+                            <label
+                                style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">IFC
+                                Class Type</label>
                             <input type="text" id="ruleIfcTypeInput" class="form-input" placeholder="e.g. IfcSlab">
                         </div>
-                        
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Material Filter (Optional)</label>
+                            <label
+                                style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Material
+                                Filter (Optional)</label>
                             <input type="text" id="ruleMaterialInput" class="form-input" placeholder="e.g. Concrete">
                         </div>
-
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Classification Target Code</label>
+                            <label
+                                style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Classification
+                                Target Code</label>
                             <select id="ruleClassCodeSelect" class="form-input">
-                                <option value="A.2.2.1">A.2.2.1 - Excavation (m³)</option>
-                                <option value="A.4.1.1">A.4.1.1 - Concrete casting (m³)</option>
-                                <option value="A.4.1.2">A.4.1.2 - Reinforcement rebar (kg)</option>
-                                <option value="A.4.1.3">A.4.1.3 - Formwork template (m²)</option>
+                                <option value="AHSP-EXC">AHSP-EXC (A.2.2.1) - Excavation (m³)</option>
+                                <option value="AHSP-CONC">AHSP-CONC (A.4.1.1) - Concrete casting (m³)</option>
+                                <option value="AHSP-REBAR">AHSP-REBAR (A.4.1.2) - Reinforcement rebar (kg)</option>
+                                <option value="AHSP-FORM">AHSP-FORM (A.4.1.3) - Formwork template (m²)</option>
                             </select>
                         </div>
-                        
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Quantity Calculation Formula</label>
-                            <input type="text" id="ruleFormulaInput" class="form-input" placeholder="e.g. volume * 135" value="volume">
-                            <span style="font-size: 9px; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.2;">Supported variables: <code>volume</code>, <code>area</code>, <code>surface_area</code>, <code>length</code>, <code>count</code></span>
+                            <label
+                                style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Quantity
+                                Calculation Formula</label>
+                            <input type="text" id="ruleFormulaInput" class="form-input" placeholder="e.g. volume * 135"
+                                value="volume">
                         </div>
-
                         <div class="form-group" style="margin-bottom: 15px;">
-                            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Priority</label>
+                            <label
+                                style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Priority</label>
                             <input type="number" id="rulePriorityInput" class="form-input" value="10" min="1" max="100">
                         </div>
-                        
                         <button class="btn btn-primary btn-full" id="btnSaveRule">
                             <i class="fa-solid fa-circle-check"></i> Register Mapping Rule
                         </button>
@@ -960,22 +989,41 @@
             </div>
 
             <!-- Tab Content: 4. Price Unit Analysis -->
-            <div id="ahsp-library-tab" class="modal-tab-content" style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
+            <div id="ahsp-library-tab" class="modal-tab-content"
+                style="display: none; flex-direction: column; flex: 1; overflow: hidden; padding: 20px;">
                 <div style="display: flex; gap: 20px; flex: 1; overflow: hidden;">
-                    <!-- AHSP List -->
-                    <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border-color); padding-right: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h4 style="margin: 0; color: var(--text-color); font-size: 13px; font-weight: 500;">Price Unit Analysis (Indonesian AHSP standards)</h4>
+                    <div
+                        style="flex: 1; display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border-color); padding-right: 20px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color); font-size: 13px; font-weight: 500;">Price
+                                Unit Analysis (Indonesian AHSP standards)</h4>
                             <div style="display: flex; gap: 8px;">
-                                <button class="btn btn-secondary danger" id="btnClearAhsp" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-trash"></i> Clear Database</button>
-                                <button class="btn btn-secondary" id="btnExportAhsp" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i> Export CSV</button>
-                                <button class="btn btn-secondary" id="btnImportAhsp" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import CSV</button>
-                                <input type="file" id="ahspFileInput" accept=".csv" style="display: none;">
+                                <button class="btn btn-secondary danger" id="btnClearAhsp"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-trash"></i> Clear
+                                    Database</button>
+                                <button class="btn btn-secondary" id="btnExportAhspJson"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i>
+                                    Export JSON</button>
+                                <button class="btn btn-secondary" id="btnExportAhspCsv"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-download"></i>
+                                    Export CSV</button>
+                                <button class="btn btn-secondary" id="btnImportAhspJson"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import
+                                    JSON</button>
+                                <button class="btn btn-secondary" id="btnImportAhspCsv"
+                                    style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-upload"></i> Import
+                                    CSV</button>
+                                <input type="file" id="ahspFileInputJson" accept=".json" style="display: none;">
+                                <input type="file" id="ahspFileInputCsv" accept=".csv" style="display: none;">
                             </div>
                         </div>
                         <div style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-                            <label for="ahspCatalogFilter" style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Filter by Source Catalog:</label>
-                            <select id="ahspCatalogFilter" class="form-input" style="width: auto; max-width: 350px; padding: 4px 10px; font-size: 11px; height: 28px; margin: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
+                            <label for="ahspCatalogFilter"
+                                style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Filter
+                                Catalog:</label>
+                            <select id="ahspCatalogFilter" class="form-input"
+                                style="width: auto; max-width: 350px; padding: 4px 10px; font-size: 11px; height: 28px; margin: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
                                 <option value="">-- All Catalogs --</option>
                             </select>
                         </div>
@@ -989,15 +1037,14 @@
                                         <th>Description</th>
                                     </tr>
                                 </thead>
-                                <tbody id="ahspTableBody">
-                                    <!-- Populated Dynamically -->
-                                </tbody>
+                                <tbody id="ahspTableBody"></tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- Selected AHSP Details -->
                     <div style="flex: 1.5; display: flex; flex-direction: column; overflow: hidden;">
-                        <h4 id="ahspDetailsHeader" style="margin: 0 0 10px 0; color: var(--accent); font-size: 13px; font-weight: 500;">Select an AHSP to view analysis coefficients</h4>
+                        <h4 id="ahspDetailsHeader"
+                            style="margin: 0 0 10px 0; color: var(--accent); font-size: 13px; font-weight: 500;">Select
+                            an AHSP to view analysis coefficients</h4>
                         <div class="table-container" style="flex: 1; overflow-y: auto;">
                             <table class="qto-table" id="ahspDetailsTable" style="display: none;">
                                 <thead>
@@ -1013,24 +1060,33 @@
                                         <th style="text-align: center; width: 60px;">Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="ahspDetailsTableBody">
-                                    <!-- Populated Dynamically -->
-                                </tbody>
+                                <tbody id="ahspDetailsTableBody"></tbody>
                             </table>
                         </div>
-                        
-                        <!-- Add Breakdown Detail Form -->
-                        <div id="addAhspDetailForm" style="display: none; margin-top: 10px; padding: 10px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-color); border-radius: 6px; gap: 8px; align-items: center; font-size: 11px;">
-                            <span style="font-weight: 600; color: var(--accent); white-space: nowrap;">Add Detail:</span>
-                            <select id="newDetailResourceSelect" style="flex: 2; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; min-width: 150px;"></select>
-                            <input type="number" id="newDetailCoefficient" placeholder="Coef" step="any" style="width: 70px; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; text-align: right;">
-                            <input type="number" id="newDetailWaste" placeholder="Waste" value="1.0" step="any" style="width: 60px; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; text-align: right;">
-                            <button class="btn btn-secondary" id="btnAddAhspDetail" style="padding: 4px 8px; font-size: 11px; white-space: nowrap;"><i class="fa-solid fa-plus"></i> Add</button>
+
+                        <div id="addAhspDetailForm"
+                            style="display: none; margin-top: 10px; padding: 10px; background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border-color); border-radius: 6px; gap: 8px; align-items: center; font-size: 11px;">
+                            <span style="font-weight: 600; color: var(--accent); white-space: nowrap;">Add
+                                Detail:</span>
+                            <select id="newDetailResourceSelect"
+                                style="flex: 2; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; min-width: 150px;"></select>
+                            <input type="number" id="newDetailCoefficient" placeholder="Coef" step="any"
+                                style="width: 70px; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; text-align: right;">
+                            <input type="number" id="newDetailWaste" placeholder="Waste" value="1.0" step="any"
+                                style="width: 60px; padding: 4px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color); font-size: 11px; text-align: right;">
+                            <button class="btn btn-secondary" id="btnAddAhspDetail"
+                                style="padding: 4px 8px; font-size: 11px; white-space: nowrap;"><i
+                                    class="fa-solid fa-plus"></i> Add</button>
                         </div>
 
-                        <div id="ahspDetailsSummary" style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; display: none; text-align: right;">
-                            <span style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Overhead & Profit: 10.0%</span>
-                            <span id="ahspCalculatedUnitPrice" style="font-size: 16px; font-weight: 700; color: var(--text-color);">Unit Price: Rp 0 / unit</span>
+                        <div id="ahspDetailsSummary"
+                            style="margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; display: none; text-align: right;">
+                            <span
+                                style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Overhead
+                                &amp; Profit: 10.0%</span>
+                            <span id="ahspCalculatedUnitPrice"
+                                style="font-size: 16px; font-weight: 700; color: var(--text-color);">Unit Price: Rp 0 /
+                                unit</span>
                         </div>
                     </div>
                 </div>
@@ -1042,7 +1098,8 @@
         </div>
     </div>
 
-    <!-- Script Entry Point -->
+    <!-- Main JS Application Entry Point -->
     <script type="module" src="/main.js"></script>
 </body>
+
 </html>

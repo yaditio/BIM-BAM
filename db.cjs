@@ -254,29 +254,35 @@ function preloadDefaults() {
   insertDetail.run('D-FORM-3', 'AHSP-FORM', 'L-WRK', 0.52, 1.0);    // workers
   insertDetail.run('D-FORM-4', 'AHSP-FORM', 'L-MSN', 0.26, 1.0);    // masons
   insertDetail.run('D-FORM-5', 'AHSP-FORM', 'L-SUP', 0.026, 1.0);   // supervisor
+  
+  // Pre-insert classification placeholders for analysis codes to satisfy FK constraints
+  insertClassification.run('AHSP-EXC', 'Analisis Galian Tanah Biasa per m³', 'm³', 'Earthworks');
+  insertClassification.run('AHSP-CONC', 'Analisis Beton Ready Mix fc 25 MPa per m³', 'm³', 'Concrete Work');
+  insertClassification.run('AHSP-REBAR', 'Analisis Pembesian per kg', 'kg', 'Concrete Work');
+  insertClassification.run('AHSP-FORM', 'Analisis Pasang Bekisting per m²', 'm²', 'Concrete Work');
 
   // Default Calculation Rules
   const insertRule = db.prepare('INSERT INTO rules (id, rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority) VALUES (?, ?, ?, ?, ?, ?, ?)');
   
   // Beam rules
-  insertRule.run('R-BEAM-CONC', 'Concrete Beam Casting', 'IfcBeam', null, 'A.4.1.1', 'volume', 10);
-  insertRule.run('R-BEAM-REBAR', 'Concrete Beam Rebar', 'IfcBeam', null, 'A.4.1.2', 'volume * 135.0', 10);
-  insertRule.run('R-BEAM-FORM', 'Concrete Beam Formwork', 'IfcBeam', null, 'A.4.1.3', 'surface_area', 10);
+  insertRule.run('R-BEAM-CONC', 'Concrete Beam Casting', 'IfcBeam', null, 'AHSP-CONC', 'volume', 10);
+  insertRule.run('R-BEAM-REBAR', 'Concrete Beam Rebar', 'IfcBeam', null, 'AHSP-REBAR', 'volume * 135.0', 10);
+  insertRule.run('R-BEAM-FORM', 'Concrete Beam Formwork', 'IfcBeam', null, 'AHSP-FORM', 'surface_area', 10);
 
   // Column rules
-  insertRule.run('R-COL-CONC', 'Concrete Column Casting', 'IfcColumn', null, 'A.4.1.1', 'volume', 10);
-  insertRule.run('R-COL-REBAR', 'Concrete Column Rebar', 'IfcColumn', null, 'A.4.1.2', 'volume * 150.0', 10);
-  insertRule.run('R-COL-FORM', 'Concrete Column Formwork', 'IfcColumn', null, 'A.4.1.3', 'surface_area', 10);
+  insertRule.run('R-COL-CONC', 'Concrete Column Casting', 'IfcColumn', null, 'AHSP-CONC', 'volume', 10);
+  insertRule.run('R-COL-REBAR', 'Concrete Column Rebar', 'IfcColumn', null, 'AHSP-REBAR', 'volume * 150.0', 10);
+  insertRule.run('R-COL-FORM', 'Concrete Column Formwork', 'IfcColumn', null, 'AHSP-FORM', 'surface_area', 10);
 
   // Slab/Floor rules
-  insertRule.run('R-SLAB-CONC', 'Concrete Slab Casting', 'IfcSlab', null, 'A.4.1.1', 'volume', 10);
-  insertRule.run('R-SLAB-REBAR', 'Concrete Slab Rebar', 'IfcSlab', null, 'A.4.1.2', 'volume * 90.0', 10);
-  insertRule.run('R-SLAB-FORM', 'Concrete Slab Formwork', 'IfcSlab', null, 'A.4.1.3', 'area', 10);
+  insertRule.run('R-SLAB-CONC', 'Concrete Slab Casting', 'IfcSlab', null, 'AHSP-CONC', 'volume', 10);
+  insertRule.run('R-SLAB-REBAR', 'Concrete Slab Rebar', 'IfcSlab', null, 'AHSP-REBAR', 'volume * 90.0', 10);
+  insertRule.run('R-SLAB-FORM', 'Concrete Slab Formwork', 'IfcSlab', null, 'AHSP-FORM', 'area', 10);
 
   // Excavation rules (IfcFooting or structural foundation triggers excavation volume)
-  insertRule.run('R-FOOT-EXC', 'Foundation Excavation', 'IfcFooting', null, 'A.2.2.1', 'volume * 1.5', 10);
-  insertRule.run('R-FOOT-CONC', 'Foundation Concrete', 'IfcFooting', null, 'A.4.1.1', 'volume', 10);
-  insertRule.run('R-FOOT-FORM', 'Foundation Formwork', 'IfcFooting', null, 'A.4.1.3', 'surface_area', 10);
+  insertRule.run('R-FOOT-EXC', 'Foundation Excavation', 'IfcFooting', null, 'AHSP-EXC', 'volume * 1.5', 10);
+  insertRule.run('R-FOOT-CONC', 'Foundation Concrete', 'IfcFooting', null, 'AHSP-CONC', 'volume', 10);
+  insertRule.run('R-FOOT-FORM', 'Foundation Formwork', 'IfcFooting', null, 'AHSP-FORM', 'surface_area', 10);
 }
 
 // Initial Call

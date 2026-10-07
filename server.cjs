@@ -7,7 +7,7 @@ const path = require('path');
 const db = require('./db.cjs');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -21,6 +21,40 @@ if (uploadDir.includes('app.asar') && !uploadDir.includes('app.asar.unpacked')) 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+// CSV helper functions
+const escapeCsv = (val) => {
+  if (val === null || val === undefined) return "";
+  const str = String(val);
+  if (str.includes(",") || str.includes("\"") || str.includes("\n") || str.includes("\r")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+const parseCsvLine = (line) => {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+};
 
 // Multer config for file upload
 const storage = multer.diskStorage({
@@ -1037,10 +1071,14 @@ app.get('/api/projects/:id/elements', (req, res) => {
 app.get('/api/rules', (req, res) => {
   try {
     const rules = db.query(`
-      SELECT r.*, c.description as classification_desc, c.unit as classification_unit, a.code as analysis_code
+      SELECT r.*, 
+             COALESCE(a.description, c.description) as classification_desc, 
+             c.unit as classification_unit, 
+             COALESCE(a.code, r.classification_code) as analysis_code,
+             COALESCE(a.classification_code, r.classification_code) as classification_display_code
       FROM rules r 
-      JOIN classifications c ON r.classification_code = c.code 
-      LEFT JOIN ahsp_analyses a ON r.classification_code = a.classification_code
+      LEFT JOIN ahsp_analyses a ON r.classification_code = a.code OR r.classification_code = a.classification_code
+      LEFT JOIN classifications c ON COALESCE(a.classification_code, r.classification_code) = c.code
       ORDER BY r.priority DESC
     `);
     res.json(rules);
@@ -1053,17 +1091,21 @@ app.post('/api/rules', (req, res) => {
   try {
     const { id, rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority } = req.body;
     const ruleId = id || 'R-' + Date.now();
-    db.run(`
-      INSERT INTO rules (id, rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        rule_name=excluded.rule_name,
-        ifc_type=excluded.ifc_type,
-        material_filter=excluded.material_filter,
-        classification_code=excluded.classification_code,
-        quantity_expression=excluded.quantity_expression,
-        priority=excluded.priority
-    `, [ruleId, rule_name, ifc_type, material_filter || null, classification_code, quantity_expression, priority || 10]);
+    db.transaction(() => {
+      db.run("INSERT OR IGNORE INTO classifications (code, description, unit, category) VALUES (?, ?, 'pcs', 'Imported')",
+        [classification_code, rule_name]);
+      db.run(`
+        INSERT INTO rules (id, rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          rule_name=excluded.rule_name,
+          ifc_type=excluded.ifc_type,
+          material_filter=excluded.material_filter,
+          classification_code=excluded.classification_code,
+          quantity_expression=excluded.quantity_expression,
+          priority=excluded.priority
+      `, [ruleId, rule_name, ifc_type, material_filter || null, classification_code, quantity_expression, priority || 10]);
+    });
     res.json({ success: true, id: ruleId });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -1275,12 +1317,20 @@ app.post('/api/projects/:id/boq/generate', (req, res) => {
     
     db.transaction(() => {
       for (const [code, quantity] of Object.entries(boqAccumulator)) {
-        const classification = classifications.find(c => c.code === code);
+        let classification = classifications.find(c => c.code === code);
+        let ahsp = ahspAnalyses.find(a => a.code === code);
+
+        if (!ahsp && classification) {
+          ahsp = ahspAnalyses.find(a => a.classification_code === code);
+        }
+
+        if (ahsp && !classification) {
+          classification = classifications.find(c => c.code === ahsp.classification_code);
+        }
+
         if (!classification) continue;
 
-        const ahsp = ahspAnalyses.find(a => a.classification_code === code);
         let unitPrice = 0.0;
-
         if (ahsp) {
           const details = db.query(`
             SELECT d.coefficient, d.waste_factor, COALESCE(p.price, 0) as price
@@ -1299,20 +1349,20 @@ app.post('/api/projects/:id/boq/generate', (req, res) => {
           unitPrice = 500000.0; 
         }
 
-        const boqItemId = `${projectId}-${code}`;
-        const description = classification.description;
+        const boqItemId = `${projectId}-${classification.code}`;
+        const description = ahsp ? ahsp.description : classification.description;
         const unit = classification.unit;
         const totalPrice = quantity * unitPrice;
-        const sourceTitle = classification.source_title || 'General';
+        const sourceTitle = ahsp ? (ahsp.source_title || 'General') : (classification.source_title || 'General');
 
         db.run(`
-          INSERT INTO boq_items (id, project_id, classification_code, description, quantity, unit, unit_price, total_price, source_title)
+          INSERT OR REPLACE INTO boq_items (id, project_id, classification_code, description, quantity, unit, unit_price, total_price, source_title)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [boqItemId, projectId, code, description, quantity, unit, unitPrice, totalPrice, sourceTitle]);
+        `, [boqItemId, projectId, classification.code, description, quantity, unit, unitPrice, totalPrice, sourceTitle]);
 
         generatedBOQ.push({
           id: boqItemId,
-          classification_code: code,
+          classification_code: classification.code,
           category: classification.category,
           description,
           quantity,
@@ -1359,6 +1409,7 @@ app.get('/api/projects/:id/boq', (req, res) => {
     }
 
     const classifications = db.query("SELECT * FROM classifications");
+    const ahspAnalyses = db.query("SELECT * FROM ahsp_analyses");
     const classOverrides = db.query("SELECT * FROM classification_overrides WHERE project_id = ?", [projectId]);
     const classOverrideMap = {};
     for (const co of classOverrides) {
@@ -1425,7 +1476,10 @@ app.get('/api/projects/:id/boq', (req, res) => {
               if (rule.material_filter && !elMatLower.includes(rule.material_filter.toLowerCase())) {
                 continue;
               }
-              if (rule.classification_code === code) {
+              const ruleTarget = rule.classification_code;
+              const isMatch = ruleTarget === code || 
+                (ahspAnalyses.some(a => a.code === ruleTarget && a.classification_code === code));
+              if (isMatch) {
                 if (!highestRule || rule.priority > highestRule.priority) {
                   highestRule = rule;
                 }
@@ -1520,6 +1574,23 @@ app.get('/api/ollama/models', async (req, res) => {
 app.get('/api/rules/export', (req, res) => {
   try {
     const rules = db.query("SELECT * FROM rules");
+    if (req.query.format === 'csv') {
+      let csv = "ID,Rule Name,IFC Type,Material Filter,Classification Code,Quantity Expression,Priority\n";
+      rules.forEach(r => {
+        csv += [
+          escapeCsv(r.id),
+          escapeCsv(r.rule_name),
+          escapeCsv(r.ifc_type),
+          escapeCsv(r.material_filter),
+          escapeCsv(r.classification_code),
+          escapeCsv(r.quantity_expression),
+          r.priority ?? 10
+        ].join(",") + "\n";
+      });
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="rules_backup.csv"');
+      return res.send(csv);
+    }
     res.json(rules);
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -1528,13 +1599,91 @@ app.get('/api/rules/export', (req, res) => {
 
 // Import Rules
 app.post('/api/rules/import', (req, res) => {
-  const { rules } = req.body;
+  const { rules, csvText } = req.body;
+  if (csvText) {
+    try {
+      const lines = csvText.split(/\r?\n/);
+      if (lines.length < 2) {
+        return res.status(400).json({ error: 'Empty or invalid CSV file' });
+      }
+      const headerRow = parseCsvLine(lines[0]);
+      const isHtmlTableFormat = headerRow.includes('IFC Class') || headerRow.length === 6;
+
+      const importedRules = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const row = parseCsvLine(lines[i]);
+        
+        if (isHtmlTableFormat) {
+          if (row.length < 5) continue;
+          const ruleName = row[0] || '';
+          const ifcType = row[1] || '';
+          let materialFilter = row[2] || '';
+          if (materialFilter.toLowerCase() === 'any' || !materialFilter) {
+            materialFilter = null;
+          }
+          let classCode = row[3] || '';
+          const parenMatch = classCode.match(/\(([^)]+)\)/);
+          if (parenMatch) {
+            classCode = parenMatch[1];
+          }
+          const formula = row[4] || '';
+          const priority = row[5] ? parseInt(row[5], 10) : 10;
+          
+          importedRules.push({
+            id: `rule-${Date.now()}-${i}`,
+            rule_name: ruleName,
+            ifc_type: ifcType,
+            material_filter: materialFilter,
+            classification_code: classCode,
+            quantity_expression: formula,
+            priority: priority
+          });
+        } else {
+          if (row.length < 5) continue;
+          importedRules.push({
+            id: row[0] || `rule-${Date.now()}-${i}`,
+            rule_name: row[1] || '',
+            ifc_type: row[2] || '',
+            material_filter: row[3] || null,
+            classification_code: row[4] || '',
+            quantity_expression: row[5] || '',
+            priority: row[6] ? parseInt(row[6], 10) : 10
+          });
+        }
+      }
+      db.transaction(() => {
+        for (const rule of importedRules) {
+          db.run("INSERT OR IGNORE INTO classifications (code, description, unit, category) VALUES (?, ?, 'pcs', 'Imported')",
+            [rule.classification_code, rule.rule_name]);
+          db.run(`
+            INSERT OR REPLACE INTO rules (id, rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+          `, [
+            rule.id,
+            rule.rule_name,
+            rule.ifc_type,
+            rule.material_filter,
+            rule.classification_code,
+            rule.quantity_expression,
+            rule.priority
+          ]);
+        }
+      });
+      return res.json({ success: true, count: importedRules.length });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
   if (!rules || !Array.isArray(rules)) {
-    return res.status(400).json({ error: 'Rules array required' });
+    return res.status(400).json({ error: 'Rules array or csvText required' });
   }
   try {
     db.transaction(() => {
       for (const rule of rules) {
+        db.run("INSERT OR IGNORE INTO classifications (code, description, unit, category) VALUES (?, ?, 'pcs', 'Imported')",
+          [rule.classification_code, rule.rule_name]);
         db.run(`
           INSERT OR REPLACE INTO rules (id, rule_name, ifc_type, material_filter, classification_code, quantity_expression, priority)
           VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -1597,9 +1746,24 @@ app.post('/api/ahsp-details/:id/delete', (req, res) => {
   }
 });
 
-// Export AHSP Library as CSV
+// Export AHSP Library as CSV or JSON
 app.get('/api/ahsp/export', (req, res) => {
   try {
+    if (req.query.format === 'json') {
+      const classifications = db.query("SELECT * FROM classifications");
+      const resources = db.query("SELECT * FROM resources");
+      const resource_prices = db.query("SELECT * FROM resource_prices");
+      const ahsp_analyses = db.query("SELECT * FROM ahsp_analyses");
+      const ahsp_details = db.query("SELECT * FROM ahsp_details");
+      return res.json({
+        classifications,
+        resources,
+        resource_prices,
+        ahsp_analyses,
+        ahsp_details
+      });
+    }
+
     const query = `
       SELECT 
         a.code AS analysis_code,
@@ -1621,15 +1785,6 @@ app.get('/api/ahsp/export', (req, res) => {
     const rows = db.query(query);
     
     let csv = "Analysis Code,WBS Item,Source Catalog,Analysis Description,Overhead Factor,Resource ID,Resource Category,Resource Description,Resource Unit,Coefficient,Resource Price\n";
-    
-    const escapeCsv = (val) => {
-      if (val === null || val === undefined) return "";
-      const str = String(val);
-      if (str.includes(",") || str.includes("\"") || str.includes("\n") || str.includes("\r")) {
-        return `"${str.replace(/"/g, '""')}"`;
-      }
-      return str;
-    };
     
     rows.forEach(r => {
       csv += [
@@ -1655,11 +1810,11 @@ app.get('/api/ahsp/export', (req, res) => {
   }
 });
 
-// Import AHSP Library from CSV
+// Import AHSP Library from CSV or JSON
 app.post('/api/ahsp/import', (req, res) => {
-  const { csvText } = req.body;
-  if (!csvText) {
-    return res.status(400).json({ error: 'csvText is required' });
+  const { csvText, jsonData } = req.body;
+  if (!csvText && !jsonData) {
+    return res.status(400).json({ error: 'csvText or jsonData is required' });
   }
   
   try {
@@ -1669,10 +1824,18 @@ app.post('/api/ahsp/import', (req, res) => {
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
-      const filepath = path.join(dirPath, `imported_${Date.now()}.csv`);
-      fs.writeFileSync(filepath, csvText, 'utf8');
+      const ext = jsonData ? 'json' : 'csv';
+      const filepath = path.join(dirPath, `imported_${Date.now()}.${ext}`);
+      fs.writeFileSync(filepath, jsonData ? JSON.stringify(jsonData, null, 2) : csvText, 'utf8');
     } catch (err) {
-      console.error('[Server] Failed to write CSV import log file:', err);
+      console.error('[Server] Failed to write import log file:', err);
+    }
+
+    if (jsonData) {
+      db.transaction(() => {
+        importUnifiedLibraryData(jsonData, jsonData.sourceTitle || 'Imported JSON');
+      });
+      return res.json({ success: true, message: 'Successfully imported JSON library data.' });
     }
 
     const lines = csvText.split(/\r?\n/);
@@ -1680,82 +1843,80 @@ app.post('/api/ahsp/import', (req, res) => {
       return res.status(400).json({ error: 'Empty or invalid CSV file' });
     }
     
-    const parseCsvLine = (line) => {
-      const result = [];
-      let current = '';
-      let inQuotes = false;
-      for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') {
-          if (inQuotes && line[i + 1] === '"') {
-            current += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (char === ',' && !inQuotes) {
-          result.push(current.trim());
-          current = '';
-        } else {
-          current += char;
-        }
-      }
-      result.push(current.trim());
-      return result;
-    };
-
+    const headerRow = parseCsvLine(lines[0]);
+    const isHtmlTableFormat = headerRow.length === 4 || !headerRow.includes('Resource ID');
+    
     db.transaction(() => {
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
         const row = parseCsvLine(lines[i]);
-        if (row.length < 4) continue;
         
-        const analysis_code = row[0];
-        const wbs_item = row[1] || analysis_code;
-        const source_catalog = row[2] || 'Imported';
-        const analysis_description = row[3] || '';
-        const overhead_factor = row[4] ? parseFloat(row[4]) : 0.10;
-        
-        const resource_id = row[5];
-        const resource_category = row[6];
-        const resource_description = row[7];
-        const resource_unit = row[8];
-        const coefficient = row[9] ? parseFloat(row[9]) : null;
-        const resource_price = row[10] ? parseFloat(row[10]) : null;
-        
-        db.run(`
-          INSERT OR REPLACE INTO classifications (code, description, unit, category, source_title)
-          VALUES (?, ?, ?, ?, ?)
-        `, [wbs_item, analysis_description, resource_unit || 'pcs', 'Imported', source_catalog]);
-        
-        db.run(`
-          INSERT OR REPLACE INTO ahsp_analyses (code, classification_code, description, overhead_factor, source_title)
-          VALUES (?, ?, ?, ?, ?)
-        `, [analysis_code, wbs_item, analysis_description, isNaN(overhead_factor) ? 0.10 : overhead_factor, source_catalog]);
-        
-        if (resource_id) {
+        if (isHtmlTableFormat) {
+          if (row.length < 3) continue;
+          const analysis_code = row[0];
+          const wbs_item = row[1] || analysis_code;
+          const source_catalog = row[2] || 'Imported';
+          const analysis_description = row[3] || '';
+          
           db.run(`
-            INSERT OR REPLACE INTO resources (id, category, description, unit)
-            VALUES (?, ?, ?, ?)
-          `, [resource_id, resource_category || 'Material', resource_description || '', resource_unit || '']);
+            INSERT OR REPLACE INTO classifications (code, description, unit, category, source_title)
+            VALUES (?, ?, 'pcs', 'Imported', ?)
+          `, [wbs_item, analysis_description, source_catalog]);
           
-          if (resource_price !== null && !isNaN(resource_price)) {
-            const regions = ['R-JKT', 'R-BDG', 'R-SBY', 'R-PAP'];
-            regions.forEach(reg => {
-              const priceId = `${reg}-${resource_id}`;
-              db.run(`
-                INSERT OR REPLACE INTO resource_prices (id, resource_id, region_id, price, effective_date)
-                VALUES (?, ?, ?, ?, date('now'))
-              `, [priceId, resource_id, reg, resource_price]);
-            });
-          }
+          db.run(`
+            INSERT OR REPLACE INTO ahsp_analyses (code, classification_code, description, overhead_factor, source_title)
+            VALUES (?, ?, ?, 0.10, ?)
+          `, [analysis_code, wbs_item, analysis_description, source_catalog]);
+        } else {
+          if (row.length < 4) continue;
           
-          if (coefficient !== null && !isNaN(coefficient)) {
-            const detailId = `${analysis_code}-${resource_id}`;
+          const analysis_code = row[0];
+          const wbs_item = row[1] || analysis_code;
+          const source_catalog = row[2] || 'Imported';
+          const analysis_description = row[3] || '';
+          const overhead_factor = row[4] ? parseFloat(row[4]) : 0.10;
+          
+          const resource_id = row[5];
+          const resource_category = row[6];
+          const resource_description = row[7];
+          const resource_unit = row[8];
+          const coefficient = row[9] ? parseFloat(row[9]) : null;
+          const resource_price = row[10] ? parseFloat(row[10]) : null;
+          
+          db.run(`
+            INSERT OR REPLACE INTO classifications (code, description, unit, category, source_title)
+            VALUES (?, ?, ?, ?, ?)
+          `, [wbs_item, analysis_description, resource_unit || 'pcs', 'Imported', source_catalog]);
+          
+          db.run(`
+            INSERT OR REPLACE INTO ahsp_analyses (code, classification_code, description, overhead_factor, source_title)
+            VALUES (?, ?, ?, ?, ?)
+          `, [analysis_code, wbs_item, analysis_description, isNaN(overhead_factor) ? 0.10 : overhead_factor, source_catalog]);
+          
+          if (resource_id) {
             db.run(`
-              INSERT OR REPLACE INTO ahsp_details (id, ahsp_code, resource_id, coefficient, waste_factor)
-              VALUES (?, ?, ?, ?, 1.0)
-            `, [detailId, analysis_code, resource_id, coefficient]);
+              INSERT OR REPLACE INTO resources (id, category, description, unit)
+              VALUES (?, ?, ?, ?)
+            `, [resource_id, resource_category || 'Material', resource_description || '', resource_unit || '']);
+            
+            if (resource_price !== null && !isNaN(resource_price)) {
+              const regions = ['R-JKT', 'R-BDG', 'R-SBY', 'R-PAP'];
+              regions.forEach(reg => {
+                const priceId = `${reg}-${resource_id}`;
+                db.run(`
+                  INSERT OR REPLACE INTO resource_prices (id, resource_id, region_id, price, effective_date)
+                  VALUES (?, ?, ?, ?, date('now'))
+                `, [priceId, resource_id, reg, resource_price]);
+              });
+            }
+            
+            if (coefficient !== null && !isNaN(coefficient)) {
+              const detailId = `${analysis_code}-${resource_id}`;
+              db.run(`
+                INSERT OR REPLACE INTO ahsp_details (id, ahsp_code, resource_id, coefficient, waste_factor)
+                VALUES (?, ?, ?, ?, 1.0)
+              `, [detailId, analysis_code, resource_id, coefficient]);
+            }
           }
         }
       }
@@ -1829,7 +1990,7 @@ app.post('/api/ahsp/reset', (req, res) => {
       });
 
       for (const subdirName of subdirs) {
-        if (subdirName !== "AHSP BM" && subdirName !== "AHSP SNI") {
+        if (subdirName !== "AHSP SNI") {
           continue;
         }
         const subDir = path.join(ahspDir, subdirName);
@@ -1993,11 +2154,12 @@ function importUnifiedLibraryData(data, sourceTitle = 'General') {
   if (Array.isArray(data)) {
     for (const item of data) {
       if (!item.code) continue;
+      const targetSource = item.source_title || sourceTitle;
       db.run("INSERT OR REPLACE INTO classifications (code, description, unit, category, source_title) VALUES (?, ?, ?, ?, ?)",
-        [item.code, item.description || '', item.unit || 'pcs', item.category || 'General', sourceTitle]);
+        [item.code, item.description || '', item.unit || 'pcs', item.category || 'General', targetSource]);
       const analysisCode = item.code.startsWith('AHSP-') ? item.code : `AHSP-${item.code}`;
       db.run("INSERT OR REPLACE INTO ahsp_analyses (code, classification_code, description, overhead_factor, source_title) VALUES (?, ?, ?, 0.10, ?)",
-        [analysisCode, item.code, item.description || '', sourceTitle]);
+        [analysisCode, item.code, item.description || '', targetSource]);
       if (item.details && Array.isArray(item.details)) {
         for (const d of item.details) {
           const resId = d.resource_id || d.resource;
@@ -2015,7 +2177,7 @@ function importUnifiedLibraryData(data, sourceTitle = 'General') {
   if (data.classifications && Array.isArray(data.classifications)) {
     for (const c of data.classifications) {
       db.run("INSERT OR REPLACE INTO classifications (code, description, unit, category, source_title) VALUES (?, ?, ?, ?, ?)",
-        [c.code, c.description, c.unit, c.category, sourceTitle]);
+        [c.code, c.description, c.unit, c.category, c.source_title || sourceTitle]);
     }
   }
   if (data.resources && Array.isArray(data.resources)) {
@@ -2035,20 +2197,22 @@ function importUnifiedLibraryData(data, sourceTitle = 'General') {
   }
   if (data.ahsp_analyses && Array.isArray(data.ahsp_analyses)) {
     for (const a of data.ahsp_analyses) {
+      const targetSource = a.source_title || sourceTitle;
       // Safety guard: insert placeholder classification if missing
       db.run("INSERT OR IGNORE INTO classifications (code, description, unit, category, source_title) VALUES (?, ?, 'pcs', 'General', ?)",
-        [a.classification_code, `Placeholder classification ${a.classification_code}`, sourceTitle]);
+        [a.classification_code, `Placeholder classification ${a.classification_code}`, targetSource]);
       db.run("INSERT OR REPLACE INTO ahsp_analyses (code, classification_code, description, overhead_factor, source_title) VALUES (?, ?, ?, ?, ?)",
-        [a.code, a.classification_code, a.description, a.overhead_factor, sourceTitle]);
+        [a.code, a.classification_code, a.description, a.overhead_factor, targetSource]);
     }
   }
   if (data.ahsp_details && Array.isArray(data.ahsp_details)) {
     for (const d of data.ahsp_details) {
+      const targetSource = d.source_title || sourceTitle;
       // Safety guards: insert placeholders
       db.run("INSERT OR IGNORE INTO resources (id, category, description, unit) VALUES (?, 'Material', ?, '')",
         [d.resource_id, `Placeholder resource ${d.resource_id}`]);
       db.run("INSERT OR IGNORE INTO ahsp_analyses (code, classification_code, description, overhead_factor, source_title) VALUES (?, ?, 'Placeholder Analysis', 0.10, ?)",
-        [d.ahsp_code, d.ahsp_code, sourceTitle]);
+        [d.ahsp_code, d.ahsp_code, targetSource]);
       db.run("INSERT OR REPLACE INTO ahsp_details (id, ahsp_code, resource_id, coefficient, waste_factor) VALUES (?, ?, ?, ?, ?)",
         [d.id, d.ahsp_code, d.resource_id, d.coefficient, d.waste_factor]);
     }
