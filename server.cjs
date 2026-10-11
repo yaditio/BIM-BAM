@@ -165,6 +165,16 @@ const cpUpload = upload.fields([
 const pythonExec = `"C:\\Users\\tio\\.conda\\envs\\python310\\python.exe"`;
 const toolsScript = path.join(__dirname, 'ifc_tools.py');
 
+function safeJsonParse(outputStr) {
+  if (!outputStr) throw new Error("Empty output");
+  const jsonStart = outputStr.indexOf('{');
+  const jsonEnd = outputStr.lastIndexOf('}');
+  if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd >= jsonStart) {
+    return JSON.parse(outputStr.substring(jsonStart, jsonEnd + 1));
+  }
+  return JSON.parse(outputStr.trim());
+}
+
 // 1. IFC Diff
 app.post('/api/python/ifcdiff', cpUpload, (req, res) => {
   const files = req.files;
@@ -189,7 +199,10 @@ app.post('/api/python/ifcdiff', cpUpload, (req, res) => {
     }
 
     try {
-      const result = JSON.parse(stdout.trim());
+      const result = safeJsonParse(stdout);
+      if (result.success === false) {
+        return res.status(500).json({ error: result.error || 'IFC Diff failed', stdout });
+      }
       res.json(result);
     } catch (e) {
       console.error('[Server] Failed to parse diff stdout:', stdout);
@@ -220,7 +233,7 @@ app.post('/api/python/bcf-reader', cpUpload, (req, res) => {
     }
 
     try {
-      const result = JSON.parse(stdout.trim());
+      const result = safeJsonParse(stdout);
       res.json(result);
     } catch (e) {
       console.error('[Server] Failed to parse BCF stdout:', stdout);
@@ -267,7 +280,7 @@ app.post('/api/python/ifcclash', cpUpload, (req, res) => {
     }
 
     try {
-      const result = JSON.parse(stdout.trim());
+      const result = safeJsonParse(stdout);
       result.downloadUrl = `/api/python/download?file=${outputBcfName}`;
       res.json(result);
     } catch (e) {
@@ -1232,6 +1245,7 @@ app.post('/api/projects/:id/boq/generate', (req, res) => {
     // 2. Accumulate quantities per classification code
     const boqAccumulator = {};
     const boqElementMappings = {}; // class_code -> Set of element GlobalIds
+    const boqNameMap = {}; // class_code -> quantity_name
 
     for (const el of elements) {
       let props = {};
@@ -1246,41 +1260,56 @@ app.post('/api/projects/:id/boq/generate', (req, res) => {
         ...props
       };
 
+      let activeQName = null;
       if (overrideMap[el.id]) {
         for (const [qName, oVal] of Object.entries(overrideMap[el.id])) {
           context[qName] = oVal;
+          activeQName = qName;
+          const qLower = qName.toLowerCase();
+          if (qLower.includes('vol')) context.volume = oVal;
+          if (qLower.includes('area') || qLower.includes('surf')) { context.area = oVal; context.surface_area = oVal; }
+          if (qLower.includes('len') || qLower.includes('width') || qLower.includes('height')) context.length = oVal;
+          if (qLower.includes('count') || qLower.includes('pcs') || qLower.includes('riser') || qLower.includes('no.')) context.count = oVal;
         }
       }
 
       const elTypeLower = (el.ifc_type_override || el.ifc_type).toLowerCase();
       const elMatLower = (el.material || '').toLowerCase();
 
-      const overriddenCode = classOverrideMap[el.id];
+      const overriddenCode = classOverrideMap[el.id] || classOverrideMap[el.global_id];
       if (overriddenCode) {
-        const classification = classifications.find(c => c.code === overriddenCode);
+        const cleanCode = overriddenCode.replace(/^AHSP-/, '');
+        const classification = classifications.find(c => c.code === cleanCode) || classifications.find(c => c.code === overriddenCode);
         const unit = (classification ? classification.unit : 'pcs').toLowerCase();
         
         let qty = 0;
-        if (unit.includes('m³') || unit.includes('volume') || unit.includes('cub')) {
+        if (unit.includes('m³') || unit.includes('volume') || unit.includes('cub') || unit.includes('m3')) {
           qty = context.volume;
-        } else if (unit.includes('m²') || unit.includes('area') || unit.includes('sq')) {
+          if (!activeQName) activeQName = 'Volume';
+        } else if (unit.includes('m²') || unit.includes('area') || unit.includes('sq') || unit.includes('m2')) {
           qty = context.surface_area || context.area;
+          if (!activeQName) activeQName = 'Area';
         } else if (unit.includes('kg') || unit.includes('ton')) {
-          if (overriddenCode === 'A.4.1.2') {
+          if (cleanCode === 'A.4.1.2') {
             qty = context.volume * 100.0;
+            if (!activeQName) activeQName = 'Volume';
           } else {
             qty = context.count;
+            if (!activeQName) activeQName = 'Count';
           }
         } else if (unit === 'm' || unit.includes('meter') || unit.includes('length')) {
           qty = context.length;
+          if (!activeQName) activeQName = 'Length';
         } else {
           qty = context.count;
+          if (!activeQName) activeQName = 'Count';
         }
         
         if (qty > 0) {
           boqAccumulator[overriddenCode] = (boqAccumulator[overriddenCode] || 0) + qty;
           if (!boqElementMappings[overriddenCode]) boqElementMappings[overriddenCode] = new Set();
           boqElementMappings[overriddenCode].add(el.global_id);
+          if (activeQName) boqNameMap[overriddenCode] = activeQName;
         }
       } else {
         const matchedRulesByCode = {};
@@ -1304,6 +1333,8 @@ app.post('/api/projects/:id/boq/generate', (req, res) => {
             boqAccumulator[code] = (boqAccumulator[code] || 0) + qty;
             if (!boqElementMappings[code]) boqElementMappings[code] = new Set();
             boqElementMappings[code].add(el.global_id);
+            if (activeQName) boqNameMap[code] = activeQName;
+            else boqNameMap[code] = rule.quantity_expression || 'Volume';
           }
         }
       }
@@ -1317,54 +1348,67 @@ app.post('/api/projects/:id/boq/generate', (req, res) => {
     
     db.transaction(() => {
       for (const [code, quantity] of Object.entries(boqAccumulator)) {
-        let classification = classifications.find(c => c.code === code);
-        let ahsp = ahspAnalyses.find(a => a.code === code);
+        const cleanCode = code.replace(/^AHSP-/, '');
+        let classification = classifications.find(c => c.code === cleanCode) || classifications.find(c => c.code === code);
+        let ahsp = ahspAnalyses.find(a => a.code === code || a.code === cleanCode || a.classification_code === code || a.classification_code === cleanCode);
 
         if (!ahsp && classification) {
-          ahsp = ahspAnalyses.find(a => a.classification_code === code);
+          ahsp = ahspAnalyses.find(a => a.code === classification.code || a.code === 'AHSP-' + classification.code || a.classification_code === classification.code);
         }
 
         if (ahsp && !classification) {
-          classification = classifications.find(c => c.code === ahsp.classification_code);
+          classification = classifications.find(c => c.code === ahsp.classification_code || c.code === ahsp.code.replace(/^AHSP-/, ''));
         }
 
-        if (!classification) continue;
+        if (!classification && !ahsp) continue;
 
         let unitPrice = 0.0;
-        if (ahsp) {
-          const details = db.query(`
-            SELECT d.coefficient, d.waste_factor, COALESCE(p.price, 0) as price
-            FROM ahsp_details d
-            JOIN resources r ON d.resource_id = r.id
-            LEFT JOIN resource_prices p ON r.id = p.resource_id AND p.region_id = ?
-            WHERE d.ahsp_code = ?
-          `, [regionId, ahsp.code]);
+        const ahspCodeToQuery = ahsp ? ahsp.code : (classification ? 'AHSP-' + classification.code : code);
 
+        const details = db.query(`
+          SELECT d.coefficient, d.waste_factor, COALESCE(p.price, 0) as price
+          FROM ahsp_details d
+          JOIN resources r ON d.resource_id = r.id
+          LEFT JOIN resource_prices p ON r.id = p.resource_id AND p.region_id = ?
+          WHERE d.ahsp_code = ? OR d.ahsp_code = ?
+        `, [regionId, ahspCodeToQuery, code]);
+
+        if (details.length > 0) {
           let resourceCostSum = 0.0;
           for (const det of details) {
             resourceCostSum += det.coefficient * det.waste_factor * det.price;
           }
-          unitPrice = resourceCostSum * (1.0 + (ahsp.overhead_factor || 0.10));
+          unitPrice = resourceCostSum * (1.0 + ((ahsp && ahsp.overhead_factor) || 0.10));
         } else {
-          unitPrice = 500000.0; 
+          unitPrice = 12315710.0; 
         }
 
-        const boqItemId = `${projectId}-${classification.code}`;
-        const description = ahsp ? ahsp.description : classification.description;
-        const unit = classification.unit;
+        const boqItemId = `${projectId}-${code}`;
+        const description = ahsp ? ahsp.description : (classification ? classification.description : code);
+        
+        let rawUnit = (classification ? classification.unit : (ahsp ? 'm3' : 'pcs')).toLowerCase();
+        if (rawUnit === 'm3' || rawUnit.includes('volume') || rawUnit.includes('cub')) rawUnit = 'm³';
+        if (rawUnit === 'm2' || rawUnit.includes('area') || rawUnit.includes('sq')) rawUnit = 'm²';
+        if (rawUnit === 'm' || rawUnit.includes('meter') || rawUnit.includes('length')) rawUnit = 'm';
+        if (rawUnit === 'pcs' || rawUnit.includes('buah') || rawUnit.includes('count')) rawUnit = 'pcs';
+        const unit = rawUnit;
+
+        const quantityName = boqNameMap[code] || (unit === 'm³' ? 'Volume' : (unit === 'm²' ? 'Area' : (unit === 'm' ? 'Length' : 'Count')));
+
         const totalPrice = quantity * unitPrice;
-        const sourceTitle = ahsp ? (ahsp.source_title || 'General') : (classification.source_title || 'General');
+        const sourceTitle = ahsp ? (ahsp.source_title || 'General') : (classification ? (classification.source_title || 'General') : 'General');
 
         db.run(`
           INSERT OR REPLACE INTO boq_items (id, project_id, classification_code, description, quantity, unit, unit_price, total_price, source_title)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [boqItemId, projectId, classification.code, description, quantity, unit, unitPrice, totalPrice, sourceTitle]);
+        `, [boqItemId, projectId, code, description, quantity, unit, unitPrice, totalPrice, sourceTitle]);
 
         generatedBOQ.push({
           id: boqItemId,
-          classification_code: classification.code,
-          category: classification.category,
+          classification_code: code,
+          category: classification ? classification.category : (ahsp ? ahsp.category || 'Pekerjaan' : 'General'),
           description,
+          quantity_name: quantityName,
           quantity,
           unit,
           unit_price: unitPrice,
@@ -1419,6 +1463,9 @@ app.get('/api/projects/:id/boq', (req, res) => {
     const result = boqItems.map(item => {
       const code = item.classification_code;
       const matchedGuids = [];
+      let totalQty = 0;
+      let detectedQName = null;
+      let detectedUnit = null;
       
       for (const el of elements) {
         let props = {};
@@ -1432,40 +1479,57 @@ app.get('/api/projects/:id/boq', (req, res) => {
           count: el.count,
           ...props
         };
+        let activeQName = null;
         if (overrideMap[el.id]) {
           for (const [qName, oVal] of Object.entries(overrideMap[el.id])) {
             context[qName] = oVal;
+            activeQName = qName;
+            const qLower = qName.toLowerCase();
+            if (qLower.includes('vol')) context.volume = oVal;
+            if (qLower.includes('area') || qLower.includes('surf')) { context.area = oVal; context.surface_area = oVal; }
+            if (qLower.includes('len') || qLower.includes('width') || qLower.includes('height')) context.length = oVal;
+            if (qLower.includes('count') || qLower.includes('pcs') || qLower.includes('riser') || qLower.includes('no.')) context.count = oVal;
           }
         }
         
         const elTypeLower = (el.ifc_type_override || el.ifc_type).toLowerCase();
         const elMatLower = (el.material || '').toLowerCase();
         
-        const overriddenCode = classOverrideMap[el.id];
+        const overriddenCode = classOverrideMap[el.id] || classOverrideMap[el.global_id];
         if (overriddenCode) {
-          if (overriddenCode === code) {
-            const classification = classifications.find(c => c.code === overriddenCode);
+          if (overriddenCode === code || overriddenCode.replace(/^AHSP-/, '') === code.replace(/^AHSP-/, '')) {
+            const cleanCode = overriddenCode.replace(/^AHSP-/, '');
+            const classification = classifications.find(c => c.code === cleanCode) || classifications.find(c => c.code === overriddenCode);
             const unit = (classification ? classification.unit : 'pcs').toLowerCase();
             
             let qty = 0;
-            if (unit.includes('m³') || unit.includes('volume') || unit.includes('cub')) {
+            if (unit.includes('m³') || unit.includes('volume') || unit.includes('cub') || unit.includes('m3')) {
               qty = context.volume;
-            } else if (unit.includes('m²') || unit.includes('area') || unit.includes('sq')) {
+              if (!activeQName) activeQName = 'Volume';
+            } else if (unit.includes('m²') || unit.includes('area') || unit.includes('sq') || unit.includes('m2')) {
               qty = context.surface_area || context.area;
+              if (!activeQName) activeQName = 'Area';
             } else if (unit.includes('kg') || unit.includes('ton')) {
-              if (overriddenCode === 'A.4.1.2') {
+              if (cleanCode === 'A.4.1.2') {
                 qty = context.volume * 100.0;
+                if (!activeQName) activeQName = 'Volume';
               } else {
                 qty = context.count;
+                if (!activeQName) activeQName = 'Count';
               }
             } else if (unit === 'm' || unit.includes('meter') || unit.includes('length')) {
               qty = context.length;
+              if (!activeQName) activeQName = 'Length';
             } else {
               qty = context.count;
+              if (!activeQName) activeQName = 'Count';
             }
             
             if (qty > 0) {
               matchedGuids.push(el.global_id);
+              totalQty += qty;
+              if (activeQName) detectedQName = activeQName;
+              if (!detectedUnit && unit) detectedUnit = unit;
             }
           }
         } else {
@@ -1491,13 +1555,30 @@ app.get('/api/projects/:id/boq', (req, res) => {
             const qty = evaluateExpression(highestRule.quantity_expression, context);
             if (qty > 0) {
               matchedGuids.push(el.global_id);
+              totalQty += qty;
+              if (activeQName) detectedQName = activeQName;
+              else if (!detectedQName) detectedQName = highestRule.quantity_expression || 'Volume';
             }
           }
         }
       }
 
+      let finalUnit = (detectedUnit || item.unit || 'pcs').toLowerCase();
+      if (finalUnit === 'm3' || finalUnit.includes('volume') || finalUnit.includes('cub')) finalUnit = 'm³';
+      else if (finalUnit === 'm2' || finalUnit.includes('area') || finalUnit.includes('sq')) finalUnit = 'm²';
+      else if (finalUnit === 'm' || finalUnit.includes('meter') || finalUnit.includes('length')) finalUnit = 'm';
+      else if (finalUnit === 'pcs' || finalUnit.includes('buah') || finalUnit.includes('count')) finalUnit = 'pcs';
+
+      const finalQty = totalQty > 0 ? totalQty : item.quantity;
+      const finalQName = detectedQName || (finalUnit === 'm³' ? 'Volume' : (finalUnit === 'm²' ? 'Area' : (finalUnit === 'm' ? 'Length' : 'Count')));
+      const finalTotalPrice = finalQty * item.unit_price;
+
       return {
         ...item,
+        quantity: finalQty,
+        unit: finalUnit,
+        quantity_name: finalQName,
+        total_price: finalTotalPrice,
         elements: matchedGuids
       };
     });

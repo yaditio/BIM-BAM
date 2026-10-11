@@ -8,6 +8,9 @@ import ifcopenshell
 from ifcdiff import IfcDiff
 from ifcclash.ifcclash import Clasher, ClashSettings
 
+import io
+import contextlib
+
 def find_elem_by_tag(parent, tag):
     for elem in parent.iter():
         if elem.tag.split('}')[-1] == tag:
@@ -33,13 +36,15 @@ def handle_diff(old_path, new_path):
             relationships=["geometry", "attributes", "property"],
             is_shallow=True
         )
-        diff_runner.diff()
+        # Suppress standard output from diff_runner
+        with contextlib.redirect_stdout(io.StringIO()):
+            diff_runner.diff()
         
-        added_guids = [el.GlobalId for el in diff_runner.added_elements if hasattr(el, "GlobalId") and el.GlobalId]
-        deleted_guids = [el.GlobalId for el in diff_runner.deleted_elements if hasattr(el, "GlobalId") and el.GlobalId]
+        added_guids = [str(el.GlobalId) if hasattr(el, "GlobalId") else str(el) for el in diff_runner.added_elements if el]
+        deleted_guids = [str(el.GlobalId) if hasattr(el, "GlobalId") else str(el) for el in diff_runner.deleted_elements if el]
         
         # Extract changed guids
-        changed_guids = list(diff_runner.change_register.keys())
+        changed_guids = [str(k) for k in diff_runner.change_register.keys() if k]
         
         result = {
             "success": True,

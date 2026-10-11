@@ -593,6 +593,10 @@
                         <div class="panel-header">
                             <h3><i class="fa-solid fa-filter"></i> Filter Selection</h3>
                         </div>
+                        <div class="filter-subtabs" id="filterSubTabs">
+                            <button class="filter-subtab-btn active" data-subtab="class"><i class="fa-solid fa-cubes"></i> IFC Class</button>
+                            <button class="filter-subtab-btn" data-subtab="model"><i class="fa-solid fa-file-contract"></i> File Model</button>
+                        </div>
                         <div class="filter-search-box">
                             <i class="fa-solid fa-magnifying-glass"></i>
                             <input type="text" id="filterClassSearch" class="form-input form-input-sm"
@@ -705,8 +709,6 @@
                                 <th>Quantity Name</th>
                                 <th>Value</th>
                                 <th>Unit</th>
-                                <th>Unit Price</th>
-                                <th>Total Price</th>
                             </tr>
                         </thead>
                         <tbody id="qtoTableBody"></tbody>
@@ -811,8 +813,8 @@
                                     <th>Category</th>
                                     <th>Source Catalog</th>
                                     <th>Work Item Description</th>
-                                    <th style="text-align: right;">Quantity</th>
-                                    <th>Unit</th>
+                                    <th style="min-width: 140px;">Quantity Name</th>
+                                    <th style="text-align: right;">Value</th>
                                     <th style="text-align: right;">Unit Price</th>
                                     <th style="text-align: right;">Total Price</th>
                                     <th style="width: 80px; text-align: center;">Highlight</th>
@@ -875,9 +877,8 @@
                                 <th>IFC Correction</th>
                                 <th>Storey</th>
                                 <th>Material</th>
-                                <th style="text-align: right;">Volume (m³)</th>
-                                <th style="text-align: right;">Area (m²)</th>
-                                <th style="text-align: right;">Length (m)</th>
+                                <th style="min-width: 180px;">Quantity Name</th>
+                                <th style="text-align: right;">Value</th>
                                 <th style="text-align: right;">Count</th>
                                 <th style="width: 220px; text-align: left;">Classification Override</th>
                                 <th style="text-align: center;">Actions</th>

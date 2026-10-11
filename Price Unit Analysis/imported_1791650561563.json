@@ -1,0 +1,3499 @@
+{
+  "classifications": [
+    {
+      "code": "A.1.01.a.1",
+      "description": "1 m2 Pembersihan dan pengupasan permukaan tanah (striping) s.d. tanaman Ø 2 cm",
+      "unit": "m2",
+      "category": "Pekerjaan Persiapan"
+    },
+    {
+      "code": "A.2.01.b1.1",
+      "description": "Penggalian 1 m3 batu sedalam > 0 s.d. 1 m, Semi-Mekanis",
+      "unit": "m3",
+      "category": "Pekerjaan Galian Batu"
+    },
+    {
+      "code": "A.2.01.b1.2",
+      "description": "Penggalian 1 m3 batu sedalam > 1 m s.d. 2 m, Semi-Mekanis",
+      "unit": "m3",
+      "category": "Pekerjaan Galian Batu"
+    },
+    {
+      "code": "A.3.01.1.a.1",
+      "description": "1 m2 Striping/kupas 100 m' top soil menggunakan Buldozer (tanpa angkutan)",
+      "unit": "m2",
+      "category": "Pekerjaan Kupas Top Soil"
+    },
+    {
+      "code": "A.3.01.1a.2",
+      "description": "1 m3 Pengerukan sampah/lumpur/sedimen di saluran/ sungai",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan Saluran"
+    },
+    {
+      "code": "A.3.01.1g.4.b",
+      "description": "Menggali dan memuat 1 m3 pasir dari SP/hasil galian ke DT menggunakan Exca Std. dan angkut",
+      "unit": "m3",
+      "category": "Pekerjaan Galian dan Muat Pasir"
+    },
+    {
+      "code": "A.3.01.1i.1",
+      "description": "Galian Alur Sungai/Saluran dengan Excavator",
+      "unit": "m3",
+      "category": "Pekerjaan Galian Alur Sungai"
+    },
+    {
+      "code": "A.3.01.2e.1",
+      "description": "Gali 1 m3 Pasir di ttk. A (Quarry) dimuat ke DT dan angkut 3 km ke ttk. B",
+      "unit": "m3",
+      "category": "Pekerjaan Pengangkutan Lintas Pulau"
+    },
+    {
+      "code": "A.3.01.2e.3",
+      "description": "Di B (SP-1: stock pile) 1 m3 pasir dimuatkan ke Tongkang",
+      "unit": "m3",
+      "category": "Pekerjaan Pengangkutan Lintas Pulau"
+    },
+    {
+      "code": "A.3.01.2e.4",
+      "description": "Tongkang angkut 1 m3 pasir dari B (SP-1) ke C (SP-2), jarak angkut 20 km",
+      "unit": "m3",
+      "category": "Pekerjaan Pengangkutan Lintas Pulau"
+    },
+    {
+      "code": "A.3.01.2e.5",
+      "description": "Di C (SP-2) 1 m3 pasir dimuatkan ke perahu kecil",
+      "unit": "m3",
+      "category": "Pekerjaan Pengangkutan Lintas Pulau"
+    },
+    {
+      "code": "A.3.01.2e.6.b",
+      "description": "Perahu kecil (dg mesin 1@10 HP) angkut 1 m3 pasir dari C ke D, jarak angkut 2 Km",
+      "unit": "m3",
+      "category": "Pekerjaan Pengangkutan Lintas Pulau"
+    },
+    {
+      "code": "A.3.02.1d.1",
+      "description": "Pembuatan badan tanggul - Ukuran tanah di tempat sempit, tidak dilakukan dengan Vibro roller",
+      "unit": "m3",
+      "category": "Pembuatan Badan Tanggul"
+    },
+    {
+      "code": "A.3.02.1d.2",
+      "description": "Pembuatan badan tanggul - Penghamparan, perataan dan pemadatan tanah (standard proctor)",
+      "unit": "m3",
+      "category": "Pembuatan Badan Tanggul"
+    },
+    {
+      "code": "A.3.02.1d.3",
+      "description": "Pembuatan badan tanggul - Penghamparan, perataan dan pemadatan tanah berat (modified proctor)",
+      "unit": "m3",
+      "category": "Pembuatan Badan Tanggul"
+    },
+    {
+      "code": "A.3.02.2a.1",
+      "description": "1 m' Pemasangan atau Pengambilan Gambangan secara Semi Mekanis sebagai landasan jalan Excavator",
+      "unit": "m'",
+      "category": "Pekerjaan Irigasi Rawa"
+    },
+    {
+      "code": "A.3.02.2b.1",
+      "description": "1 m3 Galian tanah di rawa menggunakan Excavator Long Arm",
+      "unit": "m3",
+      "category": "Pekerjaan Irigasi Rawa"
+    },
+    {
+      "code": "A.3.02.2b.3",
+      "description": "1 m3 Angkut Material Hasil Galian di Rawa oleh Dump Truck",
+      "unit": "m3",
+      "category": "Pekerjaan Irigasi Rawa"
+    },
+    {
+      "code": "A.3.03.1",
+      "description": "Pengerukan 1 m3 Sedimen menggunakan Kapal Keruk Sunction Dredger sampai kedalaman 10 m’",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.2a",
+      "description": "Pengerukan Sedimen di Waduk/Danau dengan Kapal Keruk, Kedalaman 10 m’",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.2b",
+      "description": "Pengerukan 1 m3 sedimen di waduk/danau dengan kapal keruk kedalaman 50 m’",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.2c",
+      "description": "1 m2 tempat penirisan sedimen (TPS) - Media Drain Block",
+      "unit": "m2",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.3c",
+      "description": "Angkutan 1 m3 hasil galian dengan ponton-2 (jarak 3 km)",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.3d",
+      "description": "Angkutan 1 m3 hasil galian dengan ponton-2 (jarak 5 km)",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.4a",
+      "description": "Pemanenan 1 m3 Gulma air, 50 KW Kapasitas 2.000 – 5.000 m2/jam",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan"
+    },
+    {
+      "code": "A.3.03.5",
+      "description": "Pekerjaan Pengerukan Slurry (80% air + 20% lumpur) menggunakan Kapal Keruk",
+      "unit": "m3",
+      "category": "Pekerjaan Pengerukan Slurry"
+    },
+    {
+      "code": "A.3.03.5a",
+      "description": "Pekerjaan Pengoperasian 1 Buah Pompa Air / Booster per-Jam",
+      "unit": "jam",
+      "category": "Pekerjaan Pengerukan Slurry"
+    },
+    {
+      "code": "A.1.02.4b.1.a.4",
+      "description": "1 m3 Bronjong kawat digalvanis, lubang heksagonal 80 x 100mm; Beda tinggi > 3 s.d. 4 m' (dibuat sendiri)",
+      "unit": "m3",
+      "category": "Pekerjaan Pasangan Bronjong Batu"
+    },
+    {
+      "code": "A.1.02.4b.1.c.4",
+      "description": "1 m3 Bronjong Wiremesh M6 lubang 100 x 100 mm; beda tinggi > 3 s.d. 4 m'",
+      "unit": "m3",
+      "category": "Pekerjaan Pasangan Bronjong Batu"
+    },
+    {
+      "code": "A.1.02.4b.3.b",
+      "description": "1 m3 Pasangan Bronjong Tambang Nylon/Rami di laut 200 m’ dari tepi pantai",
+      "unit": "m3",
+      "category": "Pekerjaan Pasangan Bronjong Batu"
+    },
+    {
+      "code": "A.2.02.5b.4.c",
+      "description": "1 m' Penjahitan Geotekstil Tebal (> 800 gr/m2), secara semi mekanis",
+      "unit": "m'",
+      "category": "Pekerjaan Geotekstil"
+    },
+    {
+      "code": "A.2.02.5b.5.a",
+      "description": "1 m2 Pengelasan Geotekstil, Tipis (> 100 s.d. < 400 gr/m2), secara semi mekanis",
+      "unit": "m2",
+      "category": "Pekerjaan Geotekstil"
+    },
+    {
+      "code": "A.1.02.5d.1",
+      "description": "1 m3 Pasangan (Elastis) atau Construction Joint atau Joint Filler atau joint sealant",
+      "unit": "m3",
+      "category": "Pekerjaan Penutup Sambungan"
+    },
+    {
+      "code": "A.1.04.1a",
+      "description": "1 Buah Kistdam pasir/tanah, karung plastik/bagor/goni (sebesar karung beras 25 kg) 43 x 65 cm",
+      "unit": "buah",
+      "category": "Pekerjaan Dewatering"
+    },
+    {
+      "code": "A.1.04.4",
+      "description": "Pengoperasian 1 Buah pompa air per-Jam; kapasitas 5 L/s pada head suction 3 m dan discharge 10 m'; ∅ out 2,5\"",
+      "unit": "jam",
+      "category": "Pekerjaan Dewatering"
+    },
+    {
+      "code": "A.1.04.5",
+      "description": "Pengoperasian 1 Buah pompa air per-Jam kapasitas 10 L/s pada head suction 3 m dan discharge 10 m'; ∅ out 4\"",
+      "unit": "jam",
+      "category": "Pekerjaan Dewatering"
+    },
+    {
+      "code": "A.1.04.8",
+      "description": "Pengoperasian 1 Buah pompa air per-Jam; kapasitas 100 L/s pada head suction 3 m dan discharge 10 m'; ∅ out 10\"",
+      "unit": "jam",
+      "category": "Pekerjaan Dewatering"
+    },
+    {
+      "code": "A.1.04.9",
+      "description": "Pengoperasian per-jam pompa air (D) dengan daya 30 KW dengan suction head maksimal 3 m dan discharge head maksimal 10 m’",
+      "unit": "jam",
+      "category": "Pekerjaan Dewatering"
+    },
+    {
+      "code": "A.1.06.1a",
+      "description": "1 Kali Pelumasan Pintu Angkat Stang Tunggal",
+      "unit": "kali",
+      "category": "Pekerjaan Pintu Air"
+    },
+    {
+      "code": "A.3.07.1b",
+      "description": "Memuat, mengangkut dan memasang 1 m3 Armor Kubus Beton 0,4 m' atau Armor Kubus Batu Alam ± 150 kg",
+      "unit": "m3",
+      "category": "Pekerjaan Krib Laut"
+    },
+    {
+      "code": "A.3.07.1j",
+      "description": "Memuat, mengangkut dan memasang 1 m3 Armor Blok Beton 1,0 Ton quadripod, tetrapod, dolos, tribar, dll.",
+      "unit": "m3",
+      "category": "Pekerjaan Krib Laut"
+    },
+    {
+      "code": "A.3.07.1l",
+      "description": "Memuat, mengangkut dan memasang 1 m3 Armor Blok Beton 2,0 Ton quadripod, tetrapod, dolos, tribar, dll.",
+      "unit": "m3",
+      "category": "Pekerjaan Krib Laut"
+    },
+    {
+      "code": "A.3.07.5f",
+      "description": "Angkutan Tetrapod 1 Ton dengan Perahu",
+      "unit": "buah",
+      "category": "Pekerjaan Krib Laut"
+    },
+    {
+      "code": "A.3.08.1",
+      "description": "Pembuatan Sumur Bor Air Tanah Dangkal Cara Mekanis Ø 1\" - 1,25\"",
+      "unit": "m'",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.1b.3",
+      "description": "Pengeboran 1 m' Sumur Bor Air Tanah Dangkal ∅ 2\" pada tanah berbatu",
+      "unit": "m'",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.1b.6",
+      "description": "Pengadaan dan Pemasangan 1 m' Sumur Bor Air Tanah Dangkal PVC ∅ 2\" menggunakan PVC",
+      "unit": "m'",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.1c.2",
+      "description": "Pengeboran 1 m' Sumur Bor Air Tanah Dangkal ∅ 4\" pada Tanah Keras/Cadas sangat padat dan batuan lunak",
+      "unit": "m'",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.1d.5",
+      "description": "Pengadaan dan Pemasangan 1 m' Casing Sumur Bor Air Tanah Dangkal GIP ∅ 6\"",
+      "unit": "m'",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.1e.2",
+      "description": "Pengadaan dan Pemasangan 1-set Pompa dan Perpipaan",
+      "unit": "set",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.3.1.d",
+      "description": "Pengadaan Pipa Baja DN 600 mm sampai stockpile",
+      "unit": "m",
+      "category": "Pekerjaan Air Tanah"
+    },
+    {
+      "code": "A.3.08.3.1.n",
+      "description": "Pemasangan 1 m pipa HDPE dia. 14\"/ 355 mm",
+      "unit": "m",
+      "category": "Pekerjaan Air Tanah"
+    }
+  ],
+  "ahsp_analyses": [
+    {
+      "code": "AHSP-A.1.01.a.1",
+      "classification_code": "A.1.01.a.1",
+      "description": "Analisis 1 m2 Pembersihan dan pengupasan permukaan tanah (striping) s.d. tanaman Ø 2 cm",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.2.01.b1.1",
+      "classification_code": "A.2.01.b1.1",
+      "description": "Analisis Penggalian 1 m3 batu sedalam > 0 s.d. 1 m, Semi-Mekanis",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.2.01.b1.2",
+      "classification_code": "A.2.01.b1.2",
+      "description": "Analisis Penggalian 1 m3 batu sedalam > 1 m s.d. 2 m, Semi-Mekanis",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.1.a.1",
+      "classification_code": "A.3.01.1.a.1",
+      "description": "Analisis 1 m2 Striping/kupas 100 m' top soil menggunakan Buldozer (tanpa angkutan)",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.1a.2",
+      "classification_code": "A.3.01.1a.2",
+      "description": "Analisis 1 m3 Pengerukan sampah/lumpur/sedimen di saluran/ sungai",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.1g.4.b",
+      "classification_code": "A.3.01.1g.4.b",
+      "description": "Analisis Menggali dan memuat 1 m3 pasir dari SP/hasil galian ke DT menggunakan Exca Std. dan angkut",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.1i.1",
+      "classification_code": "A.3.01.1i.1",
+      "description": "Analisis Galian Alur Sungai/Saluran dengan Excavator",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.2e.1",
+      "classification_code": "A.3.01.2e.1",
+      "description": "Analisis Gali 1 m3 Pasir di ttk. A (Quarry) dimuat ke DT dan angkut 3 km ke ttk. B",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.2e.3",
+      "classification_code": "A.3.01.2e.3",
+      "description": "Analisis Di B (SP-1: stock pile) 1 m3 pasir dimuatkan ke Tongkang",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.2e.4",
+      "classification_code": "A.3.01.2e.4",
+      "description": "Analisis Tongkang angkut 1 m3 pasir dari B (SP-1) ke C (SP-2), jarak angkut 20 km",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.2e.5",
+      "classification_code": "A.3.01.2e.5",
+      "description": "Analisis Di C (SP-2) 1 m3 pasir dimuatkan ke perahu kecil",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.01.2e.6.b",
+      "classification_code": "A.3.01.2e.6.b",
+      "description": "Analisis Perahu kecil (dg mesin 1@10 HP) angkut 1 m3 pasir dari C ke D, jarak angkut 2 Km",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.02.1d.1",
+      "classification_code": "A.3.02.1d.1",
+      "description": "Analisis Pembuatan badan tanggul - Ukuran tanah di tempat sempit, tidak dilakukan dengan Vibro roller",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.02.1d.2",
+      "classification_code": "A.3.02.1d.2",
+      "description": "Analisis Pembuatan badan tanggul - Penghamparan, perataan dan pemadatan tanah (standard proctor)",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.02.1d.3",
+      "classification_code": "A.3.02.1d.3",
+      "description": "Analisis Pembuatan badan tanggul - Penghamparan, perataan dan pemadatan tanah berat (modified proctor)",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.02.2a.1",
+      "classification_code": "A.3.02.2a.1",
+      "description": "Analisis 1 m' Pemasangan atau Pengambilan Gambangan secara Semi Mekanis sebagai landasan jalan Excavator",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.02.2b.1",
+      "classification_code": "A.3.02.2b.1",
+      "description": "Analisis 1 m3 Galian tanah di rawa menggunakan Excavator Long Arm",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.02.2b.3",
+      "classification_code": "A.3.02.2b.3",
+      "description": "Analisis 1 m3 Angkut Material Hasil Galian di Rawa oleh Dump Truck",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.1",
+      "classification_code": "A.3.03.1",
+      "description": "Analisis Pengerukan 1 m3 Sedimen menggunakan Kapal Keruk Sunction Dredger sampai kedalaman 10 m’",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.2a",
+      "classification_code": "A.3.03.2a",
+      "description": "Analisis Pengerukan Sedimen di Waduk/Danau dengan Kapal Keruk, Kedalaman 10 m’",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.2b",
+      "classification_code": "A.3.03.2b",
+      "description": "Analisis Pengerukan 1 m3 sedimen di waduk/danau dengan kapal keruk kedalaman 50 m’",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.2c",
+      "classification_code": "A.3.03.2c",
+      "description": "Analisis 1 m2 tempat penirisan sedimen (TPS) - Media Drain Block",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.3c",
+      "classification_code": "A.3.03.3c",
+      "description": "Analisis Angkutan 1 m3 hasil galian dengan ponton-2 (jarak 3 km)",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.3d",
+      "classification_code": "A.3.03.3d",
+      "description": "Analisis Angkutan 1 m3 hasil galian dengan ponton-2 (jarak 5 km)",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.4a",
+      "classification_code": "A.3.03.4a",
+      "description": "Analisis Pemanenan 1 m3 Gulma air, 50 KW Kapasitas 2.000 – 5.000 m2/jam",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.5",
+      "classification_code": "A.3.03.5",
+      "description": "Analisis Pekerjaan Pengerukan Slurry (80% air + 20% lumpur) menggunakan Kapal Keruk",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.03.5a",
+      "classification_code": "A.3.03.5a",
+      "description": "Analisis Pekerjaan Pengoperasian 1 Buah Pompa Air / Booster per-Jam",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.02.4b.1.a.4",
+      "classification_code": "A.1.02.4b.1.a.4",
+      "description": "Analisis 1 m3 Bronjong kawat digalvanis, lubang heksagonal 80 x 100mm; Beda tinggi > 3 s.d. 4 m' (dibuat sendiri)",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.02.4b.1.c.4",
+      "classification_code": "A.1.02.4b.1.c.4",
+      "description": "Analisis 1 m3 Bronjong Wiremesh M6 lubang 100 x 100 mm; beda tinggi > 3 s.d. 4 m'",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.02.4b.3.b",
+      "classification_code": "A.1.02.4b.3.b",
+      "description": "Analisis 1 m3 Pasangan Bronjong Tambang Nylon/Rami di laut 200 m’ dari tepi pantai",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.2.02.5b.4.c",
+      "classification_code": "A.2.02.5b.4.c",
+      "description": "Analisis 1 m' Penjahitan Geotekstil Tebal (> 800 gr/m2), secara semi mekanis",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.2.02.5b.5.a",
+      "classification_code": "A.2.02.5b.5.a",
+      "description": "Analisis 1 m2 Pengelasan Geotekstil, Tipis (> 100 s.d. < 400 gr/m2), secara semi mekanis",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.02.5d.1",
+      "classification_code": "A.1.02.5d.1",
+      "description": "Analisis 1 m3 Pasangan (Elastis) atau Construction Joint atau Joint Filler atau joint sealant",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.04.1a",
+      "classification_code": "A.1.04.1a",
+      "description": "Analisis 1 Buah Kistdam pasir/tanah, karung plastik/bagor/goni (sebesar karung beras 25 kg) 43 x 65 cm",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.04.4",
+      "classification_code": "A.1.04.4",
+      "description": "Analisis Pengoperasian 1 Buah pompa air per-Jam; kapasitas 5 L/s pada head suction 3 m dan discharge 10 m'; ∅ out 2,5\"",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.04.5",
+      "classification_code": "A.1.04.5",
+      "description": "Analisis Pengoperasian 1 Buah pompa air per-Jam kapasitas 10 L/s pada head suction 3 m dan discharge 10 m'; ∅ out 4\"",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.04.8",
+      "classification_code": "A.1.04.8",
+      "description": "Analisis Pengoperasian 1 Buah pompa air per-Jam; kapasitas 100 L/s pada head suction 3 m dan discharge 10 m'; ∅ out 10\"",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.04.9",
+      "classification_code": "A.1.04.9",
+      "description": "Analisis Pengoperasian per-jam pompa air (D) dengan daya 30 KW dengan suction head maksimal 3 m dan discharge head maksimal 10 m’",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.1.06.1a",
+      "classification_code": "A.1.06.1a",
+      "description": "Analisis 1 Kali Pelumasan Pintu Angkat Stang Tunggal",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.07.1b",
+      "classification_code": "A.3.07.1b",
+      "description": "Analisis Memuat, mengangkut dan memasang 1 m3 Armor Kubus Beton 0,4 m' atau Armor Kubus Batu Alam ± 150 kg",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.07.1j",
+      "classification_code": "A.3.07.1j",
+      "description": "Analisis Memuat, mengangkut dan memasang 1 m3 Armor Blok Beton 1,0 Ton quadripod, tetrapod, dolos, tribar, dll.",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.07.1l",
+      "classification_code": "A.3.07.1l",
+      "description": "Analisis Memuat, mengangkut dan memasang 1 m3 Armor Blok Beton 2,0 Ton quadripod, tetrapod, dolos, tribar, dll.",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.07.5f",
+      "classification_code": "A.3.07.5f",
+      "description": "Analisis Angkutan Tetrapod 1 Ton dengan Perahu",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.1",
+      "classification_code": "A.3.08.1",
+      "description": "Analisis Pembuatan Sumur Bor Air Tanah Dangkal Cara Mekanis Ø 1\" - 1,25\"",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.1b.3",
+      "classification_code": "A.3.08.1b.3",
+      "description": "Analisis Pengeboran 1 m' Sumur Bor Air Tanah Dangkal ∅ 2\" pada tanah berbatu",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.1b.6",
+      "classification_code": "A.3.08.1b.6",
+      "description": "Analisis Pengadaan dan Pemasangan 1 m' Sumur Bor Air Tanah Dangkal PVC ∅ 2\" menggunakan PVC",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.1c.2",
+      "classification_code": "A.3.08.1c.2",
+      "description": "Analisis Pengeboran 1 m' Sumur Bor Air Tanah Dangkal ∅ 4\" pada Tanah Keras/Cadas sangat padat dan batuan lunak",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.1d.5",
+      "classification_code": "A.3.08.1d.5",
+      "description": "Analisis Pengadaan dan Pemasangan 1 m' Casing Sumur Bor Air Tanah Dangkal GIP ∅ 6\"",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.1e.2",
+      "classification_code": "A.3.08.1e.2",
+      "description": "Analisis Pengadaan dan Pemasangan 1-set Pompa dan Perpipaan",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.3.1.d",
+      "classification_code": "A.3.08.3.1.d",
+      "description": "Analisis Pengadaan Pipa Baja DN 600 mm sampai stockpile",
+      "overhead_factor": 0.1
+    },
+    {
+      "code": "AHSP-A.3.08.3.1.n",
+      "classification_code": "A.3.08.3.1.n",
+      "description": "Analisis Pemasangan 1 m pipa HDPE dia. 14\"/ 355 mm",
+      "overhead_factor": 0.1
+    }
+  ],
+  "ahsp_details": [
+    {
+      "id": "D-SDA-A.1.01.a.1-1",
+      "ahsp_code": "AHSP-A.1.01.a.1",
+      "resource_id": "L.01",
+      "coefficient": 0.05,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.01.a.1-2",
+      "ahsp_code": "AHSP-A.1.01.a.1",
+      "resource_id": "L.04",
+      "coefficient": 0.005,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.01.b1.1-1",
+      "ahsp_code": "AHSP-A.2.01.b1.1",
+      "resource_id": "L.01",
+      "coefficient": 0.5,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.01.b1.1-2",
+      "ahsp_code": "AHSP-A.2.01.b1.1",
+      "resource_id": "L.04",
+      "coefficient": 0.05,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.01.b1.2-1",
+      "ahsp_code": "AHSP-A.2.01.b1.2",
+      "resource_id": "L.01",
+      "coefficient": 0.6654,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.01.b1.2-2",
+      "ahsp_code": "AHSP-A.2.01.b1.2",
+      "resource_id": "L.04",
+      "coefficient": 0.0665,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.01.b1.2-3",
+      "ahsp_code": "AHSP-A.2.01.b1.2",
+      "resource_id": "E.19.c",
+      "coefficient": 0.1109,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1.a.1-1",
+      "ahsp_code": "AHSP-A.3.01.1.a.1",
+      "resource_id": "L.01",
+      "coefficient": 0.60145,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1.a.1-2",
+      "ahsp_code": "AHSP-A.3.01.1.a.1",
+      "resource_id": "L.04",
+      "coefficient": 0.06014,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1.a.1-3",
+      "ahsp_code": "AHSP-A.3.01.1.a.1",
+      "resource_id": "E.07.c",
+      "coefficient": 0.00306,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1a.2-1",
+      "ahsp_code": "AHSP-A.3.01.1a.2",
+      "resource_id": "L.01",
+      "coefficient": 0.03346,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1a.2-2",
+      "ahsp_code": "AHSP-A.3.01.1a.2",
+      "resource_id": "L.04",
+      "coefficient": 0.00335,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1a.2-3",
+      "ahsp_code": "AHSP-A.3.01.1a.2",
+      "resource_id": "E.15.c",
+      "coefficient": 0.01673,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1g.4.b-1",
+      "ahsp_code": "AHSP-A.3.01.1g.4.b",
+      "resource_id": "E.15.e",
+      "coefficient": 0.00683,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1g.4.b-2",
+      "ahsp_code": "AHSP-A.3.01.1g.4.b",
+      "resource_id": "E.13.c",
+      "coefficient": 0.03393,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1i.1-1",
+      "ahsp_code": "AHSP-A.3.01.1i.1",
+      "resource_id": "L.01",
+      "coefficient": 0.0499,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1i.1-2",
+      "ahsp_code": "AHSP-A.3.01.1i.1",
+      "resource_id": "L.02",
+      "coefficient": 0.0249,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1i.1-3",
+      "ahsp_code": "AHSP-A.3.01.1i.1",
+      "resource_id": "L.04",
+      "coefficient": 0.005,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1i.1-4",
+      "ahsp_code": "AHSP-A.3.01.1i.1",
+      "resource_id": "E.15.l",
+      "coefficient": 0.0499,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1i.1-5",
+      "ahsp_code": "AHSP-A.3.01.1i.1",
+      "resource_id": "E.15.e",
+      "coefficient": 0.0333,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.1i.1-6",
+      "ahsp_code": "AHSP-A.3.01.1i.1",
+      "resource_id": "E.13.d",
+      "coefficient": 0.0979,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.1-1",
+      "ahsp_code": "AHSP-A.3.01.2e.1",
+      "resource_id": "E.13.d",
+      "coefficient": 0.0719,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.3-1",
+      "ahsp_code": "AHSP-A.3.01.2e.3",
+      "resource_id": "E.13.d",
+      "coefficient": 0.0284,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.4-1",
+      "ahsp_code": "AHSP-A.3.01.2e.4",
+      "resource_id": "E.55.e",
+      "coefficient": 0.0164,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.5-1",
+      "ahsp_code": "AHSP-A.3.01.2e.5",
+      "resource_id": "L.01",
+      "coefficient": 0.1353,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.5-2",
+      "ahsp_code": "AHSP-A.3.01.2e.5",
+      "resource_id": "L.04",
+      "coefficient": 0.0135,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.6.b-1",
+      "ahsp_code": "AHSP-A.3.01.2e.6.b",
+      "resource_id": "L.01",
+      "coefficient": 0.1353,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.6.b-2",
+      "ahsp_code": "AHSP-A.3.01.2e.6.b",
+      "resource_id": "L.04",
+      "coefficient": 0.0135,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.01.2e.6.b-3",
+      "ahsp_code": "AHSP-A.3.01.2e.6.b",
+      "resource_id": "E.36.c",
+      "coefficient": 0.1353,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.1-1",
+      "ahsp_code": "AHSP-A.3.02.1d.1",
+      "resource_id": "L.01",
+      "coefficient": 0.0161,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.1-2",
+      "ahsp_code": "AHSP-A.3.02.1d.1",
+      "resource_id": "L.02",
+      "coefficient": 0.004,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.1-3",
+      "ahsp_code": "AHSP-A.3.02.1d.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0016,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.1-4",
+      "ahsp_code": "AHSP-A.3.02.1d.1",
+      "resource_id": "E.07.c",
+      "coefficient": 0.00612,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.1-5",
+      "ahsp_code": "AHSP-A.3.02.1d.1",
+      "resource_id": "E.60.a",
+      "coefficient": 0.00703,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.1-6",
+      "ahsp_code": "AHSP-A.3.02.1d.1",
+      "resource_id": "E.53.c",
+      "coefficient": 0.05373,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.2-1",
+      "ahsp_code": "AHSP-A.3.02.1d.2",
+      "resource_id": "L.01",
+      "coefficient": 0.0161,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.2-2",
+      "ahsp_code": "AHSP-A.3.02.1d.2",
+      "resource_id": "L.02",
+      "coefficient": 0.004,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.2-3",
+      "ahsp_code": "AHSP-A.3.02.1d.2",
+      "resource_id": "L.04",
+      "coefficient": 0.0016,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.2-4",
+      "ahsp_code": "AHSP-A.3.02.1d.2",
+      "resource_id": "E.07.c",
+      "coefficient": 0.00612,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.2-5",
+      "ahsp_code": "AHSP-A.3.02.1d.2",
+      "resource_id": "E.60.a",
+      "coefficient": 0.00703,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.2-6",
+      "ahsp_code": "AHSP-A.3.02.1d.2",
+      "resource_id": "E.50.m",
+      "coefficient": 0.00402,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.3-1",
+      "ahsp_code": "AHSP-A.3.02.1d.3",
+      "resource_id": "L.01",
+      "coefficient": 0.0161,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.3-2",
+      "ahsp_code": "AHSP-A.3.02.1d.3",
+      "resource_id": "L.02",
+      "coefficient": 0.004,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.3-3",
+      "ahsp_code": "AHSP-A.3.02.1d.3",
+      "resource_id": "L.04",
+      "coefficient": 0.0016,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.3-4",
+      "ahsp_code": "AHSP-A.3.02.1d.3",
+      "resource_id": "E.07.c",
+      "coefficient": 0.00612,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.1d.3-5",
+      "ahsp_code": "AHSP-A.3.02.1d.3",
+      "resource_id": "E.60.a",
+      "coefficient": 0.00703,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2a.1-1",
+      "ahsp_code": "AHSP-A.3.02.2a.1",
+      "resource_id": "L.01",
+      "coefficient": 0.1876,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2a.1-2",
+      "ahsp_code": "AHSP-A.3.02.2a.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0188,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2b.1-1",
+      "ahsp_code": "AHSP-A.3.02.2b.1",
+      "resource_id": "L.01",
+      "coefficient": 0.0527,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2b.1-2",
+      "ahsp_code": "AHSP-A.3.02.2b.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0053,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2b.3-1",
+      "ahsp_code": "AHSP-A.3.02.2b.3",
+      "resource_id": "L.01",
+      "coefficient": 0.0527,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2b.3-2",
+      "ahsp_code": "AHSP-A.3.02.2b.3",
+      "resource_id": "L.04",
+      "coefficient": 0.0053,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.02.2b.3-3",
+      "ahsp_code": "AHSP-A.3.02.2b.3",
+      "resource_id": "E.13.c",
+      "coefficient": 0.0527,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-1",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "L.01",
+      "coefficient": 0.0652,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-2",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "L.02",
+      "coefficient": 0.0186,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-3",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0065,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-4",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "L.05",
+      "coefficient": 0.0186,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-5",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "E.23.d",
+      "coefficient": 0.00466,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-6",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "E.04.d",
+      "coefficient": 0.00466,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.1-7",
+      "ahsp_code": "AHSP-A.3.03.1",
+      "resource_id": "E.30.b",
+      "coefficient": 0.00932,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-1",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "L.01",
+      "coefficient": 0.0652,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-2",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "L.02",
+      "coefficient": 0.0186,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-3",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "L.04",
+      "coefficient": 0.0065,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-4",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "L.05",
+      "coefficient": 0.0186,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-5",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "E.23.d",
+      "coefficient": 0.00466,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-6",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "E.04.d",
+      "coefficient": 0.00466,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2a-7",
+      "ahsp_code": "AHSP-A.3.03.2a",
+      "resource_id": "E.30.b",
+      "coefficient": 0.00932,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2b-1",
+      "ahsp_code": "AHSP-A.3.03.2b",
+      "resource_id": "L.01",
+      "coefficient": 0.1205,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2b-2",
+      "ahsp_code": "AHSP-A.3.03.2b",
+      "resource_id": "L.02",
+      "coefficient": 0.0314,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2b-3",
+      "ahsp_code": "AHSP-A.3.03.2b",
+      "resource_id": "L.04",
+      "coefficient": 0.012,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2b-4",
+      "ahsp_code": "AHSP-A.3.03.2b",
+      "resource_id": "L.05",
+      "coefficient": 0.021,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2c-1",
+      "ahsp_code": "AHSP-A.3.03.2c",
+      "resource_id": "L.01",
+      "coefficient": 0.16,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2c-2",
+      "ahsp_code": "AHSP-A.3.03.2c",
+      "resource_id": "L.02",
+      "coefficient": 0.04,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2c-3",
+      "ahsp_code": "AHSP-A.3.03.2c",
+      "resource_id": "L.04",
+      "coefficient": 0.016,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.2c-4",
+      "ahsp_code": "AHSP-A.3.03.2c",
+      "resource_id": "M.05.a.3",
+      "coefficient": 0.25,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.3c-1",
+      "ahsp_code": "AHSP-A.3.03.3c",
+      "resource_id": "E.48.d",
+      "coefficient": 0.1881,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.3d-1",
+      "ahsp_code": "AHSP-A.3.03.3d",
+      "resource_id": "E.48.d",
+      "coefficient": 0.2914,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.4a-1",
+      "ahsp_code": "AHSP-A.3.03.4a",
+      "resource_id": "L.01",
+      "coefficient": 0.2733,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.5-1",
+      "ahsp_code": "AHSP-A.3.03.5",
+      "resource_id": "L.01",
+      "coefficient": 0.0079,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.5-2",
+      "ahsp_code": "AHSP-A.3.03.5",
+      "resource_id": "L.02",
+      "coefficient": 0.0023,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.5-3",
+      "ahsp_code": "AHSP-A.3.03.5",
+      "resource_id": "L.04",
+      "coefficient": 0.0008,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.03.5a-1",
+      "ahsp_code": "AHSP-A.3.03.5a",
+      "resource_id": "E.50.b",
+      "coefficient": 0.000846,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.1.a.4-1",
+      "ahsp_code": "AHSP-A.1.02.4b.1.a.4",
+      "resource_id": "L.01",
+      "coefficient": 0.2857,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.1.a.4-2",
+      "ahsp_code": "AHSP-A.1.02.4b.1.a.4",
+      "resource_id": "L.01",
+      "coefficient": 0.6717,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.1.a.4-3",
+      "ahsp_code": "AHSP-A.1.02.4b.1.a.4",
+      "resource_id": "L.02",
+      "coefficient": 0.5096,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.1.c.4-1",
+      "ahsp_code": "AHSP-A.1.02.4b.1.c.4",
+      "resource_id": "L.01",
+      "coefficient": 0.0768,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.1.c.4-2",
+      "ahsp_code": "AHSP-A.1.02.4b.1.c.4",
+      "resource_id": "L.01",
+      "coefficient": 0.6717,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.1.c.4-3",
+      "ahsp_code": "AHSP-A.1.02.4b.1.c.4",
+      "resource_id": "L.02",
+      "coefficient": 0.3007,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.3.b-1",
+      "ahsp_code": "AHSP-A.1.02.4b.3.b",
+      "resource_id": "L.01",
+      "coefficient": 0.258,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.3.b-2",
+      "ahsp_code": "AHSP-A.1.02.4b.3.b",
+      "resource_id": "L.02",
+      "coefficient": 0.0516,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.3.b-3",
+      "ahsp_code": "AHSP-A.1.02.4b.3.b",
+      "resource_id": "L.04",
+      "coefficient": 0.0258,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.3.b-4",
+      "ahsp_code": "AHSP-A.1.02.4b.3.b",
+      "resource_id": "M.04.a.3",
+      "coefficient": 1.3,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.4b.3.b-5",
+      "ahsp_code": "AHSP-A.1.02.4b.3.b",
+      "resource_id": "M.64.b",
+      "coefficient": 1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.4.c-1",
+      "ahsp_code": "AHSP-A.2.02.5b.4.c",
+      "resource_id": "L.01",
+      "coefficient": 0.065,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.4.c-2",
+      "ahsp_code": "AHSP-A.2.02.5b.4.c",
+      "resource_id": "L.04",
+      "coefficient": 0.0065,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.4.c-3",
+      "ahsp_code": "AHSP-A.2.02.5b.4.c",
+      "resource_id": "M.132.aa",
+      "coefficient": 4.1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.4.c-4",
+      "ahsp_code": "AHSP-A.2.02.5b.4.c",
+      "resource_id": "To.22.d",
+      "coefficient": 0.065,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.5.a-1",
+      "ahsp_code": "AHSP-A.2.02.5b.5.a",
+      "resource_id": "L.01",
+      "coefficient": 0.028,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.5.a-2",
+      "ahsp_code": "AHSP-A.2.02.5b.5.a",
+      "resource_id": "L.04",
+      "coefficient": 0.0028,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.2.02.5b.5.a-3",
+      "ahsp_code": "AHSP-A.2.02.5b.5.a",
+      "resource_id": "To.20.c",
+      "coefficient": 0.028,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.5d.1-1",
+      "ahsp_code": "AHSP-A.1.02.5d.1",
+      "resource_id": "L.01",
+      "coefficient": 0.046,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.5d.1-2",
+      "ahsp_code": "AHSP-A.1.02.5d.1",
+      "resource_id": "L.02",
+      "coefficient": 0.023,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.5d.1-3",
+      "ahsp_code": "AHSP-A.1.02.5d.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0046,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.5d.1-4",
+      "ahsp_code": "AHSP-A.1.02.5d.1",
+      "resource_id": "M.79.c",
+      "coefficient": 1.02,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.02.5d.1-5",
+      "ahsp_code": "AHSP-A.1.02.5d.1",
+      "resource_id": "G.19.b",
+      "coefficient": 0.023,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.1a-1",
+      "ahsp_code": "AHSP-A.1.04.1a",
+      "resource_id": "L.01",
+      "coefficient": 0.04,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.1a-2",
+      "ahsp_code": "AHSP-A.1.04.1a",
+      "resource_id": "L.04",
+      "coefficient": 0.004,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.1a-3",
+      "ahsp_code": "AHSP-A.1.04.1a",
+      "resource_id": "M.136.a",
+      "coefficient": 1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.1a-4",
+      "ahsp_code": "AHSP-A.1.04.1a",
+      "resource_id": "M.150.b",
+      "coefficient": 2,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.1a-5",
+      "ahsp_code": "AHSP-A.1.04.1a",
+      "resource_id": "M.05.b.3",
+      "coefficient": 0.022,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.4-1",
+      "ahsp_code": "AHSP-A.1.04.4",
+      "resource_id": "E.39.g",
+      "coefficient": 0.7894,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.5-1",
+      "ahsp_code": "AHSP-A.1.04.5",
+      "resource_id": "E.39.i",
+      "coefficient": 0.617,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.8-1",
+      "ahsp_code": "AHSP-A.1.04.8",
+      "resource_id": "E.39.l",
+      "coefficient": 0.9868,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.04.9-1",
+      "ahsp_code": "AHSP-A.1.04.9",
+      "resource_id": "E.39.l",
+      "coefficient": 0.9868,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.06.1a-1",
+      "ahsp_code": "AHSP-A.1.06.1a",
+      "resource_id": "L.01",
+      "coefficient": 0.1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.06.1a-2",
+      "ahsp_code": "AHSP-A.1.06.1a",
+      "resource_id": "L.04",
+      "coefficient": 0.01,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.06.1a-3",
+      "ahsp_code": "AHSP-A.1.06.1a",
+      "resource_id": "M.142.a",
+      "coefficient": 0.02,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.1.06.1a-4",
+      "ahsp_code": "AHSP-A.1.06.1a",
+      "resource_id": "M.125.d",
+      "coefficient": 0.06,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1b-1",
+      "ahsp_code": "AHSP-A.3.07.1b",
+      "resource_id": "L.01",
+      "coefficient": 0.198,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1b-2",
+      "ahsp_code": "AHSP-A.3.07.1b",
+      "resource_id": "L.02",
+      "coefficient": 0.099,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1b-3",
+      "ahsp_code": "AHSP-A.3.07.1b",
+      "resource_id": "L.04",
+      "coefficient": 0.0198,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1j-1",
+      "ahsp_code": "AHSP-A.3.07.1j",
+      "resource_id": "L.01",
+      "coefficient": 0.3777,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1j-2",
+      "ahsp_code": "AHSP-A.3.07.1j",
+      "resource_id": "L.02",
+      "coefficient": 0.1889,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1j-3",
+      "ahsp_code": "AHSP-A.3.07.1j",
+      "resource_id": "L.04",
+      "coefficient": 0.0378,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1l-1",
+      "ahsp_code": "AHSP-A.3.07.1l",
+      "resource_id": "E.27.c",
+      "coefficient": 0.0346,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.1l-2",
+      "ahsp_code": "AHSP-A.3.07.1l",
+      "resource_id": "E.15.e",
+      "coefficient": 0.0525,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.5f-1",
+      "ahsp_code": "AHSP-A.3.07.5f",
+      "resource_id": "L.01",
+      "coefficient": 1.0442,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.5f-2",
+      "ahsp_code": "AHSP-A.3.07.5f",
+      "resource_id": "L.02",
+      "coefficient": 0.5221,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.5f-3",
+      "ahsp_code": "AHSP-A.3.07.5f",
+      "resource_id": "L.04",
+      "coefficient": 0.1044,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.5f-4",
+      "ahsp_code": "AHSP-A.3.07.5f",
+      "resource_id": "E.15.e",
+      "coefficient": 0.0502,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.07.5f-5",
+      "ahsp_code": "AHSP-A.3.07.5f",
+      "resource_id": "E.36.b",
+      "coefficient": 0.5221,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1-1",
+      "ahsp_code": "AHSP-A.3.08.1",
+      "resource_id": "L.04",
+      "coefficient": 0.0042,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1-2",
+      "ahsp_code": "AHSP-A.3.08.1",
+      "resource_id": "G.13.a",
+      "coefficient": 0.0417,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.3-1",
+      "ahsp_code": "AHSP-A.3.08.1b.3",
+      "resource_id": "L.01",
+      "coefficient": 0.1724,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.3-2",
+      "ahsp_code": "AHSP-A.3.08.1b.3",
+      "resource_id": "L.04",
+      "coefficient": 0.0172,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.3-3",
+      "ahsp_code": "AHSP-A.3.08.1b.3",
+      "resource_id": "G.13.b",
+      "coefficient": 0.1724,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.6-1",
+      "ahsp_code": "AHSP-A.3.08.1b.6",
+      "resource_id": "L.01",
+      "coefficient": 0.0448,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.6-2",
+      "ahsp_code": "AHSP-A.3.08.1b.6",
+      "resource_id": "L.04",
+      "coefficient": 0.0045,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.6-3",
+      "ahsp_code": "AHSP-A.3.08.1b.6",
+      "resource_id": "M.117.e",
+      "coefficient": 1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.6-4",
+      "ahsp_code": "AHSP-A.3.08.1b.6",
+      "resource_id": "M.117.e1",
+      "coefficient": 0.1667,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1b.6-5",
+      "ahsp_code": "AHSP-A.3.08.1b.6",
+      "resource_id": "G.13.b",
+      "coefficient": 0.0448,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1c.2-1",
+      "ahsp_code": "AHSP-A.3.08.1c.2",
+      "resource_id": "L.01",
+      "coefficient": 0.1734,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1c.2-2",
+      "ahsp_code": "AHSP-A.3.08.1c.2",
+      "resource_id": "L.04",
+      "coefficient": 0.0173,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1c.2-3",
+      "ahsp_code": "AHSP-A.3.08.1c.2",
+      "resource_id": "G.13.d",
+      "coefficient": 0.1734,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1d.5-1",
+      "ahsp_code": "AHSP-A.3.08.1d.5",
+      "resource_id": "L.01",
+      "coefficient": 0.2266,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1d.5-2",
+      "ahsp_code": "AHSP-A.3.08.1d.5",
+      "resource_id": "L.04",
+      "coefficient": 0.0227,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1d.5-3",
+      "ahsp_code": "AHSP-A.3.08.1d.5",
+      "resource_id": "M.112.k",
+      "coefficient": 1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1d.5-4",
+      "ahsp_code": "AHSP-A.3.08.1d.5",
+      "resource_id": "M.114.k",
+      "coefficient": 0.1667,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1d.5-5",
+      "ahsp_code": "AHSP-A.3.08.1d.5",
+      "resource_id": "G.13.d",
+      "coefficient": 0.2266,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-1",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "L.01",
+      "coefficient": 7.5,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-2",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "L.16",
+      "coefficient": 2.5,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-3",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "L.04",
+      "coefficient": 0.75,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-4",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "M.112.e",
+      "coefficient": 7,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-5",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "M.112.e_acc",
+      "coefficient": 30,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-6",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "E.39.e",
+      "coefficient": 1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.1e.2-7",
+      "ahsp_code": "AHSP-A.3.08.1e.2",
+      "resource_id": "G.13.d",
+      "coefficient": 2.5,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.d-1",
+      "ahsp_code": "AHSP-A.3.08.3.1.d",
+      "resource_id": "L.01",
+      "coefficient": 0.10129,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.d-2",
+      "ahsp_code": "AHSP-A.3.08.3.1.d",
+      "resource_id": "L.04",
+      "coefficient": 0.01013,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.d-3",
+      "ahsp_code": "AHSP-A.3.08.3.1.d",
+      "resource_id": "M.133",
+      "coefficient": 1,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.d-4",
+      "ahsp_code": "AHSP-A.3.08.3.1.d",
+      "resource_id": "T.13.a",
+      "coefficient": 0.05064,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.n-1",
+      "ahsp_code": "AHSP-A.3.08.3.1.n",
+      "resource_id": "L.01",
+      "coefficient": 0.23,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.n-2",
+      "ahsp_code": "AHSP-A.3.08.3.1.n",
+      "resource_id": "L.02",
+      "coefficient": 0.12,
+      "waste_factor": 1
+    },
+    {
+      "id": "D-SDA-A.3.08.3.1.n-3",
+      "ahsp_code": "AHSP-A.3.08.3.1.n",
+      "resource_id": "L.04",
+      "coefficient": 0.02,
+      "waste_factor": 1
+    }
+  ],
+  "resources": [
+    {
+      "id": "L.01",
+      "name": "Pekerja",
+      "category": "Labor",
+      "unit": "OH"
+    },
+    {
+      "id": "L.02",
+      "name": "Tukang",
+      "category": "Labor",
+      "unit": "OH"
+    },
+    {
+      "id": "L.16",
+      "name": "Tukang Pompa / Juru Bor",
+      "category": "Labor",
+      "unit": "OH"
+    },
+    {
+      "id": "L.04",
+      "name": "Mandor",
+      "category": "Labor",
+      "unit": "OH"
+    },
+    {
+      "id": "L.05",
+      "name": "Penyelam",
+      "category": "Labor",
+      "unit": "OH"
+    },
+    {
+      "id": "M.04.a.3",
+      "name": "Batu alam/Batu Kali 12-25cm",
+      "category": "Material",
+      "unit": "m3"
+    },
+    {
+      "id": "M.05.a.3",
+      "name": "Pasir Kasar / Pasir Beton",
+      "category": "Material",
+      "unit": "m3"
+    },
+    {
+      "id": "M.05.b.3",
+      "name": "Pasir Pasang",
+      "category": "Material",
+      "unit": "m3"
+    },
+    {
+      "id": "M.64.b",
+      "name": "1m3 Bronjong Tambang Nylon/Rami, lubang 100x100mm",
+      "category": "Material",
+      "unit": "unit"
+    },
+    {
+      "id": "M.132.aa",
+      "name": "Geotekstil benang besar",
+      "category": "Material",
+      "unit": "m'"
+    },
+    {
+      "id": "M.79.c",
+      "name": "Bahan construction joint",
+      "category": "Material",
+      "unit": "m3"
+    },
+    {
+      "id": "M.136.a",
+      "name": "Karung plastik/bagor",
+      "category": "Material",
+      "unit": "Buah"
+    },
+    {
+      "id": "M.150.b",
+      "name": "Tali rapia/goni/rami",
+      "category": "Material",
+      "unit": "m'"
+    },
+    {
+      "id": "M.142.a",
+      "name": "Oli SAE 40",
+      "category": "Material",
+      "unit": "Liter"
+    },
+    {
+      "id": "M.125.d",
+      "name": "Solar non Subsidi",
+      "category": "Material",
+      "unit": "Liter"
+    },
+    {
+      "id": "M.117.e",
+      "name": "Pipa PVC ø 50 mm S.10",
+      "category": "Material",
+      "unit": "m'"
+    },
+    {
+      "id": "M.117.e1",
+      "name": "Shock PVC ø 50 mm S.10",
+      "category": "Material",
+      "unit": "Buah"
+    },
+    {
+      "id": "M.112.k",
+      "name": "Pipa GI Medium ø 6\"",
+      "category": "Material",
+      "unit": "m'"
+    },
+    {
+      "id": "M.114.k",
+      "name": "Pipa GI Medium ø 6\"-Socket",
+      "category": "Material",
+      "unit": "Buah"
+    },
+    {
+      "id": "M.112.e",
+      "name": "Pipa GI Medium ø 1,25\"",
+      "category": "Material",
+      "unit": "Batang"
+    },
+    {
+      "id": "M.112.e_acc",
+      "name": "Asesories (30% x harga pipa)",
+      "category": "Material",
+      "unit": "LS"
+    },
+    {
+      "id": "M.133",
+      "name": "Pipa Baja Las Spiral, t=6.35mm, DN 600",
+      "category": "Material",
+      "unit": "m"
+    },
+    {
+      "id": "E.19.c",
+      "name": "Jack Hammer Drill + Kompressor 75 HP",
+      "category": "Equipment",
+      "unit": "Hari"
+    },
+    {
+      "id": "E.15.c",
+      "name": "Excavator (Midi-Amphibi); Bucket 0,35 m3; 65 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.15.e",
+      "name": "Excavator (Std.); Bucket 0,90 m3; 155 HP; Dm 6,6m'",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.13.c",
+      "name": "Dump truck 7 ton; Bak 6 m3; 130 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.15.l",
+      "name": "Excavator longarm + ponton (2 set)",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.13.d",
+      "name": "Dump Truck",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.36.c",
+      "name": "Perahu + mesin @ 10 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.07.c",
+      "name": "Bulldozer - 155 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.60.a",
+      "name": "Water Tank Truck - (3.000-4.500) L",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.53.c",
+      "name": "Stamper Double Drum - 550kg; 15 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.50.m",
+      "name": "Roller, Vibro 8-12 Ton; 40 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.23.d",
+      "name": "Kapal Keruk (sangat besar); 450 HP, Dm = 10 m'",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.04.d",
+      "name": "Speedboat Daya 250 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.30.b",
+      "name": "Motor Air - 180 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.50.b",
+      "name": "Pompa Booster",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.48.d",
+      "name": "Ponton besi, kapasitas 10 Ton, mesin 135 HP",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.55.e",
+      "name": "Tongkang (Besar) - 4.000 Ton",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "E.36.b",
+      "name": "Perahu",
+      "category": "Equipment",
+      "unit": "jam"
+    },
+    {
+      "id": "To.22.d",
+      "name": "Mesin Jahit (desktop-Pro); 0,40 KW",
+      "category": "Equipment",
+      "unit": "Hari"
+    },
+    {
+      "id": "To.20.c",
+      "name": "Mesin Las HDPE 800 Watt",
+      "category": "Equipment",
+      "unit": "Hari"
+    },
+    {
+      "id": "G.19.b",
+      "name": "Grouting pump 0,5 - 1,5 m3/jam, 25 bar",
+      "category": "Equipment",
+      "unit": "Hari"
+    },
+    {
+      "id": "E.39.g",
+      "name": "Pompa air (D) 2 KW; Q= 5 L/s; ∅out 2,5\"",
+      "category": "Equipment",
+      "unit": "Jam"
+    },
+    {
+      "id": "E.39.i",
+      "name": "Pompa air (D) 5 KW; Q= 10 L/s; ∅out 4\"",
+      "category": "Equipment",
+      "unit": "Jam"
+    },
+    {
+      "id": "E.39.l",
+      "name": "Pompa air (D) 30 KW; Q= 100 L/s; ∅out 10\"; 120 bar",
+      "category": "Equipment",
+      "unit": "Jam"
+    },
+    {
+      "id": "E.39.e",
+      "name": "Pompa Air Jet Pump 500 Watt",
+      "category": "Equipment",
+      "unit": "Hari"
+    },
+    {
+      "id": "G.13.a",
+      "name": "Drill_Rig-WaterW. Tractor; 20 HP, 60 m'",
+      "category": "Equipment",
+      "unit": "Jam"
+    },
+    {
+      "id": "G.13.b",
+      "name": "Drill_Rig-WaterW. Tractor; 50 HP, 80 m'",
+      "category": "Equipment",
+      "unit": "Jam"
+    },
+    {
+      "id": "G.13.d",
+      "name": "Drill_Rig-WaterW. Tractor; 100 HP, 150 m'",
+      "category": "Equipment",
+      "unit": "Jam"
+    },
+    {
+      "id": "T.13.a",
+      "name": "Mobile Crane Kapasitas 25 ton",
+      "category": "Equipment",
+      "unit": "jam"
+    }
+  ],
+  "resource_prices": [
+    {
+      "id": "R-R-JKT-L.01",
+      "resource_id": "L.01",
+      "region_id": "R-JKT",
+      "price": 120000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-L.02",
+      "resource_id": "L.02",
+      "region_id": "R-JKT",
+      "price": 150000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-L.16",
+      "resource_id": "L.16",
+      "region_id": "R-JKT",
+      "price": 180000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-L.04",
+      "resource_id": "L.04",
+      "region_id": "R-JKT",
+      "price": 200000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-L.05",
+      "resource_id": "L.05",
+      "region_id": "R-JKT",
+      "price": 250000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.04.a.3",
+      "resource_id": "M.04.a.3",
+      "region_id": "R-JKT",
+      "price": 246170.89,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.05.a.3",
+      "resource_id": "M.05.a.3",
+      "region_id": "R-JKT",
+      "price": 246170.89,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.05.b.3",
+      "resource_id": "M.05.b.3",
+      "region_id": "R-JKT",
+      "price": 246964.55,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.64.b",
+      "resource_id": "M.64.b",
+      "region_id": "R-JKT",
+      "price": 150000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.132.aa",
+      "resource_id": "M.132.aa",
+      "region_id": "R-JKT",
+      "price": 12000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.79.c",
+      "resource_id": "M.79.c",
+      "region_id": "R-JKT",
+      "price": 11000000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.136.a",
+      "resource_id": "M.136.a",
+      "region_id": "R-JKT",
+      "price": 1500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.150.b",
+      "resource_id": "M.150.b",
+      "region_id": "R-JKT",
+      "price": 1000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.142.a",
+      "resource_id": "M.142.a",
+      "region_id": "R-JKT",
+      "price": 40000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.125.d",
+      "resource_id": "M.125.d",
+      "region_id": "R-JKT",
+      "price": 14500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.117.e",
+      "resource_id": "M.117.e",
+      "region_id": "R-JKT",
+      "price": 45925,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.117.e1",
+      "resource_id": "M.117.e1",
+      "region_id": "R-JKT",
+      "price": 25000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.112.k",
+      "resource_id": "M.112.k",
+      "region_id": "R-JKT",
+      "price": 324250,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.114.k",
+      "resource_id": "M.114.k",
+      "region_id": "R-JKT",
+      "price": 194550,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.112.e",
+      "resource_id": "M.112.e",
+      "region_id": "R-JKT",
+      "price": 61750,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.112.e_acc",
+      "resource_id": "M.112.e_acc",
+      "region_id": "R-JKT",
+      "price": 129675,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-M.133",
+      "resource_id": "M.133",
+      "region_id": "R-JKT",
+      "price": 2500000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.19.c",
+      "resource_id": "E.19.c",
+      "region_id": "R-JKT",
+      "price": 226736.4,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.15.c",
+      "resource_id": "E.15.c",
+      "region_id": "R-JKT",
+      "price": 322310.08,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.15.e",
+      "resource_id": "E.15.e",
+      "region_id": "R-JKT",
+      "price": 562993.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.13.c",
+      "resource_id": "E.13.c",
+      "region_id": "R-JKT",
+      "price": 381961.85,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.15.l",
+      "resource_id": "E.15.l",
+      "region_id": "R-JKT",
+      "price": 800000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.13.d",
+      "resource_id": "E.13.d",
+      "region_id": "R-JKT",
+      "price": 381961.85,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.36.c",
+      "resource_id": "E.36.c",
+      "region_id": "R-JKT",
+      "price": 58952.33,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.07.c",
+      "resource_id": "E.07.c",
+      "region_id": "R-JKT",
+      "price": 795315.02,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.60.a",
+      "resource_id": "E.60.a",
+      "region_id": "R-JKT",
+      "price": 307172.37,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.53.c",
+      "resource_id": "E.53.c",
+      "region_id": "R-JKT",
+      "price": 96065.52,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.50.m",
+      "resource_id": "E.50.m",
+      "region_id": "R-JKT",
+      "price": 385977.95,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.23.d",
+      "resource_id": "E.23.d",
+      "region_id": "R-JKT",
+      "price": 3045641.71,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.04.d",
+      "resource_id": "E.04.d",
+      "region_id": "R-JKT",
+      "price": 440148.94,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.30.b",
+      "resource_id": "E.30.b",
+      "region_id": "R-JKT",
+      "price": 283866.42,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.50.b",
+      "resource_id": "E.50.b",
+      "region_id": "R-JKT",
+      "price": 2165389.86,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.48.d",
+      "resource_id": "E.48.d",
+      "region_id": "R-JKT",
+      "price": 325561.85,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.55.e",
+      "resource_id": "E.55.e",
+      "region_id": "R-JKT",
+      "price": 987955.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.36.b",
+      "resource_id": "E.36.b",
+      "region_id": "R-JKT",
+      "price": 40393.33,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-To.22.d",
+      "resource_id": "To.22.d",
+      "region_id": "R-JKT",
+      "price": 60963.28,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-To.20.c",
+      "resource_id": "To.20.c",
+      "region_id": "R-JKT",
+      "price": 80000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-G.19.b",
+      "resource_id": "G.19.b",
+      "region_id": "R-JKT",
+      "price": 150000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.39.g",
+      "resource_id": "E.39.g",
+      "region_id": "R-JKT",
+      "price": 80000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.39.i",
+      "resource_id": "E.39.i",
+      "region_id": "R-JKT",
+      "price": 120000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.39.l",
+      "resource_id": "E.39.l",
+      "region_id": "R-JKT",
+      "price": 180000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-E.39.e",
+      "resource_id": "E.39.e",
+      "region_id": "R-JKT",
+      "price": 50000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-G.13.a",
+      "resource_id": "G.13.a",
+      "region_id": "R-JKT",
+      "price": 173147.26,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-G.13.b",
+      "resource_id": "G.13.b",
+      "region_id": "R-JKT",
+      "price": 173147.26,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-G.13.d",
+      "resource_id": "G.13.d",
+      "region_id": "R-JKT",
+      "price": 173147.26,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-JKT-T.13.a",
+      "resource_id": "T.13.a",
+      "region_id": "R-JKT",
+      "price": 780326.24,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-L.01",
+      "resource_id": "L.01",
+      "region_id": "R-BDG",
+      "price": 108000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-L.02",
+      "resource_id": "L.02",
+      "region_id": "R-BDG",
+      "price": 135000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-L.16",
+      "resource_id": "L.16",
+      "region_id": "R-BDG",
+      "price": 162000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-L.04",
+      "resource_id": "L.04",
+      "region_id": "R-BDG",
+      "price": 180000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-L.05",
+      "resource_id": "L.05",
+      "region_id": "R-BDG",
+      "price": 225000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.04.a.3",
+      "resource_id": "M.04.a.3",
+      "region_id": "R-BDG",
+      "price": 221553.8,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.05.a.3",
+      "resource_id": "M.05.a.3",
+      "region_id": "R-BDG",
+      "price": 221553.8,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.05.b.3",
+      "resource_id": "M.05.b.3",
+      "region_id": "R-BDG",
+      "price": 222268.1,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.64.b",
+      "resource_id": "M.64.b",
+      "region_id": "R-BDG",
+      "price": 135000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.132.aa",
+      "resource_id": "M.132.aa",
+      "region_id": "R-BDG",
+      "price": 10800,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.79.c",
+      "resource_id": "M.79.c",
+      "region_id": "R-BDG",
+      "price": 9900000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.136.a",
+      "resource_id": "M.136.a",
+      "region_id": "R-BDG",
+      "price": 1350,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.150.b",
+      "resource_id": "M.150.b",
+      "region_id": "R-BDG",
+      "price": 900,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.142.a",
+      "resource_id": "M.142.a",
+      "region_id": "R-BDG",
+      "price": 36000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.125.d",
+      "resource_id": "M.125.d",
+      "region_id": "R-BDG",
+      "price": 13050,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.117.e",
+      "resource_id": "M.117.e",
+      "region_id": "R-BDG",
+      "price": 41332.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.117.e1",
+      "resource_id": "M.117.e1",
+      "region_id": "R-BDG",
+      "price": 22500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.112.k",
+      "resource_id": "M.112.k",
+      "region_id": "R-BDG",
+      "price": 291825,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.114.k",
+      "resource_id": "M.114.k",
+      "region_id": "R-BDG",
+      "price": 175095,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.112.e",
+      "resource_id": "M.112.e",
+      "region_id": "R-BDG",
+      "price": 55575,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.112.e_acc",
+      "resource_id": "M.112.e_acc",
+      "region_id": "R-BDG",
+      "price": 116707.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-M.133",
+      "resource_id": "M.133",
+      "region_id": "R-BDG",
+      "price": 2250000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.19.c",
+      "resource_id": "E.19.c",
+      "region_id": "R-BDG",
+      "price": 204062.76,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.15.c",
+      "resource_id": "E.15.c",
+      "region_id": "R-BDG",
+      "price": 290079.07,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.15.e",
+      "resource_id": "E.15.e",
+      "region_id": "R-BDG",
+      "price": 506694.15,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.13.c",
+      "resource_id": "E.13.c",
+      "region_id": "R-BDG",
+      "price": 343765.66,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.15.l",
+      "resource_id": "E.15.l",
+      "region_id": "R-BDG",
+      "price": 720000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.13.d",
+      "resource_id": "E.13.d",
+      "region_id": "R-BDG",
+      "price": 343765.66,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.36.c",
+      "resource_id": "E.36.c",
+      "region_id": "R-BDG",
+      "price": 53057.1,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.07.c",
+      "resource_id": "E.07.c",
+      "region_id": "R-BDG",
+      "price": 715783.52,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.60.a",
+      "resource_id": "E.60.a",
+      "region_id": "R-BDG",
+      "price": 276455.13,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.53.c",
+      "resource_id": "E.53.c",
+      "region_id": "R-BDG",
+      "price": 86458.97,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.50.m",
+      "resource_id": "E.50.m",
+      "region_id": "R-BDG",
+      "price": 347380.16,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.23.d",
+      "resource_id": "E.23.d",
+      "region_id": "R-BDG",
+      "price": 2741077.54,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.04.d",
+      "resource_id": "E.04.d",
+      "region_id": "R-BDG",
+      "price": 396134.05,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.30.b",
+      "resource_id": "E.30.b",
+      "region_id": "R-BDG",
+      "price": 255479.78,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.50.b",
+      "resource_id": "E.50.b",
+      "region_id": "R-BDG",
+      "price": 1948850.87,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.48.d",
+      "resource_id": "E.48.d",
+      "region_id": "R-BDG",
+      "price": 293005.66,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.55.e",
+      "resource_id": "E.55.e",
+      "region_id": "R-BDG",
+      "price": 889159.95,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.36.b",
+      "resource_id": "E.36.b",
+      "region_id": "R-BDG",
+      "price": 36354,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-To.22.d",
+      "resource_id": "To.22.d",
+      "region_id": "R-BDG",
+      "price": 54866.95,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-To.20.c",
+      "resource_id": "To.20.c",
+      "region_id": "R-BDG",
+      "price": 72000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-G.19.b",
+      "resource_id": "G.19.b",
+      "region_id": "R-BDG",
+      "price": 135000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.39.g",
+      "resource_id": "E.39.g",
+      "region_id": "R-BDG",
+      "price": 72000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.39.i",
+      "resource_id": "E.39.i",
+      "region_id": "R-BDG",
+      "price": 108000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.39.l",
+      "resource_id": "E.39.l",
+      "region_id": "R-BDG",
+      "price": 162000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-E.39.e",
+      "resource_id": "E.39.e",
+      "region_id": "R-BDG",
+      "price": 45000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-G.13.a",
+      "resource_id": "G.13.a",
+      "region_id": "R-BDG",
+      "price": 155832.53,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-G.13.b",
+      "resource_id": "G.13.b",
+      "region_id": "R-BDG",
+      "price": 155832.53,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-G.13.d",
+      "resource_id": "G.13.d",
+      "region_id": "R-BDG",
+      "price": 155832.53,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-BDG-T.13.a",
+      "resource_id": "T.13.a",
+      "region_id": "R-BDG",
+      "price": 702293.62,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-L.01",
+      "resource_id": "L.01",
+      "region_id": "R-SBY",
+      "price": 114000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-L.02",
+      "resource_id": "L.02",
+      "region_id": "R-SBY",
+      "price": 142500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-L.16",
+      "resource_id": "L.16",
+      "region_id": "R-SBY",
+      "price": 171000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-L.04",
+      "resource_id": "L.04",
+      "region_id": "R-SBY",
+      "price": 190000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-L.05",
+      "resource_id": "L.05",
+      "region_id": "R-SBY",
+      "price": 237500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.04.a.3",
+      "resource_id": "M.04.a.3",
+      "region_id": "R-SBY",
+      "price": 233862.35,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.05.a.3",
+      "resource_id": "M.05.a.3",
+      "region_id": "R-SBY",
+      "price": 233862.35,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.05.b.3",
+      "resource_id": "M.05.b.3",
+      "region_id": "R-SBY",
+      "price": 234616.32,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.64.b",
+      "resource_id": "M.64.b",
+      "region_id": "R-SBY",
+      "price": 142500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.132.aa",
+      "resource_id": "M.132.aa",
+      "region_id": "R-SBY",
+      "price": 11400,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.79.c",
+      "resource_id": "M.79.c",
+      "region_id": "R-SBY",
+      "price": 10450000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.136.a",
+      "resource_id": "M.136.a",
+      "region_id": "R-SBY",
+      "price": 1425,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.150.b",
+      "resource_id": "M.150.b",
+      "region_id": "R-SBY",
+      "price": 950,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.142.a",
+      "resource_id": "M.142.a",
+      "region_id": "R-SBY",
+      "price": 38000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.125.d",
+      "resource_id": "M.125.d",
+      "region_id": "R-SBY",
+      "price": 13775,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.117.e",
+      "resource_id": "M.117.e",
+      "region_id": "R-SBY",
+      "price": 43628.75,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.117.e1",
+      "resource_id": "M.117.e1",
+      "region_id": "R-SBY",
+      "price": 23750,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.112.k",
+      "resource_id": "M.112.k",
+      "region_id": "R-SBY",
+      "price": 308037.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.114.k",
+      "resource_id": "M.114.k",
+      "region_id": "R-SBY",
+      "price": 184822.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.112.e",
+      "resource_id": "M.112.e",
+      "region_id": "R-SBY",
+      "price": 58662.5,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.112.e_acc",
+      "resource_id": "M.112.e_acc",
+      "region_id": "R-SBY",
+      "price": 123191.25,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-M.133",
+      "resource_id": "M.133",
+      "region_id": "R-SBY",
+      "price": 2375000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.19.c",
+      "resource_id": "E.19.c",
+      "region_id": "R-SBY",
+      "price": 215399.58,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.15.c",
+      "resource_id": "E.15.c",
+      "region_id": "R-SBY",
+      "price": 306194.58,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.15.e",
+      "resource_id": "E.15.e",
+      "region_id": "R-SBY",
+      "price": 534843.82,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.13.c",
+      "resource_id": "E.13.c",
+      "region_id": "R-SBY",
+      "price": 362863.76,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.15.l",
+      "resource_id": "E.15.l",
+      "region_id": "R-SBY",
+      "price": 760000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.13.d",
+      "resource_id": "E.13.d",
+      "region_id": "R-SBY",
+      "price": 362863.76,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.36.c",
+      "resource_id": "E.36.c",
+      "region_id": "R-SBY",
+      "price": 56004.71,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.07.c",
+      "resource_id": "E.07.c",
+      "region_id": "R-SBY",
+      "price": 755549.27,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.60.a",
+      "resource_id": "E.60.a",
+      "region_id": "R-SBY",
+      "price": 291813.75,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.53.c",
+      "resource_id": "E.53.c",
+      "region_id": "R-SBY",
+      "price": 91262.24,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.50.m",
+      "resource_id": "E.50.m",
+      "region_id": "R-SBY",
+      "price": 366679.05,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.23.d",
+      "resource_id": "E.23.d",
+      "region_id": "R-SBY",
+      "price": 2893359.62,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.04.d",
+      "resource_id": "E.04.d",
+      "region_id": "R-SBY",
+      "price": 418141.49,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.30.b",
+      "resource_id": "E.30.b",
+      "region_id": "R-SBY",
+      "price": 269673.1,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.50.b",
+      "resource_id": "E.50.b",
+      "region_id": "R-SBY",
+      "price": 2057120.37,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.48.d",
+      "resource_id": "E.48.d",
+      "region_id": "R-SBY",
+      "price": 309283.76,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.55.e",
+      "resource_id": "E.55.e",
+      "region_id": "R-SBY",
+      "price": 938557.72,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.36.b",
+      "resource_id": "E.36.b",
+      "region_id": "R-SBY",
+      "price": 38373.66,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-To.22.d",
+      "resource_id": "To.22.d",
+      "region_id": "R-SBY",
+      "price": 57915.12,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-To.20.c",
+      "resource_id": "To.20.c",
+      "region_id": "R-SBY",
+      "price": 76000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-G.19.b",
+      "resource_id": "G.19.b",
+      "region_id": "R-SBY",
+      "price": 142500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.39.g",
+      "resource_id": "E.39.g",
+      "region_id": "R-SBY",
+      "price": 76000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.39.i",
+      "resource_id": "E.39.i",
+      "region_id": "R-SBY",
+      "price": 114000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.39.l",
+      "resource_id": "E.39.l",
+      "region_id": "R-SBY",
+      "price": 171000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-E.39.e",
+      "resource_id": "E.39.e",
+      "region_id": "R-SBY",
+      "price": 47500,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-G.13.a",
+      "resource_id": "G.13.a",
+      "region_id": "R-SBY",
+      "price": 164489.9,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-G.13.b",
+      "resource_id": "G.13.b",
+      "region_id": "R-SBY",
+      "price": 164489.9,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-G.13.d",
+      "resource_id": "G.13.d",
+      "region_id": "R-SBY",
+      "price": 164489.9,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-SBY-T.13.a",
+      "resource_id": "T.13.a",
+      "region_id": "R-SBY",
+      "price": 741309.93,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-L.01",
+      "resource_id": "L.01",
+      "region_id": "R-PAP",
+      "price": 216000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-L.02",
+      "resource_id": "L.02",
+      "region_id": "R-PAP",
+      "price": 270000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-L.16",
+      "resource_id": "L.16",
+      "region_id": "R-PAP",
+      "price": 324000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-L.04",
+      "resource_id": "L.04",
+      "region_id": "R-PAP",
+      "price": 360000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-L.05",
+      "resource_id": "L.05",
+      "region_id": "R-PAP",
+      "price": 450000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.04.a.3",
+      "resource_id": "M.04.a.3",
+      "region_id": "R-PAP",
+      "price": 443107.6,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.05.a.3",
+      "resource_id": "M.05.a.3",
+      "region_id": "R-PAP",
+      "price": 443107.6,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.05.b.3",
+      "resource_id": "M.05.b.3",
+      "region_id": "R-PAP",
+      "price": 444536.19,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.64.b",
+      "resource_id": "M.64.b",
+      "region_id": "R-PAP",
+      "price": 270000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.132.aa",
+      "resource_id": "M.132.aa",
+      "region_id": "R-PAP",
+      "price": 21600,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.79.c",
+      "resource_id": "M.79.c",
+      "region_id": "R-PAP",
+      "price": 19800000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.136.a",
+      "resource_id": "M.136.a",
+      "region_id": "R-PAP",
+      "price": 2700,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.150.b",
+      "resource_id": "M.150.b",
+      "region_id": "R-PAP",
+      "price": 1800,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.142.a",
+      "resource_id": "M.142.a",
+      "region_id": "R-PAP",
+      "price": 72000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.125.d",
+      "resource_id": "M.125.d",
+      "region_id": "R-PAP",
+      "price": 26100,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.117.e",
+      "resource_id": "M.117.e",
+      "region_id": "R-PAP",
+      "price": 82665,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.117.e1",
+      "resource_id": "M.117.e1",
+      "region_id": "R-PAP",
+      "price": 45000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.112.k",
+      "resource_id": "M.112.k",
+      "region_id": "R-PAP",
+      "price": 583650,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.114.k",
+      "resource_id": "M.114.k",
+      "region_id": "R-PAP",
+      "price": 350190,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.112.e",
+      "resource_id": "M.112.e",
+      "region_id": "R-PAP",
+      "price": 111150,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.112.e_acc",
+      "resource_id": "M.112.e_acc",
+      "region_id": "R-PAP",
+      "price": 233415,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-M.133",
+      "resource_id": "M.133",
+      "region_id": "R-PAP",
+      "price": 4500000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.19.c",
+      "resource_id": "E.19.c",
+      "region_id": "R-PAP",
+      "price": 408125.52,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.15.c",
+      "resource_id": "E.15.c",
+      "region_id": "R-PAP",
+      "price": 580158.14,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.15.e",
+      "resource_id": "E.15.e",
+      "region_id": "R-PAP",
+      "price": 1013388.3,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.13.c",
+      "resource_id": "E.13.c",
+      "region_id": "R-PAP",
+      "price": 687531.33,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.15.l",
+      "resource_id": "E.15.l",
+      "region_id": "R-PAP",
+      "price": 1440000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.13.d",
+      "resource_id": "E.13.d",
+      "region_id": "R-PAP",
+      "price": 687531.33,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.36.c",
+      "resource_id": "E.36.c",
+      "region_id": "R-PAP",
+      "price": 106114.19,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.07.c",
+      "resource_id": "E.07.c",
+      "region_id": "R-PAP",
+      "price": 1431567.04,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.60.a",
+      "resource_id": "E.60.a",
+      "region_id": "R-PAP",
+      "price": 552910.27,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.53.c",
+      "resource_id": "E.53.c",
+      "region_id": "R-PAP",
+      "price": 172917.94,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.50.m",
+      "resource_id": "E.50.m",
+      "region_id": "R-PAP",
+      "price": 694760.31,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.23.d",
+      "resource_id": "E.23.d",
+      "region_id": "R-PAP",
+      "price": 5482155.08,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.04.d",
+      "resource_id": "E.04.d",
+      "region_id": "R-PAP",
+      "price": 792268.09,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.30.b",
+      "resource_id": "E.30.b",
+      "region_id": "R-PAP",
+      "price": 510959.56,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.50.b",
+      "resource_id": "E.50.b",
+      "region_id": "R-PAP",
+      "price": 3897701.75,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.48.d",
+      "resource_id": "E.48.d",
+      "region_id": "R-PAP",
+      "price": 586011.33,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.55.e",
+      "resource_id": "E.55.e",
+      "region_id": "R-PAP",
+      "price": 1778319.9,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.36.b",
+      "resource_id": "E.36.b",
+      "region_id": "R-PAP",
+      "price": 72707.99,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-To.22.d",
+      "resource_id": "To.22.d",
+      "region_id": "R-PAP",
+      "price": 109733.9,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-To.20.c",
+      "resource_id": "To.20.c",
+      "region_id": "R-PAP",
+      "price": 144000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-G.19.b",
+      "resource_id": "G.19.b",
+      "region_id": "R-PAP",
+      "price": 270000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.39.g",
+      "resource_id": "E.39.g",
+      "region_id": "R-PAP",
+      "price": 144000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.39.i",
+      "resource_id": "E.39.i",
+      "region_id": "R-PAP",
+      "price": 216000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.39.l",
+      "resource_id": "E.39.l",
+      "region_id": "R-PAP",
+      "price": 324000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-E.39.e",
+      "resource_id": "E.39.e",
+      "region_id": "R-PAP",
+      "price": 90000,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-G.13.a",
+      "resource_id": "G.13.a",
+      "region_id": "R-PAP",
+      "price": 311665.07,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-G.13.b",
+      "resource_id": "G.13.b",
+      "region_id": "R-PAP",
+      "price": 311665.07,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-G.13.d",
+      "resource_id": "G.13.d",
+      "region_id": "R-PAP",
+      "price": 311665.07,
+      "effective_date": "2026-07-25"
+    },
+    {
+      "id": "R-R-PAP-T.13.a",
+      "resource_id": "T.13.a",
+      "region_id": "R-PAP",
+      "price": 1404587.23,
+      "effective_date": "2026-07-25"
+    }
+  ]
+}

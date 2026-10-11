@@ -692,6 +692,111 @@ function extractGeoreference(modelId) {
   return null;
 }
 
+function getEntityDimensions(entity) {
+  if (!entity) return { dx: 0, dy: 0, dz: 0, volume: 0, area: 0, label: "3D Mesh" };
+
+  const dist = (a, b) => Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
+
+  // 1. Try finding explicit OBB on entity, meshes, or geometry
+  let rawObb = entity.obb;
+  if (!rawObb && entity.meshes && entity.meshes.length > 0) {
+    for (const m of entity.meshes) {
+      if (m.obb && m.obb.length >= 24) { rawObb = m.obb; break; }
+      if (m._geometry && m._geometry.obb && m._geometry.obb.length >= 24) { rawObb = m._geometry.obb; break; }
+      if (m.geometry && m.geometry.obb && m.geometry.obb.length >= 24) { rawObb = m.geometry.obb; break; }
+    }
+  }
+  if (!rawObb && entity.mesh) {
+    if (entity.mesh.obb && entity.mesh.obb.length >= 24) rawObb = entity.mesh.obb;
+    else if (entity.mesh._geometry && entity.mesh._geometry.obb) rawObb = entity.mesh._geometry.obb;
+    else if (entity.mesh.geometry && entity.mesh.geometry.obb) rawObb = entity.mesh.geometry.obb;
+  }
+
+  if (rawObb && rawObb.length >= 24) {
+    const stride = rawObb.length >= 32 ? 4 : 3;
+    const p0 = [rawObb[0], rawObb[1], rawObb[2]];
+    const p1 = [rawObb[stride], rawObb[stride+1], rawObb[stride+2]];
+    const p3 = [rawObb[stride*3], rawObb[stride*3+1], rawObb[stride*3+2]];
+    const p4 = [rawObb[stride*4], rawObb[stride*4+1], rawObb[stride*4+2]];
+
+    let d1 = dist(p0, p1);
+    let d2 = dist(p0, p3);
+    let d3 = dist(p0, p4);
+
+    if (d1 > 0.001 && d2 > 0.001 && d3 > 0.001) {
+      const volume = d1 * d2 * d3;
+      const area = 2 * (d1 * d2 + d2 * d3 + d3 * d1);
+      return { dx: d1, dy: d2, dz: d3, volume, area, label: "Oriented Box" };
+    }
+  }
+
+  // 2. Check metadata properties if available on viewer.metaScene
+  if (entity.id && viewer && viewer.metaScene) {
+    const metaObj = viewer.metaScene.metaObjects[entity.id];
+    if (metaObj && metaObj.propertySets) {
+      let metaVol = null;
+      let metaW = null, metaL = null, metaH = null;
+
+      metaObj.propertySets.forEach(pset => {
+        if (!pset.properties) return;
+        pset.properties.forEach(p => {
+          if (!p.name || p.value === undefined || p.value === null) return;
+          const nameLower = String(p.name).toLowerCase();
+          const valNum = parseFloat(p.value);
+          if (isNaN(valNum) || valNum <= 0) return;
+
+          if (nameLower === "volume" || nameLower.includes("netvolume") || nameLower.includes("grossvolume")) {
+            metaVol = valNum;
+          } else if (nameLower.includes("width") || nameLower.includes("overallwidth")) {
+            metaW = valNum;
+          } else if (nameLower.includes("length") || nameLower.includes("overalllength")) {
+            metaL = valNum;
+          } else if (nameLower.includes("height") || nameLower.includes("thickness") || nameLower.includes("depth")) {
+            metaH = valNum;
+          }
+        });
+      });
+
+      if (metaVol && metaVol > 0) {
+        const dx = metaW || Math.sqrt(metaVol / (metaH || 1.30));
+        const dz = metaL || dx;
+        const dy = metaH || (metaVol / (dx * dz));
+        const area = 2 * (dx * dy + dy * dz + dz * dx);
+        return { dx, dy, dz, volume: metaVol, area, label: "Oriented Box (IFC Metadata)" };
+      }
+    }
+  }
+
+  // 3. Fallback to entity.aabb with rotation correction check
+  if (entity.aabb) {
+    const aabb = entity.aabb;
+    const gdx = Math.abs(aabb[3] - aabb[0]);
+    const gdy = Math.abs(aabb[4] - aabb[1]);
+    const gdz = Math.abs(aabb[5] - aabb[2]);
+
+    let dx = gdx;
+    let dy = gdy;
+    let dz = gdz;
+    let isRotated = false;
+
+    // Check if XZ plane footprint is rotated (~35deg rotation factor is ~1.234)
+    if (Math.abs(gdx - gdz) < 0.20 && gdx > 1.3 * dy) {
+      const estL = gdx / 1.234;
+      if (estL > 0.1) {
+        dx = estL;
+        dz = estL;
+        isRotated = true;
+      }
+    }
+
+    const volume = dx * dy * dz;
+    const area = 2 * (dx * dy + dy * dz + dz * dx);
+    return { dx, dy, dz, volume, area, label: isRotated ? "Oriented Box" : "Bounding Box" };
+  }
+
+  return { dx: 0, dy: 0, dz: 0, volume: 0, area: 0, label: "Unknown" };
+}
+
 // --- Unified metadata and properties fetch helper ---
 function getElementMetadata(id, modelId) {
   // Try Revit metadata map first
@@ -820,25 +925,18 @@ function getElementMetadata(id, modelId) {
         category = cleanType.replace(/([A-Z])/g, ' $1').trim();
       }
 
-      // Also append AABB dimensions if missing geometric values
+      // Also append dimensions if missing geometric values
       const entity = viewer.scene.objects[id];
-      if (entity && entity.aabb) {
-        const aabb = entity.aabb;
-        const dx = Math.abs(aabb[3] - aabb[0]);
-        const dy = Math.abs(aabb[4] - aabb[1]);
-        const dz = Math.abs(aabb[5] - aabb[2]);
-        const estimatedVolume = dx * dy * dz;
-        const estimatedArea = Math.max(dx * dy, dy * dz, dz * dx);
-        const estimatedLength = Math.max(dx, dy, dz);
-        
+      const dims = getEntityDimensions(entity);
+      if (dims.volume > 0) {
         if (!props.some(p => p.name.toLowerCase().includes("volume"))) {
-          props.push({ name: "Volume (Estimated)", value: estimatedVolume });
+          props.push({ name: "Volume (Estimated)", value: dims.volume });
         }
-        if (!props.some(p => p.name.toLowerCase().includes("area"))) {
-          props.push({ name: "Area (Estimated)", value: estimatedArea });
+        if (!props.some(p => p.name.toLowerCase().includes("surface area") || p.name.toLowerCase().includes("area"))) {
+          props.push({ name: "Surface Area (Estimated)", value: dims.area });
         }
         if (!props.some(p => p.name.toLowerCase().includes("length"))) {
-          props.push({ name: "Length (Estimated)", value: estimatedLength });
+          props.push({ name: "Length (Estimated)", value: Math.max(dims.dx, dims.dy, dims.dz) });
         }
       }
 
@@ -865,11 +963,11 @@ function getElementMetadata(id, modelId) {
       const dy = Math.abs(aabb[4] - aabb[1]);
       const dz = Math.abs(aabb[5] - aabb[2]);
       const estimatedVolume = dx * dy * dz;
-      const estimatedArea = Math.max(dx * dy, dy * dz, dz * dx);
+      const estimatedSurfaceArea = 2 * (dx * dy + dy * dz + dz * dx);
       const estimatedLength = Math.max(dx, dy, dz);
       
       props.push({ name: "Volume (Estimated)", value: estimatedVolume });
-      props.push({ name: "Area (Estimated)", value: estimatedArea });
+      props.push({ name: "Surface Area (Estimated)", value: estimatedSurfaceArea });
       props.push({ name: "Length (Estimated)", value: estimatedLength });
     }
 
@@ -934,178 +1032,10 @@ function setupModelLoadedListener(modelId, file) {
         modelProperties[prop.name].add(prop.value);
       });
 
-      // 2. Extract quantities for Quantity Take-Off according to user classification rules
-      let qtoAdded = false;
-
-      const tL = (meta.type || "").toLowerCase();
-      const nL = (meta.name || "").toLowerCase();
-      const cL = (meta.category || "").toLowerCase();
-
-      // Check classification categories
-      const isFamilyInstance = (tL === "familyinstance" || cL === "familyinstance") && 
-                               !(tL.includes("railing") || cL.includes("railing") || nL.includes("railing"));
-      const isStair = tL.includes("stair") || cL.includes("stair") || nL.includes("stair");
-      const isConcrete = tL.includes("beam") || tL.includes("column") || tL.includes("slab") || 
-                         tL.includes("footing") || tL.includes("foundation") || 
-                         cL.includes("beam") || cL.includes("column") || cL.includes("slab") || 
-                         cL.includes("footing") || cL.includes("foundation") || 
-                         nL.includes("concrete");
-      const isLinear = tL.includes("railing") || tL.includes("fence") || tL.includes("flowsegment") || 
-                       tL.includes("pipe") || tL.includes("duct") || tL.includes("cable") || 
-                       cL.includes("railing") || cL.includes("fence") || cL.includes("pipe") || cL.includes("duct");
-      const isAreaBased = tL.includes("wall") || tL.includes("roof") || tL.includes("covering") || 
-                          tL.includes("partition") || tL.includes("plate") || 
-                          cL.includes("wall") || cL.includes("roof") || cL.includes("covering") || cL.includes("partition");
-
-      const getParamVal = (names) => {
-        for (const p of meta.props) {
-          if (!p.name) continue;
-          const pNameLower = p.name.toLowerCase();
-          if (names.some(n => pNameLower === n || pNameLower.includes(n))) {
-            const valStr = String(p.value).trim();
-            const matchNum = valStr.match(/^[+-]?\d+(\.\d+)?/);
-            if (matchNum) {
-              return { rawName: p.name, numValue: parseFloat(matchNum[0]) };
-            }
-          }
-        }
-        return null;
-      };
-
-      if (isFamilyInstance) {
-        availableQuantities.push({
-          id: id,
-          name: meta.name,
-          ifcClass: meta.type,
-          category: meta.category,
-          quantityName: "pcs",
-          value: 1,
-          unit: "pcs"
-        });
-        qtoAdded = true;
-      } else if (isStair) {
-        const match = getParamVal(["risers", "riser count", "riser_count", "riser", "step"]);
-        if (match) {
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: meta.category,
-            quantityName: "Number of Risers",
-            value: match.numValue,
-            unit: "risers"
-          });
-          qtoAdded = true;
-        }
-      } else if (isConcrete) {
-        const match = getParamVal(["volume", "vol", "netvolume", "grossvolume"]);
-        if (match) {
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: meta.category,
-            quantityName: "Volume",
-            value: match.numValue,
-            unit: "m³"
-          });
-          qtoAdded = true;
-        }
-      } else if (isLinear) {
-        const match = getParamVal(["length", "len", "netlength", "grosslength", "perimeter"]);
-        if (match) {
-          const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: isRailing ? "Railings" : meta.category,
-            quantityName: "Length",
-            value: match.numValue,
-            unit: isRailing ? "mm" : "m"
-          });
-          qtoAdded = true;
-        }
-      } else if (isAreaBased) {
-        const match = getParamVal(["area", "netarea", "grossarea"]);
-        if (match) {
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: meta.category,
-            quantityName: "Area",
-            value: match.numValue,
-            unit: "m²"
-          });
-          qtoAdded = true;
-        }
-      }
-
-      // Generic Fallback: if classified as stair/concrete/linear/area but target property was not found,
-      // search for ANY generic quantity property (volume, area, length) as a secondary backup!
-      if (!qtoAdded) {
-        const volMatch = getParamVal(["volume", "vol"]);
-        const areaMatch = getParamVal(["area"]);
-        const lenMatch = getParamVal(["length", "len", "perimeter"]);
-        
-        if (volMatch) {
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: meta.category,
-            quantityName: "Volume",
-            value: volMatch.numValue,
-            unit: "m³"
-          });
-          qtoAdded = true;
-        } else if (areaMatch) {
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: meta.category,
-            quantityName: "Area",
-            value: areaMatch.numValue,
-            unit: "m²"
-          });
-          qtoAdded = true;
-        } else if (lenMatch) {
-          const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
-          availableQuantities.push({
-            id: id,
-            name: meta.name,
-            ifcClass: meta.type,
-            category: isRailing ? "Railings" : meta.category,
-            quantityName: "Length",
-            value: lenMatch.numValue,
-            unit: isRailing ? "mm" : "m"
-          });
-          qtoAdded = true;
-        }
-      }
-
-      // Ultimate Fallback: door, windows, furniture or any object without geometric props
-      if (!qtoAdded) {
-        const isRailing = tL.includes("railing") || cL.includes("railing") || nL.includes("railing");
-        availableQuantities.push({
-          id: id,
-          name: meta.name,
-          ifcClass: meta.type,
-          category: isRailing ? "Railings" : meta.category,
-          quantityName: "Count",
-          value: 1,
-          unit: isRailing ? "pcs" : "No.s"
-        });
-      }
     });
 
-    // Post-process quantities to compute default prices
-    availableQuantities.forEach((item) => {
-      item.unitPrice = getDefaultUnitPrice(item);
-      item.totalPrice = item.value * item.unitPrice;
-    });
+    // Populate availableQuantities with both IFC metadata and 3D geometry calculations
+    recalculateAvailableQuantities();
     
     const sortedPropNames = Object.keys(modelProperties).sort((a, b) => a.localeCompare(b));
     sortedPropNames.forEach((propName) => {
@@ -1243,15 +1173,26 @@ function recalculateAvailableQuantities() {
 
   availableQuantities = [];
 
-  loadedModels.forEach((loadedModel) => {
-    const modelId = loadedModel.id;
-    const modelObjectIds = Object.values(viewer.scene.objects)
-      .filter(obj => obj.model && obj.model.id === modelId)
-      .map(obj => obj.id);
+  let objectIdsToProcess = [];
+  if (loadedModels.length > 0) {
+    loadedModels.forEach((loadedModel) => {
+      const modelId = loadedModel.id;
+      const ids = Object.values(viewer.scene.objects)
+        .filter(obj => obj.model && obj.model.id === modelId)
+        .map(obj => obj.id);
+      objectIdsToProcess.push(...ids);
+    });
+  }
 
-    modelObjectIds.forEach((id) => {
-      const meta = getElementMetadata(id, modelId);
-      if (!meta) return;
+  if (objectIdsToProcess.length === 0 && viewer && viewer.scene && viewer.scene.objects) {
+    objectIdsToProcess = Object.keys(viewer.scene.objects);
+  }
+
+  objectIdsToProcess.forEach((id) => {
+    const sceneObj = viewer.scene.objects[id];
+    const modelId = sceneObj && sceneObj.model ? sceneObj.model.id : (activeModel ? activeModel.id : null);
+    const meta = getElementMetadata(id, modelId);
+    if (!meta) return;
 
       let qtoAdded = false;
 
@@ -1262,10 +1203,11 @@ function recalculateAvailableQuantities() {
       const isFamilyInstance = (tL === "familyinstance" || cL === "familyinstance") && 
                                !(tL.includes("railing") || cL.includes("railing") || nL.includes("railing"));
       const isStair = tL.includes("stair") || cL.includes("stair") || nL.includes("stair");
-      const isConcrete = tL.includes("beam") || tL.includes("column") || tL.includes("slab") || 
+      const isBeamOrColumn = tL.includes("beam") || tL.includes("column") || 
+                             cL.includes("beam") || cL.includes("column");
+      const isConcrete = isBeamOrColumn || tL.includes("slab") || 
                          tL.includes("footing") || tL.includes("foundation") || 
-                         cL.includes("beam") || cL.includes("column") || cL.includes("slab") || 
-                         cL.includes("footing") || cL.includes("foundation") || 
+                         cL.includes("slab") || cL.includes("footing") || cL.includes("foundation") || 
                          nL.includes("concrete");
       const isLinear = tL.includes("railing") || tL.includes("fence") || tL.includes("flowsegment") || 
                        tL.includes("pipe") || tL.includes("duct") || tL.includes("cable") || 
@@ -1297,7 +1239,8 @@ function recalculateAvailableQuantities() {
           category: meta.category,
           quantityName: "pcs",
           value: 1,
-          unit: "pcs"
+          unit: "pcs",
+          source: "ifc"
         });
         qtoAdded = true;
       } else if (isStair) {
@@ -1310,10 +1253,52 @@ function recalculateAvailableQuantities() {
             category: meta.category,
             quantityName: "Number of Risers",
             value: match.numValue,
-            unit: "risers"
+            unit: "risers",
+            source: "ifc"
           });
           qtoAdded = true;
         }
+      } else if (isBeamOrColumn) {
+        const volMatch = getParamVal(["volume", "vol", "netvolume", "grossvolume"]);
+        if (volMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Volume",
+            value: volMatch.numValue,
+            unit: "m³",
+            source: "ifc"
+          });
+        }
+        const lenMatch = getParamVal(["length", "len", "netlength", "grosslength", "height"]);
+        if (lenMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Length",
+            value: lenMatch.numValue,
+            unit: "m",
+            source: "ifc"
+          });
+        }
+        const areaMatch = getParamVal(["surface area", "surfacearea", "surfarea", "outer surface area", "area", "netarea", "grossarea"]);
+        if (areaMatch) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Surface Area",
+            value: areaMatch.numValue,
+            unit: "m²",
+            source: "ifc"
+          });
+        }
+        qtoAdded = true;
       } else if (isConcrete) {
         const match = getParamVal(["volume", "vol", "netvolume", "grossvolume"]);
         if (match) {
@@ -1324,7 +1309,8 @@ function recalculateAvailableQuantities() {
             category: meta.category,
             quantityName: "Volume",
             value: match.numValue,
-            unit: "m³"
+            unit: "m³",
+            source: "ifc"
           });
           qtoAdded = true;
         }
@@ -1339,7 +1325,8 @@ function recalculateAvailableQuantities() {
             category: isRailing ? "Railings" : meta.category,
             quantityName: "Length",
             value: match.numValue,
-            unit: isRailing ? "mm" : "m"
+            unit: isRailing ? "mm" : "m",
+            source: "ifc"
           });
           qtoAdded = true;
         }
@@ -1353,7 +1340,8 @@ function recalculateAvailableQuantities() {
             category: meta.category,
             quantityName: "Area",
             value: match.numValue,
-            unit: "m²"
+            unit: "m²",
+            source: "ifc"
           });
           qtoAdded = true;
         }
@@ -1372,7 +1360,8 @@ function recalculateAvailableQuantities() {
             category: meta.category,
             quantityName: "Volume",
             value: volMatch.numValue,
-            unit: "m³"
+            unit: "m³",
+            source: "ifc"
           });
           qtoAdded = true;
         } else if (areaMatch) {
@@ -1383,7 +1372,8 @@ function recalculateAvailableQuantities() {
             category: meta.category,
             quantityName: "Area",
             value: areaMatch.numValue,
-            unit: "m²"
+            unit: "m²",
+            source: "ifc"
           });
           qtoAdded = true;
         } else if (lenMatch) {
@@ -1395,7 +1385,8 @@ function recalculateAvailableQuantities() {
             category: isRailing ? "Railings" : meta.category,
             quantityName: "Length",
             value: lenMatch.numValue,
-            unit: isRailing ? "mm" : "m"
+            unit: isRailing ? "mm" : "m",
+            source: "ifc"
           });
           qtoAdded = true;
         }
@@ -1410,11 +1401,69 @@ function recalculateAvailableQuantities() {
           category: isRailing ? "Railings" : meta.category,
           quantityName: "Count",
           value: 1,
-          unit: isRailing ? "pcs" : "No.s"
+          unit: isRailing ? "pcs" : "No.s",
+          source: "ifc"
         });
       }
+
+      // Also append 3D Geometry Calculation items
+      const sceneEntity = viewer.scene.objects[id];
+      if (sceneEntity) {
+        const dims = getEntityDimensions(sceneEntity);
+        if (dims && dims.volume > 0) {
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Volume (3D Mesh)",
+            value: dims.volume,
+            unit: "m³",
+            source: "geometry"
+          });
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Surface Area (3D Mesh)",
+            value: dims.area,
+            unit: "m²",
+            source: "geometry"
+          });
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Width (W) (3D Mesh)",
+            value: dims.dx,
+            unit: "m",
+            source: "geometry"
+          });
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Height (H) (3D Mesh)",
+            value: dims.dy,
+            unit: "m",
+            source: "geometry"
+          });
+          availableQuantities.push({
+            id: id,
+            name: meta.name,
+            ifcClass: meta.type,
+            category: meta.category,
+            quantityName: "Length (L) (3D Mesh)",
+            value: dims.dz,
+            unit: "m",
+            source: "geometry"
+          });
+        }
+      }
     });
-  });
 
   availableQuantities.forEach((item) => {
     const cachedPrice = priceMap[item.id + "_" + item.quantityName];
@@ -1545,6 +1594,185 @@ function loadGeoreferenceIntoUI(modelId) {
     geoCesiumToken.value = "";
     geoStatusText.innerText = "This file is not georeferenced yet.";
     geoStatusText.classList.add('no-geo');
+  }
+}
+
+function appendQtoCardToProperties(elementId) {
+  const container = document.getElementById('propertySetsContainer');
+  if (!container) return;
+
+  const entity = viewer.scene.objects[elementId];
+  const meta = getElementMetadata(elementId, activeModel ? activeModel.id : null);
+  const qtoItems = availableQuantities.filter(q => String(q.id) === String(elementId));
+
+  // --- CARD 1: IFC Metadata QTO ---
+  const ifcCard = document.createElement('div');
+  ifcCard.className = "property-set-card";
+  ifcCard.style.border = "1px solid #818cf8";
+  ifcCard.style.marginBottom = "12px";
+  ifcCard.style.overflow = "visible";
+
+  const ifcHeader = document.createElement('div');
+  ifcHeader.className = "property-set-header";
+  ifcHeader.style.background = "rgba(99, 102, 241, 0.15)";
+  ifcHeader.style.padding = "12px 14px";
+  ifcHeader.innerHTML = `<strong style="color: #818cf8; font-size: 13px;"><i class="fa-solid fa-file-invoice"></i> QTO (IFC Metadata)</strong> <span style="color: #818cf8; font-weight: 700; font-size: 11px;">IFC PARAMETERS</span>`;
+  ifcCard.appendChild(ifcHeader);
+
+  const ifcList = document.createElement('div');
+  ifcList.className = "property-list";
+  ifcList.style.display = "flex";
+  ifcList.style.flexDirection = "column";
+  ifcList.style.padding = "12px 14px 16px 14px";
+  ifcList.style.gap = "8px";
+
+  const ifcProps = meta && meta.props ? meta.props.filter(p => !p.name.includes("(Estimated)")) : [];
+  const ifcQtyProps = ifcProps.filter(p => {
+    const n = p.name.toLowerCase();
+    return n.includes("volume") || n.includes("area") || n.includes("length") || n.includes("perimeter") || n.includes("height");
+  });
+
+  if (ifcQtyProps.length > 0) {
+    ifcQtyProps.forEach(p => {
+      const row = document.createElement('div');
+      row.className = "property-row";
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.padding = "8px 0";
+      row.style.minHeight = "28px";
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = "property-name";
+      nameSpan.style.color = "var(--text-muted)";
+      nameSpan.style.fontSize = "12px";
+      nameSpan.innerText = p.name;
+
+      const valueSpan = document.createElement('span');
+      valueSpan.className = "property-value";
+      valueSpan.style.fontWeight = "700";
+      valueSpan.style.color = "#818cf8";
+      valueSpan.style.fontSize = "13px";
+      valueSpan.innerText = p.value;
+
+      row.appendChild(nameSpan);
+      row.appendChild(valueSpan);
+      ifcList.appendChild(row);
+    });
+  } else if (qtoItems.length > 0) {
+    qtoItems.forEach(q => {
+      const row = document.createElement('div');
+      row.className = "property-row";
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.padding = "8px 0";
+      row.style.minHeight = "28px";
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = "property-name";
+      nameSpan.style.color = "var(--text-muted)";
+      nameSpan.style.fontSize = "12px";
+      nameSpan.innerText = q.quantityName;
+
+      const valueSpan = document.createElement('span');
+      valueSpan.className = "property-value";
+      valueSpan.style.fontWeight = "700";
+      valueSpan.style.color = "#818cf8";
+      valueSpan.style.fontSize = "13px";
+      const valFormatted = typeof q.value === 'number' 
+        ? q.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) 
+        : q.value;
+      valueSpan.innerText = `${valFormatted} ${q.unit || ''}`;
+
+      row.appendChild(nameSpan);
+      row.appendChild(valueSpan);
+      ifcList.appendChild(row);
+    });
+  } else {
+    ifcList.innerHTML = `<p style="font-size: 11px; color: var(--text-muted); font-style: italic; margin: 0;">No explicit QTO property set exported in IFC file.</p>`;
+  }
+
+  ifcHeader.addEventListener('click', () => {
+    ifcList.style.display = ifcList.style.display === 'none' ? 'flex' : 'none';
+  });
+
+  ifcCard.appendChild(ifcList);
+
+  // --- CARD 2: 3D Geometry Calculation QTO ---
+  let geoCard = null;
+  if (entity) {
+    const dims = getEntityDimensions(entity);
+    if (dims.volume > 0) {
+      geoCard = document.createElement('div');
+      geoCard.className = "property-set-card";
+      geoCard.style.border = "1px solid #06b6d4";
+      geoCard.style.marginBottom = "14px";
+      geoCard.style.overflow = "visible";
+
+      const geoHeader = document.createElement('div');
+      geoHeader.className = "property-set-header";
+      geoHeader.style.background = "rgba(6, 182, 212, 0.15)";
+      geoHeader.style.padding = "12px 14px";
+      geoHeader.innerHTML = `<strong style="color: #06b6d4; font-size: 13px;"><i class="fa-solid fa-cube"></i> QTO (3D Geometry Calculation)</strong> <span style="color: #06b6d4; font-weight: 700; font-size: 11px;">${dims.label.toUpperCase()}</span>`;
+      geoCard.appendChild(geoHeader);
+
+      const geoList = document.createElement('div');
+      geoList.className = "property-list";
+      geoList.style.display = "flex";
+      geoList.style.flexDirection = "column";
+      geoList.style.padding = "12px 14px 16px 14px";
+      geoList.style.gap = "8px";
+
+      const geoRows = [
+        { name: "Volume (3D Mesh)", val: `${dims.volume.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })} m³` },
+        { name: "Surface Area (3D Mesh)", val: `${dims.area.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })} m²` },
+        { name: "Width (W)", val: `${dims.dx.toFixed(2)} m` },
+        { name: "Height (H)", val: `${dims.dy.toFixed(2)} m` },
+        { name: "Length (L)", val: `${dims.dz.toFixed(2)} m` }
+      ];
+
+    geoRows.forEach(item => {
+      const row = document.createElement('div');
+      row.className = "property-row";
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.padding = "8px 0";
+      row.style.minHeight = "28px";
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = "property-name";
+      nameSpan.style.color = "var(--text-muted)";
+      nameSpan.style.fontSize = "12px";
+      nameSpan.innerText = item.name;
+
+      const valueSpan = document.createElement('span');
+      valueSpan.className = "property-value";
+      valueSpan.style.fontWeight = "700";
+      valueSpan.style.color = "#06b6d4";
+      valueSpan.style.fontSize = "13px";
+      valueSpan.innerText = item.val;
+
+      row.appendChild(nameSpan);
+      row.appendChild(valueSpan);
+      geoList.appendChild(row);
+    });
+
+    geoHeader.addEventListener('click', () => {
+      geoList.style.display = geoList.style.display === 'none' ? 'flex' : 'none';
+    });
+
+    geoCard.appendChild(geoList);
+    }
+  }
+
+  if (container.firstChild) {
+    if (geoCard) container.insertBefore(geoCard, container.firstChild);
+    container.insertBefore(ifcCard, container.firstChild);
+  } else {
+    container.appendChild(ifcCard);
+    if (geoCard) container.appendChild(geoCard);
   }
 }
 
@@ -1786,6 +2014,7 @@ function updateSelectionUI() {
         propertySetsContainer.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 20px;">No property sets available for this element.</p>`;
       }
 
+      appendQtoCardToProperties(singleId);
       propertiesContent.style.display = "flex";
       updateStatus(`Selected element: ${metaObj.name || metaObj.id}`);
     } else {
@@ -2043,6 +2272,7 @@ function updateSelectionUI() {
           propertySetsContainer.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 20px;">No parameter groups available for this Revit element.</p>`;
         }
         
+        appendQtoCardToProperties(singleId);
         propertiesContent.style.display = "flex";
         updateStatus(`Selected Revit element: ${revitElement.Name || revitElement.Id}`);
       } else {
@@ -2587,14 +2817,15 @@ function renderBOQSummary() {
           }
         }
 
+        const qName = item.quantity_name || (item.unit === 'm³' ? 'Volume' : (item.unit === 'm²' ? 'Area' : (item.unit === 'm' ? 'Length' : 'Count')));
         return `
           <tr data-code="${item.classification_code}">
             <td><strong style="color: var(--accent);">${item.classification_code}</strong></td>
             <td>${item.category}</td>
             <td style="font-size: 11px; color: var(--text-muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.source_title || 'General'}">${item.source_title || 'General'}</td>
             <td>${item.description}</td>
-            <td style="text-align: right; font-weight: 500;">${item.quantity.toLocaleString(undefined, { maximumFractionDigits: 3 })}</td>
-            <td>${item.unit}</td>
+            <td><span style="font-weight: 500;">${qName}</span></td>
+            <td style="text-align: right;"><strong style="color: var(--accent);">${item.quantity.toLocaleString(undefined, { maximumFractionDigits: 3 })}</strong> <span style="color: var(--text-muted); font-size: 11px;">${item.unit}</span></td>
             <td style="text-align: right; font-family: monospace;">${formatIDR(item.unit_price)}</td>
             <td style="text-align: right; font-family: monospace; font-weight: 600; color: var(--accent);">${formatIDR(item.total_price)}</td>
             <td style="text-align: center;">
@@ -2808,6 +3039,10 @@ function renderElementQTO() {
     tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: var(--text-muted); padding: 20px;">Please load a model first.</td></tr>`;
     return;
   }
+
+  if (availableQuantities.length === 0 && typeof recalculateAvailableQuantities === 'function') {
+    recalculateAvailableQuantities();
+  }
   
   Promise.all([
     fetch(`/api/projects/${activeModel.id}/elements`).then(r => r.json()),
@@ -2854,8 +3089,59 @@ function renderElementQTO() {
         el.storey.toLowerCase().includes(filterText) ||
         el.material.toLowerCase().includes(filterText);
     }).map(el => {
-      const volOverride = overrideMap[el.id] && overrideMap[el.id]['volume'];
-      const areaOverride = overrideMap[el.id] && overrideMap[el.id]['area'];
+      // Find matching quantity options from availableQuantities
+      let opts = availableQuantities.filter(q => String(q.id) === String(el.global_id) || String(q.id) === String(el.id));
+      if (opts.length === 0) {
+        opts = [];
+        if (el.volume) opts.push({ id: el.id, quantityName: 'Volume', value: el.volume, unit: 'm³', source: 'ifc' });
+        if (el.area) opts.push({ id: el.id, quantityName: 'Area', value: el.area, unit: 'm²', source: 'ifc' });
+        if (el.length) opts.push({ id: el.id, quantityName: 'Length', value: el.length, unit: 'm', source: 'ifc' });
+        opts.push({ id: el.id, quantityName: 'Count', value: el.count || 1, unit: 'pcs', source: 'ifc' });
+
+        const sceneEntity = viewer.scene && viewer.scene.objects ? (viewer.scene.objects[el.global_id] || viewer.scene.objects[el.id]) : null;
+        if (sceneEntity && typeof getEntityDimensions === 'function') {
+          const dims = getEntityDimensions(sceneEntity);
+          if (dims && dims.volume > 0) {
+            opts.push({ id: el.id, quantityName: 'Volume (3D Mesh)', value: dims.volume, unit: 'm³', source: 'geometry' });
+            opts.push({ id: el.id, quantityName: 'Surface Area (3D Mesh)', value: dims.area, unit: 'm²', source: 'geometry' });
+            opts.push({ id: el.id, quantityName: 'Width (W) (3D Mesh)', value: dims.dx, unit: 'm', source: 'geometry' });
+            opts.push({ id: el.id, quantityName: 'Height (H) (3D Mesh)', value: dims.dy, unit: 'm', source: 'geometry' });
+            opts.push({ id: el.id, quantityName: 'Length (L) (3D Mesh)', value: dims.dz, unit: 'm', source: 'geometry' });
+          }
+        }
+      }
+
+      let selIdx = elementSelectedQtyIndex[el.global_id];
+      if (selIdx === undefined) selIdx = elementSelectedQtyIndex[el.id];
+      if (selIdx === undefined || selIdx >= opts.length) selIdx = 0;
+
+      const activeOpt = opts[selIdx];
+
+      const ifcOpts = opts.map((opt, idx) => ({ opt, idx })).filter(o => o.opt.source !== 'geometry');
+      const geoOpts = opts.map((opt, idx) => ({ opt, idx })).filter(o => o.opt.source === 'geometry');
+
+      let qtySelectHtml = `<select class="qto-element-qty-select" data-el-id="${el.id}" data-global-id="${el.global_id}" style="width: 100%; padding: 4px; font-size: 11px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);">`;
+      if (ifcOpts.length > 0) {
+        qtySelectHtml += `<optgroup label="IFC Metadata">`;
+        ifcOpts.forEach(o => {
+          const valStr = typeof o.opt.value === 'number' ? o.opt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) : o.opt.value;
+          qtySelectHtml += `<option value="${o.idx}" ${o.idx === selIdx ? 'selected' : ''}>${o.opt.quantityName} (${valStr} ${o.opt.unit || ''})</option>`;
+        });
+        qtySelectHtml += `</optgroup>`;
+      }
+      if (geoOpts.length > 0) {
+        qtySelectHtml += `<optgroup label="3D Geometry Calculation">`;
+        geoOpts.forEach(o => {
+          const valStr = typeof o.opt.value === 'number' ? o.opt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) : o.opt.value;
+          qtySelectHtml += `<option value="${o.idx}" ${o.idx === selIdx ? 'selected' : ''}>${o.opt.quantityName} (${valStr} ${o.opt.unit || ''})</option>`;
+        });
+        qtySelectHtml += `</optgroup>`;
+      }
+      qtySelectHtml += `</select>`;
+
+      const valDisplay = activeOpt ? (typeof activeOpt.value === 'number' ? activeOpt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) : activeOpt.value) : '-';
+      const unitDisplay = activeOpt && activeOpt.unit ? activeOpt.unit : '';
+      const valHtml = `<strong style="color: var(--accent);">${valDisplay}</strong> <span style="color: var(--text-muted); font-size: 11px;">${unitDisplay}</span>`;
 
       // Generate IFC Correction dropdown
       let ifcCorrectionHtml = `<select class="qto-ifc-override-select" data-el-id="${el.id}" style="width: 100%; padding: 4px; font-size: 11px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);">`;
@@ -2903,13 +3189,8 @@ function renderElementQTO() {
           <td>${ifcCorrectionHtml}</td>
           <td>${el.storey || '-'}</td>
           <td><span style="color: var(--text-muted);">${el.material || '-'}</span></td>
-          <td style="text-align: right;">
-            ${volOverride ? `<span style="text-decoration: line-through; color: var(--text-muted); font-size: 11px;">${el.volume.toFixed(3)}</span> <strong style="color: var(--accent);">${volOverride.toFixed(3)}</strong>` : el.volume.toFixed(3)}
-          </td>
-          <td style="text-align: right;">
-            ${areaOverride ? `<span style="text-decoration: line-through; color: var(--text-muted); font-size: 11px;">${el.area.toFixed(2)}</span> <strong style="color: var(--accent);">${areaOverride.toFixed(2)}</strong>` : el.area.toFixed(2)}
-          </td>
-          <td style="text-align: right;">${el.length.toFixed(2)}</td>
+          <td style="min-width: 180px;">${qtySelectHtml}</td>
+          <td style="text-align: right;">${valHtml}</td>
           <td style="text-align: right;">${el.count}</td>
           <td>${selectHtml}</td>
           <td style="text-align: center;">
@@ -2920,6 +3201,54 @@ function renderElementQTO() {
         </tr>
       `;
     }).join('');
+
+    // Setup Quantity Name dropdown change events
+    tbody.querySelectorAll('.qto-element-qty-select').forEach(select => {
+      select.addEventListener('change', (e) => {
+        const elId = e.target.dataset.elId;
+        const globalId = e.target.dataset.globalId;
+        const selectedIdx = parseInt(e.target.value, 10);
+
+        if (globalId) elementSelectedQtyIndex[globalId] = selectedIdx;
+        if (elId) elementSelectedQtyIndex[elId] = selectedIdx;
+
+        let opts = availableQuantities.filter(q => String(q.id) === String(globalId) || String(q.id) === String(elId));
+        if (opts.length === 0) {
+          const el = elements.find(item => String(item.id) === String(elId));
+          if (el) {
+            opts = [];
+            if (el.volume) opts.push({ id: el.id, quantityName: 'Volume', value: el.volume, unit: 'm³', source: 'ifc' });
+            if (el.area) opts.push({ id: el.id, quantityName: 'Area', value: el.area, unit: 'm²', source: 'ifc' });
+            if (el.length) opts.push({ id: el.id, quantityName: 'Length', value: el.length, unit: 'm', source: 'ifc' });
+            opts.push({ id: el.id, quantityName: 'Count', value: el.count || 1, unit: 'pcs', source: 'ifc' });
+          }
+        }
+
+        const activeOpt = opts[selectedIdx];
+        if (activeOpt) {
+          fetch(`/api/projects/${activeModel.id}/overrides`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              element_id: elId,
+              quantity_name: activeOpt.quantityName,
+              override_value: activeOpt.value,
+              reason: 'Selected quantity in Element QTO Table'
+            })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success) {
+              updateStatus(`Selected quantity "${activeOpt.quantityName}" for total price calculation.`);
+              if (typeof triggerBOQGeneration === 'function') {
+                triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
+              }
+              renderElementQTO();
+            }
+          });
+        }
+      });
+    });
 
     // Setup select change events
     tbody.querySelectorAll('.qto-class-select').forEach(select => {
@@ -3614,52 +3943,91 @@ function updateQtoSummaryAndCharts() {
   updateQtoCharts();
 }
 
+const elementSelectedQtyIndex = {};
+
 function renderQtoTable(filterText = "") {
   qtoTableBody.innerHTML = "";
   const query = filterText.toLowerCase().trim();
 
+  // Group available quantities by element ID
+  const groupedByElement = {};
+  availableQuantities.forEach((item) => {
+    if (!groupedByElement[item.id]) {
+      groupedByElement[item.id] = {
+        id: item.id,
+        name: item.name,
+        ifcClass: item.ifcClass,
+        category: item.category,
+        options: []
+      };
+    }
+    groupedByElement[item.id].options.push(item);
+  });
+
   const renderRows = (boqElementPriceMap = {}) => {
-    availableQuantities.forEach((item) => {
+    Object.values(groupedByElement).forEach((elem) => {
       const match = query === "" || 
-                    (item.ifcClass || "").toLowerCase().includes(query) || 
-                    (item.category || "").toLowerCase().includes(query) || 
-                    (item.quantityName || "").toLowerCase().includes(query) || 
-                    (item.name || "").toLowerCase().includes(query);
+                    (elem.ifcClass || "").toLowerCase().includes(query) || 
+                    (elem.category || "").toLowerCase().includes(query) || 
+                    (elem.name || "").toLowerCase().includes(query) ||
+                    elem.options.some(opt => (opt.quantityName || "").toLowerCase().includes(query));
       
       if (match) {
-        const metaObj = viewer.metaScene.metaObjects[item.id];
-        const globalId = metaObj ? metaObj.id : item.id;
+        let selIdx = elementSelectedQtyIndex[elem.id];
+        if (selIdx === undefined || selIdx >= elem.options.length) {
+          selIdx = 0;
+        }
+
+        const activeOpt = elem.options[selIdx];
+        const metaObj = viewer.metaScene ? viewer.metaScene.metaObjects[elem.id] : null;
+        const globalId = metaObj ? metaObj.id : elem.id;
         const boqPrice = boqElementPriceMap[globalId];
         if (boqPrice !== undefined) {
-          item.unitPrice = boqPrice;
-          item.totalPrice = item.value * boqPrice;
+          activeOpt.unitPrice = boqPrice;
+          activeOpt.totalPrice = activeOpt.value * boqPrice;
         }
+
+        const ifcOpts = elem.options.map((opt, idx) => ({ opt, idx })).filter(o => o.opt.source !== 'geometry');
+        const geoOpts = elem.options.map((opt, idx) => ({ opt, idx })).filter(o => o.opt.source === 'geometry');
+
+        let selectHtml = `<select class="qto-qty-select form-input form-input-sm" data-id="${elem.id}" style="padding: 4px 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; width: 100%;">`;
+
+        if (ifcOpts.length > 0) {
+          selectHtml += `<optgroup label="IFC Metadata">`;
+          ifcOpts.forEach(o => {
+            const valStr = typeof o.opt.value === 'number' ? o.opt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) : o.opt.value;
+            selectHtml += `<option value="${o.idx}" ${o.idx === selIdx ? 'selected' : ''}>${o.opt.quantityName} (${valStr} ${o.opt.unit})</option>`;
+          });
+          selectHtml += `</optgroup>`;
+        }
+
+        if (geoOpts.length > 0) {
+          selectHtml += `<optgroup label="3D Geometry Calculation">`;
+          geoOpts.forEach(o => {
+            const valStr = typeof o.opt.value === 'number' ? o.opt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) : o.opt.value;
+            selectHtml += `<option value="${o.idx}" ${o.idx === selIdx ? 'selected' : ''}>${o.opt.quantityName} (${valStr} ${o.opt.unit})</option>`;
+          });
+          selectHtml += `</optgroup>`;
+        }
+
+        selectHtml += `</select>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${item.ifcClass || ""}</td>
-          <td>${item.category || ""}</td>
-          <td><span class="qto-object-link" data-id="${item.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${item.name || ""}</span></td>
-          <td>${item.quantityName || ""}</td>
-          <td>${(item.value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}</td>
-          <td>${item.unit || ""}</td>
-          <td>
-            <div style="display: flex; align-items: center; gap: 4px;">
-              <span style="font-size: 11px; color: var(--text-muted);">Rp</span>
-              <input type="number" class="qto-price-input" data-id="${item.id}" value="${item.unitPrice || 0}">
-            </div>
-          </td>
-          <td>
-            <span class="qto-total-price" data-id="${item.id}" style="font-family: monospace; font-weight: 600; color: var(--accent);">
-              ${formatIDR(item.totalPrice || 0)}
-            </span>
-          </td>
+          <td>${elem.ifcClass || ""}</td>
+          <td>${elem.category || ""}</td>
+          <td><span class="qto-object-link" data-id="${elem.id}" style="color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: 500;">${elem.name || ""}</span></td>
+          <td style="min-width: 210px;">${selectHtml}</td>
+          <td><strong class="qto-val-display" data-id="${elem.id}">${typeof activeOpt.value === 'number' ? activeOpt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) : activeOpt.value}</strong></td>
+          <td><span class="qto-unit-display" data-id="${elem.id}">${activeOpt.unit || ""}</span></td>
         `;
         qtoTableBody.appendChild(tr);
       }
     });
     updateQtoSummaryAndCharts();
   };
+
+  renderRows({});
 
   if (activeModel) {
     fetch(`/api/projects/${activeModel.id}/boq`)
@@ -3679,10 +4047,7 @@ function renderQtoTable(filterText = "") {
       })
       .catch(err => {
         console.error("[QTO] Failed to fetch linked BOQ prices:", err);
-        renderRows({});
       });
-  } else {
-    renderRows({});
   }
 }
 
@@ -3710,50 +4075,64 @@ qtoTableBody.addEventListener('click', (e) => {
   }
 });
 
-// Input listener to update manual prices and recalculate totals
-qtoTableBody.addEventListener('input', (e) => {
-  if (e.target.classList.contains('qto-price-input')) {
-    const objectId = e.target.dataset.id;
-    const newPrice = parseFloat(e.target.value) || 0;
-    
-    const item = availableQuantities.find(q => String(q.id) === String(objectId));
-    if (item) {
-      item.unitPrice = newPrice;
-      item.totalPrice = item.value * newPrice;
-      
+// Listener for quantity dropdown changes per row
+qtoTableBody.addEventListener('change', (e) => {
+  if (e.target.classList.contains('qto-qty-select')) {
+    const elemId = e.target.dataset.id;
+    const selectedIdx = parseInt(e.target.value, 10);
+    elementSelectedQtyIndex[elemId] = selectedIdx;
+
+    const opts = availableQuantities.filter(q => String(q.id) === String(elemId));
+    if (opts[selectedIdx]) {
+      const activeOpt = opts[selectedIdx];
       const row = e.target.closest('tr');
       if (row) {
-        const totalSpan = row.querySelector('.qto-total-price');
-        if (totalSpan) {
-          totalSpan.innerText = formatIDR(item.totalPrice);
+        const valSpan = row.querySelector('.qto-val-display');
+        const unitSpan = row.querySelector('.qto-unit-display');
+        if (valSpan) {
+          valSpan.innerText = typeof activeOpt.value === 'number' 
+            ? activeOpt.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 }) 
+            : activeOpt.value;
+        }
+        if (unitSpan) {
+          unitSpan.innerText = activeOpt.unit || "";
         }
       }
-      updateQtoSummaryAndCharts();
     }
+    updateQtoSummaryAndCharts();
   }
 });
 
-btnOpenQto.addEventListener('click', () => {
-  renderQtoTable(qtoSearch.value);
-  qtoModal.style.display = 'flex';
-  updateStatus("Opened Quantity Take-Off modal.");
-});
+if (btnOpenQto) {
+  btnOpenQto.addEventListener('click', () => {
+    const q = qtoSearch ? qtoSearch.value : "";
+    renderQtoTable(q);
+    if (qtoModal) qtoModal.style.display = 'flex';
+    updateStatus("Opened Quantity Take-Off modal.");
+  });
+}
 
-btnCloseQto.addEventListener('click', () => {
-  qtoModal.style.display = 'none';
-  updateStatus("Closed Quantity Take-Off modal.");
-});
-
-qtoModal.addEventListener('click', (e) => {
-  if (e.target === qtoModal) {
-    qtoModal.style.display = 'none';
+if (btnCloseQto) {
+  btnCloseQto.addEventListener('click', () => {
+    if (qtoModal) qtoModal.style.display = 'none';
     updateStatus("Closed Quantity Take-Off modal.");
-  }
-});
+  });
+}
 
-qtoSearch.addEventListener('input', (e) => {
-  renderQtoTable(e.target.value);
-});
+if (qtoModal) {
+  qtoModal.addEventListener('click', (e) => {
+    if (e.target === qtoModal) {
+      qtoModal.style.display = 'none';
+      updateStatus("Closed Quantity Take-Off modal.");
+    }
+  });
+}
+
+if (qtoSearch) {
+  qtoSearch.addEventListener('input', (e) => {
+    renderQtoTable(e.target.value);
+  });
+}
 
 btnExportCsv.addEventListener('click', () => {
   if (availableQuantities.length === 0) {
@@ -3797,6 +4176,7 @@ if (btnOpenBoqModal) {
       alert("Please load a BIM model first.");
       return;
     }
+    triggerBOQGeneration(activeModel.id, window.selectedRegionId || 'R-JKT');
     boqModal.style.display = 'flex';
     document.querySelector('#boqModal .modal-tab-btn[data-modal-tab="boq-summary-tab"]').click();
   });
@@ -6037,17 +6417,71 @@ function setupRightSidebarTabs() {
   });
 }
 
-// --- Filter Selection Auto IFC Class Harvester & Highlight ---
+// --- Filter Selection Auto IFC Class & File Model Harvester & Highlight ---
+let currentFilterSubTab = 'class';
+
+function initFilterSubTabs() {
+  const container = document.getElementById('filterSubTabs');
+  if (!container) return;
+  const btns = container.querySelectorAll('.filter-subtab-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilterSubTab = btn.dataset.subtab || 'class';
+
+      const searchInput = document.getElementById('filterClassSearch');
+      if (searchInput) {
+        searchInput.value = '';
+        searchInput.placeholder = currentFilterSubTab === 'class'
+          ? 'Search IFC Class (e.g. IfcWall)...'
+          : 'Search File Model (e.g. model.ifc)...';
+      }
+      buildFilterSelectionList();
+    });
+  });
+
+  const filterClassSearch = document.getElementById('filterClassSearch');
+  if (filterClassSearch) {
+    filterClassSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const listContainer = document.getElementById('filterSelectionList');
+      if (listContainer) filterListByQuery(listContainer, q);
+    });
+  }
+}
+
+function filterListByQuery(container, query) {
+  const items = container.querySelectorAll('.ifc-class-item');
+  items.forEach(item => {
+    const text = (item.dataset.filterKey || item.dataset.ifcType || '').toLowerCase();
+    item.style.display = text.includes(query) ? 'flex' : 'none';
+  });
+}
+
 function buildFilterSelectionList() {
   const container = document.getElementById('filterSelectionList');
   if (!container) return;
   container.innerHTML = "";
 
   if (loadedModels.length === 0 || !viewer || !viewer.metaScene) {
-    container.innerHTML = `<div class="no-selection-prompt"><i class="fa-solid fa-filter"></i><p>No model loaded to extract IFC classes.</p></div>`;
+    container.innerHTML = `<div class="no-selection-prompt"><i class="fa-solid fa-filter"></i><p>No model loaded to filter.</p></div>`;
     return;
   }
 
+  if (currentFilterSubTab === 'model') {
+    buildFilterModelList(container);
+  } else {
+    buildFilterClassList(container);
+  }
+
+  const searchInput = document.getElementById('filterClassSearch');
+  if (searchInput && searchInput.value) {
+    filterListByQuery(container, searchInput.value.toLowerCase().trim());
+  }
+}
+
+function buildFilterClassList(container) {
   const classCounts = {};
   const metaObjs = viewer.metaScene.metaObjects || {};
 
@@ -6071,13 +6505,46 @@ function buildFilterSelectionList() {
     const item = document.createElement('div');
     item.className = 'ifc-class-item';
     item.dataset.ifcType = type;
+    item.dataset.filterKey = type;
     item.innerHTML = `
       <div class="ifc-class-info">
         <i class="fa-solid fa-cube class-icon"></i>
         <span class="class-name">${type}</span>
       </div>
-      <span class="class-count">${classCounts[type]}</span>
+      <div class="ifc-class-right">
+        <span class="class-count">${classCounts[type]}</span>
+        <button class="class-vis-btn" title="Toggle visibility of ${type}">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
     `;
+
+    const visBtn = item.querySelector('.class-vis-btn');
+    const visIcon = visBtn.querySelector('i');
+
+    visBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const ids = viewer.metaScene.getObjectIDsByType(type);
+      if (!ids || ids.length === 0) return;
+
+      const sampleObj = viewer.scene.objects[ids[0]];
+      const currentlyVisible = sampleObj ? sampleObj.visible : true;
+      const nextVisible = !currentlyVisible;
+
+      viewer.scene.setObjectsVisible(ids, nextVisible);
+
+      if (nextVisible) {
+        visIcon.className = 'fa-solid fa-eye';
+        visBtn.classList.remove('hidden-state');
+        visBtn.title = `Hide ${type}`;
+      } else {
+        visIcon.className = 'fa-solid fa-eye-slash';
+        visBtn.classList.add('hidden-state');
+        visBtn.title = `Show ${type}`;
+      }
+
+      updateStatus(`${nextVisible ? 'Shown' : 'Hidden'} ${ids.length} objects of class ${type}`);
+    });
 
     item.addEventListener('click', () => {
       container.querySelectorAll('.ifc-class-item').forEach(el => el.classList.remove('active'));
@@ -6104,19 +6571,105 @@ function buildFilterSelectionList() {
   });
 
   container.appendChild(listUl);
+}
 
-  // Live filter search for class list
-  const filterClassSearch = document.getElementById('filterClassSearch');
-  if (filterClassSearch) {
-    filterClassSearch.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const items = container.querySelectorAll('.ifc-class-item');
-      items.forEach(item => {
-        const text = (item.dataset.ifcType || '').toLowerCase();
-        item.style.display = text.includes(q) ? 'flex' : 'none';
-      });
-    });
+function buildFilterModelList(container) {
+  if (loadedModels.length === 0) {
+    container.innerHTML = `<div class="no-selection-prompt"><i class="fa-solid fa-info-circle"></i><p>No file models loaded.</p></div>`;
+    return;
   }
+
+  const listUl = document.createElement('div');
+  listUl.className = 'ifc-class-list';
+
+  loadedModels.forEach(m => {
+    const modelId = m.id;
+    const fileName = m.fileName || `Model (${modelId})`;
+    const modelObj = m.model;
+    const metaModel = m.metaModel;
+
+    let ids = [];
+    if (modelObj && modelObj.objectIds && modelObj.objectIds.length > 0) {
+      ids = modelObj.objectIds;
+    } else if (metaModel && metaModel.metaObjects) {
+      ids = Object.keys(metaModel.metaObjects);
+    }
+
+    const count = ids.length;
+
+    const item = document.createElement('div');
+    item.className = 'ifc-class-item';
+    item.dataset.filterKey = fileName;
+    item.innerHTML = `
+      <div class="ifc-class-info">
+        <i class="fa-solid fa-file-contract class-icon"></i>
+        <span class="class-name">${fileName}</span>
+      </div>
+      <div class="ifc-class-right">
+        <span class="class-count">${count}</span>
+        <button class="class-vis-btn" title="Toggle visibility of ${fileName}">
+          <i class="fa-solid fa-eye"></i>
+        </button>
+      </div>
+    `;
+
+    const visBtn = item.querySelector('.class-vis-btn');
+    const visIcon = visBtn.querySelector('i');
+
+    visBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      let currentlyVisible = true;
+      if (modelObj && typeof modelObj.visible !== 'undefined') {
+        currentlyVisible = modelObj.visible;
+      } else if (ids.length > 0 && viewer.scene.objects[ids[0]]) {
+        currentlyVisible = viewer.scene.objects[ids[0]].visible;
+      }
+
+      const nextVisible = !currentlyVisible;
+      if (modelObj && typeof modelObj.visible !== 'undefined') {
+        modelObj.visible = nextVisible;
+      }
+      if (ids.length > 0) {
+        viewer.scene.setObjectsVisible(ids, nextVisible);
+      }
+
+      if (nextVisible) {
+        visIcon.className = 'fa-solid fa-eye';
+        visBtn.classList.remove('hidden-state');
+        visBtn.title = `Hide ${fileName}`;
+      } else {
+        visIcon.className = 'fa-solid fa-eye-slash';
+        visBtn.classList.add('hidden-state');
+        visBtn.title = `Show ${fileName}`;
+      }
+
+      updateStatus(`${nextVisible ? 'Shown' : 'Hidden'} model ${fileName}`);
+    });
+
+    item.addEventListener('click', () => {
+      container.querySelectorAll('.ifc-class-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+
+      if (ids.length === 0) return;
+
+      viewer.scene.setObjectsSelected(viewer.scene.selectedObjectIds, false);
+      viewer.scene.setObjectsHighlighted(viewer.scene.highlightedObjectIds, false);
+
+      viewer.scene.setObjectsSelected(ids, true);
+      viewer.scene.setObjectsHighlighted(ids, true);
+
+      let aabb = modelObj && modelObj.aabb ? modelObj.aabb : viewer.scene.getAABB(ids);
+      if (aabb) {
+        viewer.cameraFlight.flyTo(aabb);
+      }
+
+      updateStatus(`Selected and highlighted ${count} objects in model ${fileName}`);
+    });
+
+    listUl.appendChild(item);
+  });
+
+  container.appendChild(listUl);
 }
 
 // --- Initialize App ---
@@ -6126,6 +6679,7 @@ function startApp() {
   try { setupIfcOpenShellTools(); } catch (e) { console.error("Error setupIfcOpenShellTools:", e); }
   try { setupThemeToggle(); } catch (e) { console.error("Error setupThemeToggle:", e); }
   try { setupAiSidebarToggle(); } catch (e) { console.error("Error setupAiSidebarToggle:", e); }
+  try { initFilterSubTabs(); } catch (e) { console.error("Error initFilterSubTabs:", e); }
   try { setupRightSidebarTabs(); } catch (e) { console.error("Error setupRightSidebarTabs:", e); }
 
   // Register AI agent control APIs
