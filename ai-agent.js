@@ -204,6 +204,259 @@ export const aiTools = [
       },
       required: ["objectId", "parameterName", "newValue"]
     }
+  },
+  {
+    name: "colorize_objects",
+    description: "Colorize one or more objects with a custom hex color (e.g. #ff0000, #38bdf8).",
+    parameters: {
+      type: "object",
+      properties: {
+        objectIds: { type: "array", items: { type: "string" }, description: "Array of object IDs." },
+        color: { type: "string", description: "Hex color string (e.g. #38bdf8)." }
+      },
+      required: ["objectIds", "color"]
+    }
+  },
+  {
+    name: "reset_object_colors",
+    description: "Reset object colors back to default materials.",
+    parameters: {
+      type: "object",
+      properties: {
+        objectIds: { type: "array", items: { type: "string" }, description: "Optional array of object IDs. If omitted, resets all." }
+      }
+    }
+  },
+  {
+    name: "set_camera_view",
+    description: "Navigate camera to standard viewpoint preset.",
+    parameters: {
+      type: "object",
+      properties: {
+        view: { type: "string", enum: ["top", "bottom", "front", "back", "left", "right", "isometric"], description: "Preset view orientation." }
+      },
+      required: ["view"]
+    }
+  },
+  {
+    name: "set_camera_projection",
+    description: "Switch 3D camera projection between perspective and orthographic.",
+    parameters: {
+      type: "object",
+      properties: {
+        projection: { type: "string", enum: ["perspective", "ortho"], description: "Projection mode." }
+      },
+      required: ["projection"]
+    }
+  },
+  {
+    name: "get_camera_state",
+    description: "Get current eye, look, up camera position vectors.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "set_camera_state",
+    description: "Move camera to specific coordinates.",
+    parameters: {
+      type: "object",
+      properties: {
+        eye: { type: "array", items: { type: "number" }, description: "[x, y, z] eye coordinates." },
+        look: { type: "array", items: { type: "number" }, description: "[x, y, z] target coordinates." },
+        up: { type: "array", items: { type: "number" }, description: "Optional [x, y, z] up vector." }
+      },
+      required: ["eye", "look"]
+    }
+  },
+  {
+    name: "set_viewer_theme",
+    description: "Switch application theme between dark and light mode.",
+    parameters: {
+      type: "object",
+      properties: {
+        theme: { type: "string", enum: ["dark", "light"], description: "UI color theme." }
+      },
+      required: ["theme"]
+    }
+  },
+  {
+    name: "set_sun_position",
+    description: "Control solar position lighting and simulation.",
+    parameters: {
+      type: "object",
+      properties: {
+        dateTime: { type: "string", description: "ISO date time string (e.g. 2026-10-11T12:00)." },
+        skyColor: { type: "string", description: "Sky color hex." },
+        groundColor: { type: "string", description: "Ground color hex." },
+        enabled: { type: "boolean", description: "Whether solar simulation is enabled." }
+      }
+    }
+  },
+  {
+    name: "get_loaded_models",
+    description: "Get list of all loaded model files in the session.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "get_qto_summary",
+    description: "Get Quantity Takeoff summary (volume, area, length, count) for all elements in model.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "get_element_qto",
+    description: "Get Quantity Takeoff values for a specific element ID.",
+    parameters: {
+      type: "object",
+      properties: {
+        objectId: { type: "string", description: "Element ID." }
+      },
+      required: ["objectId"]
+    }
+  },
+  {
+    name: "get_boq_items",
+    description: "Fetch all 5D Bill of Quantities items with unit pricing.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "calculate_project_cost",
+    description: "Calculate total project estimated construction cost budget from BOQ database.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "search_ahsp_catalog",
+    description: "Search Indonesian AHSP unit price analysis database by keyword.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Search query text." }
+      },
+      required: ["query"]
+    }
+  },
+  {
+    name: "get_schedule_tasks",
+    description: "Get all 4D construction schedule tasks and timeline information.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "create_schedule_task",
+    description: "Create a new 4D construction schedule task linked to 3D elements.",
+    parameters: {
+      type: "object",
+      properties: {
+        workDesc: { type: "string", description: "Work description / task name." },
+        startDate: { type: "string", description: "Start date (YYYY-MM-DD)." },
+        endDate: { type: "string", description: "Ending date (YYYY-MM-DD)." },
+        resourceId: { type: "string", description: "Optional labor resource ID." },
+        resourceDesc: { type: "string", description: "Labor description." },
+        resourceCount: { type: "number", description: "Number of laborers." },
+        color: { type: "string", description: "Hex color for Gantt bar." },
+        predecessor: { type: "string", description: "Predecessor task name." },
+        progress: { type: "number", description: "Current progress (0-100)." },
+        elementIds: { type: "array", items: { type: "string" }, description: "Linked 3D element IDs." }
+      },
+      required: ["workDesc", "startDate", "endDate"]
+    }
+  },
+  {
+    name: "update_schedule_task",
+    description: "Update an existing schedule task (dates, progress, labor, elements).",
+    parameters: {
+      type: "object",
+      properties: {
+        taskId: { type: "string", description: "ID of task to update." },
+        progress: { type: "number", description: "New progress percentage (0-100)." },
+        workDesc: { type: "string", description: "Updated description." },
+        startDate: { type: "string", description: "Updated start date." },
+        endDate: { type: "string", description: "Updated end date." }
+      },
+      required: ["taskId"]
+    }
+  },
+  {
+    name: "delete_schedule_task",
+    description: "Delete a task from the 4D construction schedule.",
+    parameters: {
+      type: "object",
+      properties: {
+        taskId: { type: "string", description: "ID of task to delete." }
+      },
+      required: ["taskId"]
+    }
+  },
+  {
+    name: "set_schedule_today",
+    description: "Set reference 'Today' date for progress monitoring and Gantt vertical line.",
+    parameters: {
+      type: "object",
+      properties: {
+        todayDate: { type: "string", description: "Date string (YYYY-MM-DD)." }
+      },
+      required: ["todayDate"]
+    }
+  },
+  {
+    name: "toggle_chronology_simulation",
+    description: "Toggle 4D Chronology simulation mode on or off.",
+    parameters: {
+      type: "object",
+      properties: {
+        enabled: { type: "boolean", description: "Whether chronology simulation is on." }
+      }
+    }
+  },
+  {
+    name: "set_chronology_simulation_date",
+    description: "Scrub 4D chronology simulation to a specific calendar date.",
+    parameters: {
+      type: "object",
+      properties: {
+        date: { type: "string", description: "Date string (YYYY-MM-DD)." }
+      },
+      required: ["date"]
+    }
+  },
+  {
+    name: "save_schedule_draft",
+    description: "Export current schedule draft as JSON containing element GlobalIDs.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "export_schedule_ods",
+    description: "Export the 4D schedule to a LibreOffice Calc spreadsheet (.ods).",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "export_schedule_ifc",
+    description: "Export the 4D schedule to Open Planner Studio IFC4X3 format.",
+    parameters: {
+      type: "object",
+      properties: {}
+    }
   }
 ];
 
@@ -307,11 +560,16 @@ export function setupAiAgent() {
   let messages = [
     {
       role: 'system',
-      content: `You are BIM BAM AI Agent, a helpful assistant integrated into a 3D BIM Viewer (xeokit). 
-You have access to tools to query model structure, zoom/fly to objects, control visibility, and run clash detection.
-Always perform the actions requested by calling the appropriate tool. If the user asks you to select, hide, show, diff, or measure, call the corresponding tool first.
-CRITICAL: To avoid rate-limits and token exhaustion, avoid calling 'get_all_objects' unless absolutely necessary. Instead, prefer targeted queries using 'search_objects_by_text' or 'apply_property_filter'.
-After calling a tool, explain what you did clearly in one or two short sentences.`
+      content: `You are BIM BAM AI Agent, an intelligent BIM engineering assistant integrated into this 3D BIM Viewer (xeokit).
+You have full real-time access to all application capabilities:
+1. Model & 3D Control: select, hide, isolate, highlight, xray, colorize elements, fly to elements, change camera viewpoints (top/bottom/front/back/left/right/isometric), projections, and UI themes.
+2. Sectioning & Measurements: place section cut planes, measure distances, areas, and angles.
+3. Solar Simulation: adjust sun date/time, sky/ground lighting, and shadows.
+4. Quantity Takeoff & 5D BOQ Costing: retrieve element quantities, query BOQ pricing, search Indonesian AHSP price catalog, and calculate project budgets.
+5. 4D Construction Scheduling & Simulation: view tasks, create/update/delete schedule tasks with assigned labor, set reference today date, scrub chronology 4D simulation, export to ODS / Open Planner Studio IFC, and save drafts with GlobalIDs.
+6. BIM Auditing: execute model diffs and clash detections.
+
+Always perform requested actions by calling the appropriate tool. Give concise, direct answers explaining what was done.`
     }
   ];
 
@@ -330,7 +588,7 @@ After calling a tool, explain what you did clearly in one or two short sentences
     }
   };
 
-  const executeTool = async (name, args) => {
+  const executeTool = async (name, args = {}) => {
     const api = window.bimBamApi;
     if (!api) {
       return { error: "BIM BAM Control API not found." };
@@ -345,19 +603,35 @@ After calling a tool, explain what you did clearly in one or two short sentences
         case 'get_object_metadata':
           return api.getObjectMetadata(args.objectId);
         case 'select_objects':
-          return api.selectObjects(args.objectIds);
+          return api.selectObjects(args.objectIds || args.ids);
         case 'hide_objects':
-          return api.hideObjects(args.objectIds);
+          return api.hideObjects(args.objectIds || args.ids);
         case 'show_all_objects':
           return api.showAllObjects();
         case 'isolate_objects':
-          return api.isolateObjects(args.objectIds);
+          return api.isolateObjects(args.objectIds || args.ids);
         case 'highlight_objects':
-          return api.highlightObjects(args.objectIds, args.highlight);
+          return api.highlightObjects(args.objectIds || args.ids, args.highlight);
         case 'xray_objects':
-          return api.xrayObjects(args.objectIds, args.xray);
+          return api.xrayObjects(args.objectIds || args.ids, args.xray);
+        case 'colorize_objects':
+          return api.colorizeObjects(args.objectIds || args.ids, args.color || args.hexColor);
+        case 'reset_object_colors':
+          return api.resetObjectColors(args.objectIds || args.ids);
         case 'fly_to_objects':
-          return api.flyToObjects(args.objectIds);
+          return api.flyToObjects(args.objectIds || args.ids);
+        case 'set_camera_view':
+          return api.setCameraView(args.view);
+        case 'set_camera_projection':
+          return api.setCameraProjection(args.projection);
+        case 'get_camera_state':
+          return api.getCameraState();
+        case 'set_camera_state':
+          return api.setCameraState(args.eye, args.look, args.up);
+        case 'set_viewer_theme':
+          return api.setViewerTheme(args.theme);
+        case 'set_sun_position':
+          return api.setSunPosition(args.dateTime, args.skyColor, args.groundColor, args.enabled);
         case 'apply_property_filter':
           return api.applyPropertyFilter(args.propertyName, args.operator, args.propertyValue);
         case 'reset_property_filter':
@@ -378,7 +652,43 @@ After calling a tool, explain what you did clearly in one or two short sentences
           return await api.runClashDetection(args.modelAId, args.modelBId, args.tolerance);
         case 'update_object_parameter':
           return api.updateObjectParameter(args.objectId, args.parameterName, args.newValue);
+        case 'get_loaded_models':
+          return api.getLoadedModels();
+        case 'get_qto_summary':
+          return api.getQtoSummary();
+        case 'getElementQto':
+        case 'get_element_qto':
+          return api.getElementQto(args.objectId);
+        case 'get_boq_items':
+          return await api.getBoqItems();
+        case 'calculate_project_cost':
+          return await api.calculateProjectCost();
+        case 'search_ahsp_catalog':
+          return await api.searchAhspCatalog(args.query);
+        case 'get_schedule_tasks':
+          return api.getScheduleTasks();
+        case 'create_schedule_task':
+          return api.createScheduleTask(args);
+        case 'update_schedule_task':
+          return api.updateScheduleTask(args.taskId, args);
+        case 'delete_schedule_task':
+          return api.deleteScheduleTask(args.taskId);
+        case 'set_schedule_today':
+          return api.setScheduleToday(args.todayDate || args.date);
+        case 'toggle_chronology_simulation':
+          return api.toggleChronologySimulation(args.enabled);
+        case 'set_chronology_simulation_date':
+          return api.setChronologySimulationDate(args.date);
+        case 'export_schedule_ods':
+          return api.exportScheduleToOds();
+        case 'export_schedule_ifc':
+          return api.exportScheduleToOpenPlannerStudioIfc();
+        case 'save_schedule_draft':
+          return api.saveScheduleDraftJson();
         default:
+          if (typeof api[name] === 'function') {
+            return await api[name](args);
+          }
           return { error: `Tool ${name} is not implemented.` };
       }
     } catch (err) {

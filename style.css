@@ -171,11 +171,12 @@ h1, h2, h3, h4, h5 {
 }
 
 .app-main-workspace {
-    display: grid;
-    grid-template-columns: var(--sidebar-w-left) 1fr var(--sidebar-w-right);
+    display: flex;
+    flex-direction: row;
     flex: 1;
     overflow: hidden;
     position: relative;
+    width: 100%;
 }
 
 /* --- Ribbon Layout --- */
@@ -189,6 +190,84 @@ h1, h2, h3, h4, h5 {
     z-index: 200;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     flex-shrink: 0;
+    position: relative;
+}
+
+.ribbon-bar.collapsed .ribbon-content,
+.ribbon-bar.collapsed .ribbon-resizer {
+    display: none !important;
+}
+
+.ribbon-bar.hidden {
+    display: none !important;
+}
+
+.ribbon-resizer {
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    cursor: ns-resize;
+    z-index: 215;
+    background: transparent;
+    transition: background 0.2s;
+}
+
+.ribbon-resizer:hover, .ribbon-resizer.dragging {
+    background: var(--accent);
+}
+
+.ribbon-collapse-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+}
+
+.ribbon-collapse-btn:hover {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.ribbon-edge-toggle {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 95;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: all 0.2s;
+}
+
+.ribbon-edge-toggle:hover {
+    color: var(--accent);
+    background: var(--bg-panel);
+}
+
+.ribbon-edge-toggle.visible {
+    display: flex !important;
 }
 
 .ribbon-top-line {
@@ -2552,13 +2631,123 @@ select.form-input option {
     justify-content: center;
 }
 
-/* --- Right Sidebar Revit-Style Bottom Tabs Layout --- */
-.sidebar.right-sidebar {
+/* --- Left & Right Sidebars Layout (Stretchable & Collapsible) --- */
+.sidebar.left-sidebar {
+    width: var(--sidebar-w-left, 340px);
+    flex-shrink: 0;
+    position: relative;
     display: flex;
     flex-direction: column;
+    z-index: 25;
     height: 100%;
     overflow: hidden;
     background-color: var(--bg-card);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar.right-sidebar {
+    width: var(--sidebar-w-right, 360px);
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    z-index: 25;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-card);
+    border-left: 1px solid var(--border-color);
+}
+
+.sidebar.hidden {
+    display: none !important;
+}
+
+/* Sidebar Resizer Handles */
+.sidebar-resizer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: col-resize;
+    z-index: 60;
+    background: transparent;
+    transition: background 0.2s;
+}
+
+.sidebar-resizer:hover, .sidebar-resizer.dragging {
+    background: var(--accent);
+}
+
+.sidebar-resizer-right {
+    right: 0;
+}
+
+.sidebar-resizer-left {
+    left: 0;
+}
+
+/* Floating Edge Toggles */
+.sidebar-edge-toggle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 52px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 80;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.sidebar-edge-toggle:hover {
+    color: var(--accent);
+    background: var(--bg-panel);
+    width: 30px;
+}
+
+.left-edge-toggle {
+    left: 0;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+}
+
+.right-edge-toggle {
+    right: 0;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+}
+
+.dock-edge-toggle {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    z-index: 85;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    transition: all 0.2s;
+}
+
+.dock-edge-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateX(-50%) translateY(-2px);
 }
 
 .right-sidebar-content {
@@ -2867,5 +3056,371 @@ select.form-input option {
     word-break: break-word;
 }
 
+/* --- IFC 4D Gantt & Bottom Dock Styles --- */
+.bottom-dock-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 270px;
+    min-height: 38px;
+    max-height: 85vh;
+    background: var(--bg-card);
+    border-top: 2px solid var(--border-color);
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    z-index: 105;
+    transition: height 0.15s ease;
+}
 
+.bottom-dock-panel.collapsed {
+    height: 38px !important;
+}
 
+.bottom-dock-panel.collapsed .bottom-dock-body {
+    display: none !important;
+}
+
+.bottom-dock-panel.hidden {
+    display: none !important;
+}
+
+.bottom-dock-resizer {
+    height: 6px;
+    cursor: ns-resize;
+    background: transparent;
+    width: 100%;
+    position: absolute;
+    top: -3px;
+    left: 0;
+    z-index: 10;
+    transition: background 0.2s;
+}
+
+.bottom-dock-resizer:hover {
+    background: var(--accent);
+}
+
+.bottom-dock-header {
+    height: 38px;
+    padding: 0 12px;
+    background: rgba(0, 0, 0, 0.18);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.dock-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.dock-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dock-control-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+}
+
+.dock-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--border-color);
+    margin: 0 3px;
+}
+
+.btn-xs {
+    padding: 2px 8px;
+    font-size: 11px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 5px;
+}
+
+.btn-icon-xs {
+    padding: 2px 6px;
+    font-size: 11px;
+    height: 26px;
+    width: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.btn-icon-xs:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.form-input-xs {
+    padding: 2px 6px;
+    font-size: 11px;
+    height: 26px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--text-main);
+}
+
+.chronology-range {
+    width: 110px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.chronology-date-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 75px;
+    font-family: monospace;
+}
+
+.bottom-dock-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+}
+
+/* Gantt Chart Container */
+.gantt-chart-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.gantt-table-pane {
+    width: 320px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.gantt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.gantt-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-panel);
+    padding: 6px 8px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+.gantt-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.gantt-table tr:hover {
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+}
+
+.gantt-table tr.active-task {
+    background: rgba(56, 189, 248, 0.12);
+}
+
+/* Timeline grid & bars */
+.gantt-timeline-pane {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    position: relative;
+    background: rgba(0, 0, 0, 0.14);
+}
+
+.gantt-timeline-inner {
+    position: relative;
+    min-width: 100%;
+}
+
+.gantt-header-row {
+    display: flex;
+    height: 28px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background: var(--bg-panel);
+    z-index: 8;
+}
+
+.gantt-day-header {
+    flex: 1;
+    min-width: 38px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 10px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.gantt-grid-row {
+    position: relative;
+    height: 34px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+}
+
+.gantt-grid-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.gantt-grid-cell {
+    flex: 1;
+    min-width: 38px;
+    border-right: 1px solid rgba(255, 255, 255, 0.03);
+    height: 100%;
+}
+
+.gantt-bar-item {
+    position: absolute;
+    top: 6px;
+    height: 22px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    user-select: none;
+    z-index: 2;
+    transition: transform 0.1s ease, filter 0.1s ease;
+}
+
+.gantt-bar-item:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.15);
+    z-index: 4;
+}
+
+.gantt-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 4px 0 0 4px;
+    pointer-events: none;
+}
+
+.gantt-bar-content {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Overdue task bar (Requirement 5) */
+.gantt-bar-item.overdue {
+    background-color: var(--danger) !important;
+    border: 1px solid #dc2626 !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+    animation: overduePulse 2s infinite;
+}
+
+@keyframes overduePulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 14px rgba(239, 68, 68, 0.8); }
+}
+
+/* Today indicator line (Requirement 3) */
+.gantt-today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-left: 2px dashed #f59e0b;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.gantt-today-badge {
+    position: absolute;
+    top: 2px;
+    transform: translateX(-50%);
+    background: #f59e0b;
+    color: #111827;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    z-index: 12;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Chronology simulation line (Requirement 7) */
+.gantt-chronology-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    z-index: 11;
+    pointer-events: none;
+}
+
+.gantt-chronology-badge {
+    position: absolute;
+    top: 2px;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #111827;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    z-index: 13;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}

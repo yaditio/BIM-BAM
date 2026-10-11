@@ -1796,6 +1796,12 @@ function updateSelectionUI() {
       activeMetaObject = metaObj;
       noSelectionPrompt.style.display = "none";
       
+      const rightSidebar = document.getElementById('rightSidebar');
+      if (rightSidebar && rightSidebar.classList.contains('hidden')) {
+        rightSidebar.classList.remove('hidden');
+        window.dispatchEvent(new Event('resize'));
+      }
+      
       // Fill basic properties
       propObjId.innerText = `ID: ${metaObj.id}`;
       
@@ -6367,27 +6373,227 @@ function setupThemeToggle() {
   });
 }
 
-// --- AI Left Sidebar Collapse / Expand Toggle ---
+// --- Left Sidebar (AI Agent) Toggle ---
 function setupAiSidebarToggle() {
   const btnToggle = document.getElementById('btnToggleAiSidebar');
   const aiSidebar = document.getElementById('aiAgentSidebar');
-  const appWorkspace = document.querySelector('.app-main-workspace');
+  const btnOpen = document.getElementById('btnOpenAiSidebar');
 
-  if (!btnToggle || !aiSidebar) return;
+  if (!aiSidebar) return;
 
-  btnToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isCollapsed = aiSidebar.classList.toggle('collapsed');
-    if (appWorkspace) {
-      if (isCollapsed) {
-        appWorkspace.style.gridTemplateColumns = '36px 1fr var(--sidebar-w-right)';
-        btnToggle.innerHTML = '<i class="fa-solid fa-chevron-right"></i>';
-      } else {
-        appWorkspace.style.gridTemplateColumns = 'var(--sidebar-w-left) 1fr var(--sidebar-w-right)';
-        btnToggle.innerHTML = '<i class="fa-solid fa-chevron-left"></i>';
-      }
-    }
+  function toggleAiSidebar(show) {
+    const isHidden = (show !== undefined) ? !show : !aiSidebar.classList.contains('hidden');
+    aiSidebar.classList.toggle('hidden', isHidden);
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  if (btnToggle) {
+    btnToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleAiSidebar(false);
+    });
+  }
+
+  if (btnOpen) {
+    btnOpen.addEventListener('click', () => {
+      toggleAiSidebar(aiSidebar.classList.contains('hidden'));
+    });
+  }
+}
+
+// --- Right Sidebar Toggle ---
+function setupRightSidebarToggle() {
+  const rightSidebar = document.getElementById('rightSidebar');
+  const btnOpen = document.getElementById('btnOpenRightSidebar');
+  const closeBtns = document.querySelectorAll('.btn-close-right-sidebar');
+
+  if (!rightSidebar) return;
+
+  function toggleRightSidebar(show) {
+    const isHidden = (show !== undefined) ? !show : !rightSidebar.classList.contains('hidden');
+    rightSidebar.classList.toggle('hidden', isHidden);
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  if (btnOpen) {
+    btnOpen.addEventListener('click', () => {
+      toggleRightSidebar(rightSidebar.classList.contains('hidden'));
+    });
+  }
+
+  closeBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleRightSidebar(false);
+    });
   });
+}
+
+// --- Stretchable Horizontal Sidebar Resizers ---
+function setupSidebarResizers() {
+  const leftSidebar = document.getElementById('aiAgentSidebar');
+  const leftResizer = document.getElementById('leftSidebarResizer');
+  const rightSidebar = document.getElementById('rightSidebar');
+  const rightResizer = document.getElementById('rightSidebarResizer');
+
+  // Drag to stretch Left Sidebar
+  if (leftSidebar && leftResizer) {
+    let isDraggingLeft = false;
+    leftResizer.addEventListener('mousedown', (e) => {
+      isDraggingLeft = true;
+      leftResizer.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDraggingLeft) return;
+      const newWidth = Math.max(200, Math.min(window.innerWidth * 0.6, e.clientX));
+      leftSidebar.style.width = `${newWidth}px`;
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDraggingLeft) {
+        isDraggingLeft = false;
+        leftResizer.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    });
+  }
+
+  // Drag to stretch Right Sidebar
+  if (rightSidebar && rightResizer) {
+    let isDraggingRight = false;
+    rightResizer.addEventListener('mousedown', (e) => {
+      isDraggingRight = true;
+      rightResizer.classList.add('dragging');
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDraggingRight) return;
+      const newWidth = Math.max(220, Math.min(window.innerWidth * 0.6, window.innerWidth - e.clientX));
+      rightSidebar.style.width = `${newWidth}px`;
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDraggingRight) {
+        isDraggingRight = false;
+        rightResizer.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
+    });
+  }
+
+  // Connect dock edge toggle for 4D panel
+  const btnOpen4d = document.getElementById('btnOpen4dPanel');
+  const ifc4dPanel = document.getElementById('ifc4dPanel');
+  if (btnOpen4d && ifc4dPanel) {
+    btnOpen4d.addEventListener('click', () => {
+      ifc4dPanel.classList.remove('hidden');
+      ifc4dPanel.classList.remove('collapsed');
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
+}
+
+// --- Ribbon Bar Collapse, Hide & Stretch Controls ---
+function setupRibbonControls() {
+  const ribbonBar = document.querySelector('.ribbon-bar');
+  const ribbonContent = document.querySelector('.ribbon-content');
+  const btnToggleCollapse = document.getElementById('btnToggleRibbonCollapse');
+  const btnHide = document.getElementById('btnHideRibbon');
+  const btnOpen = document.getElementById('btnOpenRibbon');
+  const ribbonResizer = document.getElementById('ribbonResizer');
+  const ribbonTabs = document.querySelectorAll('.ribbon-tab');
+
+  if (!ribbonBar) return;
+
+  function toggleRibbonCollapse() {
+    const isCollapsed = ribbonBar.classList.toggle('collapsed');
+    if (btnToggleCollapse) {
+      btnToggleCollapse.innerHTML = isCollapsed
+        ? '<i class="fa-solid fa-chevron-down"></i>'
+        : '<i class="fa-solid fa-chevron-up"></i>';
+      btnToggleCollapse.title = isCollapsed ? 'Expand Ribbon Toolbar' : 'Collapse Ribbon Toolbar';
+    }
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  if (btnToggleCollapse) {
+    btnToggleCollapse.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleRibbonCollapse();
+    });
+  }
+
+  // Double click tab to collapse/expand (Office / Revit standard)
+  ribbonTabs.forEach(tab => {
+    tab.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      toggleRibbonCollapse();
+    });
+  });
+
+  if (btnHide) {
+    btnHide.addEventListener('click', (e) => {
+      e.stopPropagation();
+      ribbonBar.classList.add('hidden');
+      if (btnOpen) btnOpen.classList.add('visible');
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
+
+  if (btnOpen) {
+    btnOpen.addEventListener('click', () => {
+      ribbonBar.classList.remove('hidden');
+      btnOpen.classList.remove('visible');
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
+
+  // Stretch / resize ribbon height
+  if (ribbonResizer && ribbonContent) {
+    let isDragging = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    ribbonResizer.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startY = e.clientY;
+      startHeight = ribbonContent.offsetHeight;
+      ribbonResizer.classList.add('dragging');
+      document.body.style.cursor = 'ns-resize';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dy = e.clientY - startY;
+      const newHeight = Math.max(50, Math.min(380, startHeight + dy));
+      ribbonContent.style.height = `${newHeight}px`;
+      ribbonContent.style.minHeight = `${newHeight}px`;
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        ribbonResizer.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+  }
 }
 
 // --- Right Sidebar Revit-Style Bottom Tabs Setup ---
@@ -6679,8 +6885,12 @@ function startApp() {
   try { setupIfcOpenShellTools(); } catch (e) { console.error("Error setupIfcOpenShellTools:", e); }
   try { setupThemeToggle(); } catch (e) { console.error("Error setupThemeToggle:", e); }
   try { setupAiSidebarToggle(); } catch (e) { console.error("Error setupAiSidebarToggle:", e); }
+  try { setupRightSidebarToggle(); } catch (e) { console.error("Error setupRightSidebarToggle:", e); }
+  try { setupSidebarResizers(); } catch (e) { console.error("Error setupSidebarResizers:", e); }
+  try { setupRibbonControls(); } catch (e) { console.error("Error setupRibbonControls:", e); }
   try { initFilterSubTabs(); } catch (e) { console.error("Error initFilterSubTabs:", e); }
   try { setupRightSidebarTabs(); } catch (e) { console.error("Error setupRightSidebarTabs:", e); }
+  try { setupMcpPolling(); } catch (e) { console.error("Error setupMcpPolling:", e); }
 
   // Register AI agent control APIs
   window.bimBamApi = {
@@ -6942,8 +7152,158 @@ function startApp() {
       }
 
       return { success: false, error: `Parameter "${parameterName}" not found on object ${objectId}.` };
+    },
+
+    // Color & Styling
+    colorizeObjects: (ids, hexColor) => {
+      if (!ids || ids.length === 0) return { success: false, error: "No object IDs provided." };
+      const hex = (hexColor || "#38bdf8").replace('#', '');
+      const num = parseInt(hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex, 16);
+      const rgb = [(num >> 16) / 255, ((num >> 8) & 255) / 255, (num & 255) / 255];
+      viewer.scene.setObjectsColorized(ids, rgb);
+      return { success: true, message: `Colorized ${ids.length} objects with ${hexColor}.` };
+    },
+    resetObjectColors: (ids) => {
+      const targetIds = ids && ids.length > 0 ? ids : viewer.scene.objectIds;
+      viewer.scene.setObjectsColorized(targetIds, false);
+      return { success: true, message: "Reset object colors to default." };
+    },
+    setViewerTheme: (theme) => {
+      const mode = (theme === 'light') ? 'light' : 'dark';
+      document.body.dataset.theme = mode;
+      localStorage.setItem('theme', mode);
+      return { success: true, theme: mode, message: `Set UI theme to ${mode}.` };
+    },
+
+    // Camera Views & Navigation
+    setCameraView: (view) => {
+      const presets = {
+        top: { eye: [0, 100, 0], look: [0, 0, 0], up: [0, 0, -1] },
+        bottom: { eye: [0, -100, 0], look: [0, 0, 0], up: [0, 0, 1] },
+        front: { eye: [0, 0, 100], look: [0, 0, 0], up: [0, 1, 0] },
+        back: { eye: [0, 0, -100], look: [0, 0, 0], up: [0, 1, 0] },
+        left: { eye: [-100, 0, 0], look: [0, 0, 0], up: [0, 1, 0] },
+        right: { eye: [100, 0, 0], look: [0, 0, 0], up: [0, 1, 0] },
+        isometric: { eye: [100, 100, 100], look: [0, 0, 0], up: [0, 1, 0] }
+      };
+      const key = (view || 'isometric').toLowerCase();
+      const target = presets[key] || presets.isometric;
+      viewer.cameraFlight.flyTo(target);
+      return { success: true, view: key, message: `Navigated camera to ${key} view.` };
+    },
+    setCameraProjection: (projection) => {
+      const mode = (projection === 'ortho' || projection === 'orthographic') ? 'ortho' : 'perspective';
+      viewer.camera.projection = mode;
+      return { success: true, projection: mode, message: `Set camera projection to ${mode}.` };
+    },
+    getCameraState: () => {
+      return {
+        success: true,
+        eye: [...viewer.camera.eye],
+        look: [...viewer.camera.look],
+        up: [...viewer.camera.up],
+        projection: viewer.camera.projection
+      };
+    },
+    setCameraState: (eye, look, up) => {
+      if (!eye || !look) return { success: false, error: "Eye and Look coordinates required." };
+      viewer.cameraFlight.flyTo({ eye, look, up: up || [0, 1, 0] });
+      return { success: true, message: "Camera moved to custom state." };
+    },
+
+    // Solar Position
+    setSunPosition: (dateTime, skyColor, groundColor, enabled = true) => {
+      if (chkEnableSunPosition) chkEnableSunPosition.checked = !!enabled;
+      if (sunDateTime && dateTime) sunDateTime.value = dateTime;
+      if (sunSkyColor && skyColor) sunSkyColor.value = skyColor;
+      if (sunGroundColor && groundColor) sunGroundColor.value = groundColor;
+      if (enabled) {
+        if (sunParamsContainer) sunParamsContainer.style.display = 'flex';
+        updateSunPositionLight();
+      } else {
+        if (sunParamsContainer) sunParamsContainer.style.display = 'none';
+        restoreDefaultLights();
+      }
+      return { success: true, enabled, message: `Updated solar position (enabled: ${enabled}).` };
+    },
+
+    // QTO & 5D BOQ
+    getQtoSummary: () => {
+      if (!elementsList || elementsList.length === 0) {
+        return { success: true, message: "No QTO items loaded.", count: 0, items: [] };
+      }
+      return {
+        success: true,
+        count: elementsList.length,
+        items: elementsList.map(e => ({
+          id: e.id,
+          globalId: e.globalId,
+          name: e.name,
+          category: e.category || e.ifcType,
+          volume: e.volume,
+          area: e.area,
+          length: e.length,
+          count: e.count
+        }))
+      };
+    },
+    getElementQto: (objectId) => {
+      const found = elementsList ? elementsList.find(e => String(e.id) === String(objectId) || String(e.globalId) === String(objectId)) : null;
+      if (found) return { success: true, qto: found };
+      return { success: false, error: `No QTO record found for object ${objectId}.` };
+    },
+    getBoqItems: async () => {
+      try {
+        const res = await fetch('/api/boq');
+        if (res.ok) {
+          const items = await res.json();
+          return { success: true, items };
+        }
+      } catch (e) {}
+      return { success: false, error: "Could not fetch BOQ items." };
+    },
+    calculateProjectCost: async () => {
+      try {
+        const res = await fetch('/api/boq');
+        if (res.ok) {
+          const items = await res.json();
+          const total = items.reduce((acc, it) => acc + (Number(it.total_price) || 0), 0);
+          return { success: true, totalCost: total, currency: "IDR", itemsCount: items.length };
+        }
+      } catch (e) {}
+      return { success: false, error: "Could not calculate project cost." };
+    },
+    searchAhspCatalog: async (query) => {
+      try {
+        const res = await fetch(`/api/ahsp/search?q=${encodeURIComponent(query || '')}`);
+        if (res.ok) {
+          const items = await res.json();
+          return { success: true, count: items.length, items };
+        }
+      } catch (e) {}
+      return { success: false, error: "AHSP search failed." };
+    },
+
+    // Models
+    getLoadedModels: () => {
+      return {
+        success: true,
+        models: (loadedModels || []).map(m => ({ id: m.id, name: m.name, size: m.file ? m.file.size : 0 }))
+      };
     }
   };
+
+  // Case-insensitive / snake_case proxy so FastMCP tool calls route seamlessly
+  window.bimBamApi = new Proxy(window.bimBamApi, {
+    get(target, prop) {
+      if (prop in target) return target[prop];
+      if (typeof prop === 'string') {
+        const camel = prop.replace(/_([a-z0-9])/g, (_, g) => g.toUpperCase());
+        if (camel in target) return target[camel];
+      }
+      return undefined;
+    }
+  });
 
   // Set default datetime to 12:00 PM (noon) of the current day in local time
   const todayNoon = new Date();
@@ -7471,25 +7831,74 @@ function setupIfcOpenShellTools() {
   setupBackupAndOverrideTools();
 }
 
-// --- RVT to IFC Converter Tool ---
+// --- RVT to IFC Converter Tool (DDC cad2data) ---
 function setupRvtConverter() {
   const btnConvertRvt = document.getElementById('btnConvertRvt');
   const rvtFileInput = document.getElementById('rvtFileInput');
-  const xdesApiUrlInput = document.getElementById('xdesApiUrl');
-  const xdesClientIdInput = document.getElementById('xdesClientId');
-  const xdesClientSecretInput = document.getElementById('xdesClientSecret');
+  const ddcExePathInput = document.getElementById('ddcExePath');
+  const btnLoadDdcExe = document.getElementById('btnLoadDdcExe');
+  const ddcStatusDot = document.getElementById('ddcStatusDot');
+  const ddcExeStatusText = document.getElementById('ddcExeStatusText');
+  const ddcExeStatus = document.getElementById('ddcExeStatus');
+  const ddcIfcVersion = document.getElementById('ddcIfcVersion');
 
   if (!btnConvertRvt) return;
 
-  // Restore saved settings from localStorage
-  if (localStorage.getItem('xdes_api_url')) {
-    xdesApiUrlInput.value = localStorage.getItem('xdes_api_url');
+  // Helper to test and apply DDC converter path
+  async function checkAndApplyDdcPath(targetPath, silent = false) {
+    if (!targetPath) {
+      if (!silent) alert("Please enter the folder or path to RVT2IFCconverter.exe");
+      return false;
+    }
+    try {
+      const res = await fetch('/api/check-ddc-path', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: targetPath })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.valid) {
+        localStorage.setItem('ddc_converter_path', targetPath);
+        if (ddcStatusDot) ddcStatusDot.style.color = '#22c55e';
+        if (ddcExeStatusText) ddcExeStatusText.innerText = data.exeName || 'Loaded';
+        if (ddcExeStatus) ddcExeStatus.title = `Converter: ${data.exePath}`;
+        if (!silent) {
+          updateStatus(`DDC Converter loaded: ${data.exePath}`);
+        }
+        return true;
+      } else {
+        if (ddcStatusDot) ddcStatusDot.style.color = '#ef4444';
+        if (ddcExeStatusText) ddcExeStatusText.innerText = 'Not found';
+        if (ddcExeStatus) ddcExeStatus.title = data.error || 'Executable not found';
+        if (!silent) {
+          alert(`DDC Converter not found:\n${data.error || 'Please specify the correct folder or .exe path.'}`);
+        }
+        return false;
+      }
+    } catch (err) {
+      if (ddcStatusDot) ddcStatusDot.style.color = '#ef4444';
+      if (ddcExeStatusText) ddcExeStatusText.innerText = 'Error';
+      if (!silent) alert(`Failed to check converter path: ${err.message}`);
+      return false;
+    }
   }
-  if (localStorage.getItem('xdes_client_id')) {
-    xdesClientIdInput.value = localStorage.getItem('xdes_client_id');
+
+  // Restore saved converter path from localStorage
+  const savedDdcPath = localStorage.getItem('ddc_converter_path');
+  if (savedDdcPath && ddcExePathInput) {
+    ddcExePathInput.value = savedDdcPath;
+    checkAndApplyDdcPath(savedDdcPath, true);
   }
-  if (localStorage.getItem('xdes_client_secret')) {
-    xdesClientSecretInput.value = localStorage.getItem('xdes_client_secret');
+
+  if (btnLoadDdcExe && ddcExePathInput) {
+    btnLoadDdcExe.addEventListener('click', () => {
+      checkAndApplyDdcPath(ddcExePathInput.value.trim(), false);
+    });
+    ddcExePathInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        checkAndApplyDdcPath(ddcExePathInput.value.trim(), false);
+      }
+    });
   }
 
   btnConvertRvt.addEventListener('click', async () => {
@@ -7499,27 +7908,21 @@ function setupRvtConverter() {
       return;
     }
 
-    const apiUrl = xdesApiUrlInput.value.trim();
-    const clientId = xdesClientIdInput.value.trim();
-    const clientSecret = xdesClientSecretInput.value.trim();
-
-    if (!clientId || !clientSecret) {
-      alert("Please enter both your Client ID and Client Secret.");
+    const converterPath = ddcExePathInput ? ddcExePathInput.value.trim() : '';
+    if (!converterPath) {
+      alert("Please specify the local directory or .exe path of the DDC converter and click Load.");
+      if (ddcExePathInput) ddcExePathInput.focus();
       return;
     }
 
-    // Save configuration settings
-    localStorage.setItem('xdes_api_url', apiUrl);
-    localStorage.setItem('xdes_client_id', clientId);
-    localStorage.setItem('xdes_client_secret', clientSecret);
+    const ifcVersion = ddcIfcVersion ? ddcIfcVersion.value : '4x3';
 
-    showLoader("Converting RVT to XKT", "Uploading file & initiating Data Engine job...", 10);
+    showLoader("Converting RVT to IFC", "Running DDC RVT2IFC converter pipeline...", 20);
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('apiUrl', apiUrl);
-    formData.append('clientId', clientId);
-    formData.append('clientSecret', clientSecret);
+    formData.append('converterPath', converterPath);
+    formData.append('ifcVersion', ifcVersion);
 
     try {
       const response = await fetch('/api/convert-rvt', {
@@ -7528,71 +7931,20 @@ function setupRvtConverter() {
       });
 
       if (!response.ok) {
-        const errData = await response.json();
-        const msg = errData.details ? `${errData.error}: ${errData.details}` : (errData.error || 'Conversion failed');
+        const errData = await response.json().catch(() => ({}));
+        const msg = errData.details ? `${errData.error}: ${errData.details}` : (errData.error || `HTTP error ${response.status}`);
         throw new Error(msg);
       }
 
-      updateLoaderProgress(80, "Downloading converted model data...");
-      const data = await response.json();
+      updateLoaderProgress(65, "Receiving converted IFC file...");
+      const ifcBlob = await response.blob();
+      const ifcFilename = file.name.replace(/\.[^/.]+$/, "") + ".ifc";
+      const ifcFile = new File([ifcBlob], ifcFilename, { type: 'application/x-step' });
 
-      updateLoaderProgress(90, "Decoding XKT model...");
-      // Decode base64 XKT to ArrayBuffer
-      const binaryStr = atob(data.xkt);
-      const len = binaryStr.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryStr.charCodeAt(i);
-      }
-      const xktArrayBuffer = bytes.buffer;
+      updateLoaderProgress(80, "Parsing IFC geometry and BIM metadata...");
+      await loadModel(ifcFile, false);
 
-      const modelId = "model-" + Date.now();
-
-      // Store Revit metadata if available
-      if (data.metadata) {
-        console.log(`[RVT] Metadata keys: ${Object.keys(data.metadata).join(', ')}`);
-        
-        if (data.metadata.Elements) {
-          // xeoRvt native format — store for custom tree & properties
-          revitMetadataMap[modelId] = data.metadata;
-          console.log(`[RVT] Stored xeoRvt metadata for model ${modelId}: ${data.metadata.Elements.length} elements`);
-        } else if (data.metadata.metaObjects) {
-          // xeokit-convert MetaModel format — store for custom tree adaptation
-          revitMetadataMap[modelId] = data.metadata;
-          console.log(`[RVT] Stored xeokit MetaModel metadata for model ${modelId}: ${data.metadata.metaObjects.length} metaObjects`);
-        }
-      }
-
-      // Cache for download
-      convertedXktBuffer = xktArrayBuffer;
-      convertedXktName = data.filename || file.name.replace(/\.rvt$/i, '.xkt');
-      btnDownloadXkt.disabled = false;
-
-      updateLoaderProgress(95, "Loading converted XKT model into viewer...");
-      
-      // Build loader options
-      const loadOptions = {
-        id: modelId,
-        xkt: xktArrayBuffer,
-        edges: true,
-        dtxEnabled: true
-      };
-      
-      // If we have xeokit MetaModel metadata, load it alongside the XKT
-      if (data.metadata && data.metadata.metaObjects) {
-        // Create a Blob URL for the metadata JSON so we can pass it as metaModelSrc
-        const metaBlob = new Blob([JSON.stringify(data.metadata)], { type: 'application/json' });
-        const metaUrl = URL.createObjectURL(metaBlob);
-        loadOptions.metaModelSrc = metaUrl;
-        console.log(`[RVT] Loading XKT with MetaModel metadata`);
-      }
-
-      activeModel = xktLoader.load(loadOptions);
-
-      const xktFilename = data.filename || file.name.replace(/\.rvt$/i, '.xkt');
-      setupModelLoadedListener(modelId, { name: xktFilename });
-      hideLoader();
-      updateStatus(`Revit model converted and loaded successfully.`);
+      updateStatus(`Revit file converted to IFC (${ifcVersion}) and loaded successfully.`);
     } catch (err) {
       hideLoader();
       updateStatus(`RVT Conversion failed: ${err.message}`, true);
@@ -8444,6 +8796,1230 @@ function setupBackupAndOverrideTools() {
       qtoFileInput.value = '';
     });
   }
+
+  // Initialize IFC 4D Module
+  initIfc4DModule();
+}
+
+// =========================================================================
+// IFC 4D SCHEDULING, GANTT CHART & CHRONOLOGY MODULE
+// =========================================================================
+function initIfc4DModule() {
+  let schedules4D = [];
+  let today4D = new Date().toISOString().slice(0, 10);
+  let laborResources4D = [];
+  let chronologyActive = false;
+  let chronologyTimer = null;
+  let currentSimDate = null;
+  let selectedTaskElementIds = [];
+
+  const ifc4dPanel = document.getElementById('ifc4dPanel');
+  if (!ifc4dPanel) return;
+
+  const ifc4dResizeHandle = document.getElementById('ifc4dResizeHandle');
+  const btn4dAssignTask = document.getElementById('btn4dAssignTask');
+  const input4dToday = document.getElementById('input4dToday');
+  const btn4dToggleChronology = document.getElementById('btn4dToggleChronology');
+  const chronologyControlsWrap = document.getElementById('chronologyControlsWrap');
+  const btn4dPlayChronology = document.getElementById('btn4dPlayChronology');
+  const slider4dChronology = document.getElementById('slider4dChronology');
+  const lbl4dChronologyDate = document.getElementById('lbl4dChronologyDate');
+  const btn4dSaveDraft = document.getElementById('btn4dSaveDraft');
+  const btn4dImportDraft = document.getElementById('btn4dImportDraft');
+  const input4dImportDraft = document.getElementById('input4dImportDraft');
+  const btn4dExportOds = document.getElementById('btn4dExportOds') || document.getElementById('btn4dExportOdt');
+  const btn4dExportIfc = document.getElementById('btn4dExportIfc');
+  const btn4dToggleCollapse = document.getElementById('btn4dToggleCollapse');
+  const btn4dClose = document.getElementById('btn4dClose');
+  const ganttContainer = document.getElementById('ganttContainer');
+  const badge4dTaskCount = document.getElementById('badge4dTaskCount');
+
+  // Ribbon elements
+  const btnRibbonToggle4d = document.getElementById('btnRibbonToggle4d');
+  const btnRibbonAssignTask = document.getElementById('btnRibbonAssignTask');
+  const btnRibbonChronology = document.getElementById('btnRibbonChronology');
+  const btnRibbonSaveDraft = document.getElementById('btnRibbonSaveDraft');
+  const btnRibbonImportDraft = document.getElementById('btnRibbonImportDraft');
+  const btnRibbonExportOds = document.getElementById('btnRibbonExportOds') || document.getElementById('btnRibbonExportOdt');
+  const btnRibbonExportIfc = document.getElementById('btnRibbonExportIfc');
+
+  // Modal elements
+  const modalAssign4D = document.getElementById('modalAssign4D');
+  const btnCloseAssign4D = document.getElementById('btnCloseAssign4D');
+  const btnCancelAssign4D = document.getElementById('btnCancelAssign4D');
+  const formAssign4D = document.getElementById('formAssign4D');
+  const assign4dElementChip = document.getElementById('assign4dElementChip');
+  const assign4dWorkDesc = document.getElementById('assign4dWorkDesc');
+  const assign4dStartDate = document.getElementById('assign4dStartDate');
+  const assign4dEndDate = document.getElementById('assign4dEndDate');
+  const assign4dLaborResource = document.getElementById('assign4dLaborResource');
+  const assign4dLaborCount = document.getElementById('assign4dLaborCount');
+  const assign4dColor = document.getElementById('assign4dColor');
+  const assign4dColorCode = document.getElementById('assign4dColorCode');
+  const assign4dPredecessor = document.getElementById('assign4dPredecessor');
+  const assign4dProgress = document.getElementById('assign4dProgress');
+  const assign4dProgressText = document.getElementById('assign4dProgressText');
+
+  // Initialize Today date
+  if (input4dToday) {
+    input4dToday.value = today4D;
+    input4dToday.addEventListener('change', () => {
+      today4D = input4dToday.value || new Date().toISOString().slice(0, 10);
+      renderGantt();
+    });
+  }
+
+  // Panel resizing (ns-resize)
+  let isDraggingResizer = false;
+  let startY = 0;
+  let startHeight = 0;
+
+  if (ifc4dResizeHandle) {
+    ifc4dResizeHandle.addEventListener('mousedown', (e) => {
+      isDraggingResizer = true;
+      startY = e.clientY;
+      startHeight = ifc4dPanel.offsetHeight;
+      ifc4dPanel.style.transition = 'none';
+      document.body.style.cursor = 'ns-resize';
+      e.preventDefault();
+    });
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDraggingResizer) return;
+    const dy = startY - e.clientY;
+    const newHeight = Math.max(38, Math.min(window.innerHeight * 0.85, startHeight + dy));
+    ifc4dPanel.style.height = `${newHeight}px`;
+    if (newHeight <= 45) {
+      ifc4dPanel.classList.add('collapsed');
+    } else {
+      ifc4dPanel.classList.remove('collapsed');
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDraggingResizer) {
+      isDraggingResizer = false;
+      ifc4dPanel.style.transition = 'height 0.15s ease';
+      document.body.style.cursor = '';
+    }
+  });
+
+  // Collapse / Close / Open
+  function open4DPanel() {
+    ifc4dPanel.classList.remove('hidden');
+    ifc4dPanel.classList.remove('collapsed');
+    if (btn4dToggleCollapse) btn4dToggleCollapse.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+  }
+
+  if (btn4dToggleCollapse) {
+    btn4dToggleCollapse.addEventListener('click', () => {
+      ifc4dPanel.classList.toggle('collapsed');
+      const isCol = ifc4dPanel.classList.contains('collapsed');
+      btn4dToggleCollapse.innerHTML = isCol ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
+    });
+  }
+
+  if (btn4dClose) {
+    btn4dClose.addEventListener('click', () => {
+      ifc4dPanel.classList.add('hidden');
+    });
+  }
+
+  if (btnRibbonToggle4d) {
+    btnRibbonToggle4d.addEventListener('click', () => {
+      if (ifc4dPanel.classList.contains('hidden')) {
+        open4DPanel();
+      } else {
+        ifc4dPanel.classList.toggle('collapsed');
+        const isCol = ifc4dPanel.classList.contains('collapsed');
+        if (btn4dToggleCollapse) btn4dToggleCollapse.innerHTML = isCol ? '<i class="fa-solid fa-chevron-up"></i>' : '<i class="fa-solid fa-chevron-down"></i>';
+      }
+    });
+  }
+
+  // Fetch labor resources from BOQ database
+  async function loadLaborResources() {
+    try {
+      const res = await fetch('/api/labor');
+      if (res.ok) {
+        laborResources4D = await res.json();
+      }
+    } catch (e) {
+      console.warn("Could not fetch labor resources, fallback to defaults", e);
+    }
+    if (!laborResources4D || laborResources4D.length === 0) {
+      laborResources4D = [
+        { id: 'L-WRK', description: 'Pekerja (Worker)', unit: 'day' },
+        { id: 'L-MSN', description: 'Tukang Batu (Mason)', unit: 'day' },
+        { id: 'L-FRM', description: 'Kepala Tukang (Foreman)', unit: 'day' },
+        { id: 'L-SUP', description: 'Mandor (Supervisor)', unit: 'day' }
+      ];
+    }
+    if (assign4dLaborResource) {
+      assign4dLaborResource.innerHTML = '<option value="">-- Select Labor Resource --</option>' +
+        laborResources4D.map(l => `<option value="${l.id}">${escapeXml(l.description)} (${escapeXml(l.unit)})</option>`).join('');
+    }
+  }
+
+  // Load and save schedules
+  async function loadSchedules4D() {
+    try {
+      const res = await fetch('/api/4d/schedules');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          schedules4D = data;
+        }
+      }
+    } catch (e) {}
+
+    if (schedules4D.length === 0) {
+      const local = localStorage.getItem('bimbam_schedules_4d');
+      if (local) {
+        try { schedules4D = JSON.parse(local); } catch (e) {}
+      }
+    }
+    renderGantt();
+  }
+
+  function saveSchedules4D() {
+    localStorage.setItem('bimbam_schedules_4d', JSON.stringify(schedules4D));
+    fetch('/api/4d/schedules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ schedules: schedules4D })
+    }).catch(() => {});
+  }
+
+  // IFC GlobalId helper for elements
+  function getElementGlobalId(elemId) {
+    if (window.viewer && window.viewer.metaScene && window.viewer.metaScene.metaObjects) {
+      const meta = window.viewer.metaScene.metaObjects[elemId];
+      if (meta) {
+        if (meta.propertySets) {
+          for (const pset of meta.propertySets) {
+            if (pset.properties) {
+              const gidProp = pset.properties.find(p => p.name && (p.name.toLowerCase() === 'globalid' || p.name.toLowerCase() === 'guid'));
+              if (gidProp && gidProp.value) return String(gidProp.value).trim();
+            }
+          }
+        }
+        if (meta.originalSystemId) return String(meta.originalSystemId).trim();
+        if (meta.id) return String(meta.id).trim();
+      }
+    }
+    return elemId;
+  }
+
+  function ensureTaskGlobalIds(task) {
+    if ((!task.elementGlobalIds || task.elementGlobalIds.length === 0) && task.elementIds && task.elementIds.length > 0) {
+      task.elementGlobalIds = task.elementIds.map(id => getElementGlobalId(id));
+    }
+    return task.elementGlobalIds || [];
+  }
+
+  // Task assignment modal handling
+  function openAssignModal() {
+    open4DPanel();
+    const selectedIds = (window.viewer && window.viewer.scene && window.viewer.scene.selectedObjectIds) ? window.viewer.scene.selectedObjectIds : [];
+    selectedTaskElementIds = [...selectedIds];
+
+    if (selectedTaskElementIds.length > 0) {
+      const firstId = selectedTaskElementIds[0];
+      const meta = (window.viewer && window.viewer.metaScene && window.viewer.metaScene.metaObjects) ? window.viewer.metaScene.metaObjects[firstId] : null;
+      const name = meta ? (meta.name || meta.type || firstId) : firstId;
+      assign4dElementChip.textContent = `${selectedTaskElementIds.length} element(s) selected: ${name}${selectedTaskElementIds.length > 1 ? ` (+${selectedTaskElementIds.length - 1} more)` : ''}`;
+      if (!assign4dWorkDesc.value) {
+        assign4dWorkDesc.value = `${name} Installation`;
+      }
+    } else {
+      assign4dElementChip.textContent = "No element selected (Project-level task)";
+    }
+
+    if (!assign4dStartDate.value) assign4dStartDate.value = today4D;
+    if (!assign4dEndDate.value) {
+      const d = new Date(today4D);
+      d.setDate(d.getDate() + 5);
+      assign4dEndDate.value = d.toISOString().slice(0, 10);
+    }
+
+    // Populate predecessor choices
+    if (assign4dPredecessor) {
+      assign4dPredecessor.innerHTML = '<option value="">(None)</option>' +
+        schedules4D.map(s => `<option value="${escapeXml(s.workDesc)}">${escapeXml(s.workDesc)}</option>`).join('');
+    }
+
+    if (modalAssign4D) modalAssign4D.style.display = 'flex';
+  }
+
+  if (btn4dAssignTask) btn4dAssignTask.addEventListener('click', openAssignModal);
+  if (btnRibbonAssignTask) btnRibbonAssignTask.addEventListener('click', openAssignModal);
+  if (btnCloseAssign4D) btnCloseAssign4D.addEventListener('click', () => modalAssign4D.style.display = 'none');
+  if (btnCancelAssign4D) btnCancelAssign4D.addEventListener('click', () => modalAssign4D.style.display = 'none');
+
+  if (assign4dColor) {
+    assign4dColor.addEventListener('input', () => {
+      if (assign4dColorCode) assign4dColorCode.textContent = assign4dColor.value;
+    });
+  }
+
+  if (assign4dProgress) {
+    assign4dProgress.addEventListener('input', () => {
+      if (assign4dProgressText) assign4dProgressText.textContent = `${assign4dProgress.value}%`;
+    });
+  }
+
+  if (formAssign4D) {
+    formAssign4D.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const workDesc = assign4dWorkDesc.value.trim();
+      const startDate = assign4dStartDate.value;
+      const endDate = assign4dEndDate.value;
+      if (!workDesc || !startDate || !endDate) return;
+
+      if (new Date(endDate) < new Date(startDate)) {
+        alert("Ending Date cannot be earlier than Start Date.");
+        return;
+      }
+
+      const resId = assign4dLaborResource ? assign4dLaborResource.value : '';
+      const resObj = laborResources4D.find(r => r.id === resId);
+      const resourceDesc = resObj ? resObj.description : '';
+      const resourceCount = Number(assign4dLaborCount ? assign4dLaborCount.value : 1) || 1;
+      const color = assign4dColor ? assign4dColor.value : '#38bdf8';
+      const predecessor = assign4dPredecessor ? assign4dPredecessor.value : '';
+      const progress = Number(assign4dProgress ? assign4dProgress.value : 0) || 0;
+
+      const elementGlobalIds = selectedTaskElementIds.map(id => getElementGlobalId(id));
+
+      const newTask = {
+        id: 'task-' + Date.now(),
+        workDesc,
+        startDate,
+        endDate,
+        resourceId: resId,
+        resourceDesc,
+        resourceCount,
+        color,
+        predecessor,
+        progress,
+        elementIds: [...selectedTaskElementIds],
+        elementGlobalIds: elementGlobalIds
+      };
+
+      schedules4D.push(newTask);
+      saveSchedules4D();
+      renderGantt();
+
+      modalAssign4D.style.display = 'none';
+      formAssign4D.reset();
+      if (assign4dColor) assign4dColor.value = '#38bdf8';
+      if (assign4dColorCode) assign4dColorCode.textContent = '#38bdf8';
+      if (assign4dProgress) assign4dProgress.value = 0;
+      if (assign4dProgressText) assign4dProgressText.textContent = '0%';
+    });
+  }
+
+  // Gantt Chart Rendering
+  function renderGantt() {
+    if (badge4dTaskCount) {
+      badge4dTaskCount.textContent = `${schedules4D.length} Task${schedules4D.length === 1 ? '' : 's'}`;
+    }
+
+    if (!ganttContainer) return;
+
+    if (schedules4D.length === 0) {
+      ganttContainer.innerHTML = `
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 12px; gap: 8px;">
+          <i class="fa-solid fa-calendar-plus" style="font-size: 28px; opacity: 0.5;"></i>
+          <span>No schedule tasks yet. Select a 3D element and click <strong>Assign Task</strong>.</span>
+        </div>`;
+      return;
+    }
+
+    // Determine timeline date boundaries
+    const allDates = [];
+    allDates.push(new Date(today4D + 'T00:00:00'));
+    if (currentSimDate) allDates.push(new Date(currentSimDate));
+    schedules4D.forEach(s => {
+      allDates.push(new Date(s.startDate + 'T00:00:00'));
+      allDates.push(new Date(s.endDate + 'T00:00:00'));
+    });
+
+    const minTime = Math.min(...allDates.map(d => d.getTime()));
+    const maxTime = Math.max(...allDates.map(d => d.getTime()));
+
+    const dayMs = 86400000;
+    const startRange = new Date(minTime - 2 * dayMs);
+    startRange.setHours(0, 0, 0, 0);
+    const endRange = new Date(maxTime + 3 * dayMs);
+    endRange.setHours(23, 59, 59, 999);
+
+    const totalRangeMs = endRange.getTime() - startRange.getTime();
+    const totalDays = Math.ceil(totalRangeMs / dayMs);
+
+    const dayHeaders = [];
+    const curr = new Date(startRange);
+    for (let i = 0; i < totalDays; i++) {
+      const dStr = curr.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const isToday = curr.toISOString().slice(0, 10) === today4D;
+      dayHeaders.push({
+        dateStr: curr.toISOString().slice(0, 10),
+        label: dStr,
+        isToday
+      });
+      curr.setDate(curr.getDate() + 1);
+    }
+
+    // Left Table Pane
+    let tableHtml = `
+      <div class="gantt-table-pane">
+        <table class="gantt-table">
+          <thead>
+            <tr>
+              <th>Work Description</th>
+              <th>Labor</th>
+              <th style="text-align: right;">Prog</th>
+              <th style="text-align: center; width: 30px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    schedules4D.forEach((t, idx) => {
+      const laborText = t.resourceDesc ? `${t.resourceCount}× ${t.resourceDesc}` : '-';
+      tableHtml += `
+        <tr data-task-idx="${idx}" title="Click to highlight linked 3D element">
+          <td><strong style="color: var(--text-main);">${escapeXml(t.workDesc)}</strong></td>
+          <td style="color: var(--text-muted); font-size: 10px;">${escapeXml(laborText)}</td>
+          <td style="text-align: right; font-weight: 600; color: ${t.progress === 100 ? 'var(--success)' : 'var(--accent)'};">${t.progress}%</td>
+          <td style="text-align: center;">
+            <button class="btn-icon-xs btn-delete-task" data-task-id="${t.id}" style="width: 20px; height: 20px; border: none; background: transparent; color: var(--danger); cursor: pointer;" title="Delete task"><i class="fa-solid fa-trash-can"></i></button>
+          </td>
+        </tr>
+      `;
+    });
+    tableHtml += `</tbody></table></div>`;
+
+    // Right Timeline Pane
+    const dayColWidth = 44;
+    const timelineInnerWidth = Math.max(dayColWidth * totalDays, 600);
+
+    let timelineHtml = `
+      <div class="gantt-timeline-pane" id="ganttTimelinePane">
+        <div class="gantt-timeline-inner" style="width: ${timelineInnerWidth}px;">
+          <div class="gantt-header-row">
+    `;
+
+    dayHeaders.forEach(dh => {
+      timelineHtml += `
+        <div class="gantt-day-header ${dh.isToday ? 'style="font-weight:700; color:#f59e0b;"' : ''}">
+          ${dh.label}
+        </div>
+      `;
+    });
+    timelineHtml += `</div>`;
+
+    // Vertical Today Line (Requirement 3)
+    const todayMs = new Date(today4D + 'T12:00:00').getTime();
+    const todayOffsetPct = ((todayMs - startRange.getTime()) / totalRangeMs) * 100;
+    const todayLeftPx = (todayOffsetPct / 100) * timelineInnerWidth;
+
+    timelineHtml += `
+      <div class="gantt-today-line" style="left: ${todayLeftPx}px;">
+        <span class="gantt-today-badge">Today (${today4D})</span>
+      </div>
+    `;
+
+    // Vertical Chronology Line (Requirement 7)
+    if (chronologyActive && currentSimDate) {
+      const simMs = currentSimDate.getTime();
+      const simOffsetPct = ((simMs - startRange.getTime()) / totalRangeMs) * 100;
+      const simLeftPx = (simOffsetPct / 100) * timelineInnerWidth;
+      timelineHtml += `
+        <div class="gantt-chronology-line" style="left: ${simLeftPx}px;">
+          <span class="gantt-chronology-badge">Sim: ${currentSimDate.toISOString().slice(0, 10)}</span>
+        </div>
+      `;
+    }
+
+    // Task rows & bars
+    schedules4D.forEach((t, idx) => {
+      const sTime = new Date(t.startDate + 'T00:00:00').getTime();
+      const eTime = new Date(t.endDate + 'T23:59:59').getTime();
+      const leftPct = Math.max(0, ((sTime - startRange.getTime()) / totalRangeMs) * 100);
+      const widthPct = Math.min(100 - leftPct, Math.max(1.5, ((eTime - sTime) / totalRangeMs) * 100));
+
+      // Requirement 5: Overdue check -> Red bar
+      const isOverdue = new Date(t.endDate + 'T23:59:59') < new Date(today4D + 'T00:00:00') && Number(t.progress) < 100;
+      const barBg = isOverdue ? '#ef4444' : (t.color || '#38bdf8');
+      const overdueClass = isOverdue ? 'overdue' : '';
+
+      timelineHtml += `
+        <div class="gantt-grid-row" data-task-idx="${idx}">
+          ${dayHeaders.map(() => '<div class="gantt-grid-cell"></div>').join('')}
+          <div class="gantt-bar-item ${overdueClass}" style="left: ${leftPct}%; width: ${widthPct}%; background-color: ${barBg};" title="${escapeXml(t.workDesc)}: ${t.startDate} → ${t.endDate} (${t.progress}%) ${isOverdue ? '[OVERDUE]' : ''}">
+            <div class="gantt-bar-fill" style="width: ${t.progress}%;"></div>
+            <div class="gantt-bar-content">
+              ${isOverdue ? '<i class="fa-solid fa-triangle-exclamation"></i>' : ''}
+              <span>${escapeXml(t.workDesc)}</span>
+              <small style="opacity: 0.85;">(${t.progress}%)</small>
+              ${t.predecessor ? `<small style="opacity: 0.75; font-size: 9px;">← ${escapeXml(t.predecessor)}</small>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    timelineHtml += `</div></div>`;
+
+    ganttContainer.innerHTML = tableHtml + timelineHtml;
+
+    // Delete buttons
+    ganttContainer.querySelectorAll('.btn-delete-task').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.taskId;
+        if (confirm("Delete this schedule task?")) {
+          schedules4D = schedules4D.filter(s => s.id !== id);
+          saveSchedules4D();
+          renderGantt();
+        }
+      });
+    });
+
+    // Row click -> Select linked element in viewer
+    ganttContainer.querySelectorAll('[data-task-idx]').forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = Number(el.dataset.taskIdx);
+        const task = schedules4D[idx];
+        if (task && task.elementIds && task.elementIds.length > 0 && window.viewer && window.viewer.scene) {
+          window.viewer.scene.setObjectsSelected(window.viewer.scene.selectedObjectIds, false);
+          window.viewer.scene.setObjectsSelected(task.elementIds, true);
+          if (typeof updateSelectionUI === 'function') {
+            updateSelectionUI();
+          }
+        }
+      });
+    });
+  }
+
+  // 4D Chronology Simulation (Requirement 7)
+  function toggleChronology(active) {
+    chronologyActive = (active !== undefined) ? active : !chronologyActive;
+    if (btn4dToggleChronology) {
+      btn4dToggleChronology.innerHTML = chronologyActive 
+        ? '<i class="fa-solid fa-eye text-accent"></i> Chronology: On'
+        : '<i class="fa-solid fa-eye-slash"></i> Chronology: Off';
+      btn4dToggleChronology.classList.toggle('btn-primary', chronologyActive);
+      btn4dToggleChronology.classList.toggle('btn-secondary', !chronologyActive);
+    }
+    if (btnRibbonChronology) {
+      btnRibbonChronology.innerHTML = chronologyActive
+        ? '<i class="fa-solid fa-film text-accent"></i> Simulation: On'
+        : '<i class="fa-solid fa-film"></i> Simulation: Off';
+      btnRibbonChronology.classList.toggle('btn-primary', chronologyActive);
+      btnRibbonChronology.classList.toggle('btn-secondary', !chronologyActive);
+    }
+
+    if (chronologyControlsWrap) {
+      chronologyControlsWrap.style.display = chronologyActive ? 'flex' : 'none';
+    }
+
+    if (!chronologyActive) {
+      stopChronologyPlay();
+      currentSimDate = null;
+      if (window.viewer && window.viewer.scene) {
+        const allIds = Object.keys(window.viewer.scene.objects);
+        window.viewer.scene.setObjectsVisible(allIds, true);
+      }
+      renderGantt();
+      return;
+    }
+
+    if (schedules4D.length === 0) {
+      alert("Please assign schedule tasks first.");
+      toggleChronology(false);
+      return;
+    }
+
+    const allStarts = schedules4D.map(s => new Date(s.startDate + 'T00:00:00').getTime());
+    const allEnds = schedules4D.map(s => new Date(s.endDate + 'T23:59:59').getTime());
+    const minSimTime = Math.min(...allStarts);
+    const maxSimTime = Math.max(...allEnds);
+
+    if (slider4dChronology) {
+      slider4dChronology.min = 0;
+      slider4dChronology.max = Math.ceil((maxSimTime - minSimTime) / 86400000);
+      slider4dChronology.value = 0;
+    }
+
+    updateChronologyFrame(minSimTime, maxSimTime, 0);
+  }
+
+  function updateChronologyFrame(minSimTime, maxSimTime, dayOffset) {
+    const simMs = minSimTime + dayOffset * 86400000;
+    currentSimDate = new Date(Math.min(maxSimTime, simMs));
+    const simDateStr = currentSimDate.toISOString().slice(0, 10);
+    if (lbl4dChronologyDate) lbl4dChronologyDate.textContent = simDateStr;
+
+    // Hide/show elements based on schedule date reached
+    if (window.viewer && window.viewer.scene) {
+      schedules4D.forEach(task => {
+        if (task.elementIds && task.elementIds.length > 0) {
+          const taskStart = new Date(task.startDate + 'T00:00:00');
+          if (currentSimDate < taskStart) {
+            window.viewer.scene.setObjectsVisible(task.elementIds, false);
+          } else {
+            window.viewer.scene.setObjectsVisible(task.elementIds, true);
+          }
+        }
+      });
+    }
+
+    renderGantt();
+  }
+
+  if (btn4dToggleChronology) btn4dToggleChronology.addEventListener('click', () => toggleChronology());
+  if (btnRibbonChronology) btnRibbonChronology.addEventListener('click', () => toggleChronology());
+
+  if (slider4dChronology) {
+    slider4dChronology.addEventListener('input', () => {
+      if (!chronologyActive) return;
+      const allStarts = schedules4D.map(s => new Date(s.startDate + 'T00:00:00').getTime());
+      const allEnds = schedules4D.map(s => new Date(s.endDate + 'T23:59:59').getTime());
+      updateChronologyFrame(Math.min(...allStarts), Math.max(...allEnds), Number(slider4dChronology.value));
+    });
+  }
+
+  function stopChronologyPlay() {
+    if (chronologyTimer) {
+      clearInterval(chronologyTimer);
+      chronologyTimer = null;
+    }
+    if (btn4dPlayChronology) btn4dPlayChronology.innerHTML = '<i class="fa-solid fa-play"></i>';
+  }
+
+  if (btn4dPlayChronology) {
+    btn4dPlayChronology.addEventListener('click', () => {
+      if (chronologyTimer) {
+        stopChronologyPlay();
+        return;
+      }
+
+      btn4dPlayChronology.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      const allStarts = schedules4D.map(s => new Date(s.startDate + 'T00:00:00').getTime());
+      const allEnds = schedules4D.map(s => new Date(s.endDate + 'T23:59:59').getTime());
+      const minSim = Math.min(...allStarts);
+      const maxSim = Math.max(...allEnds);
+      const maxDays = Number(slider4dChronology.max);
+
+      if (Number(slider4dChronology.value) >= maxDays) {
+        slider4dChronology.value = 0;
+      }
+
+      chronologyTimer = setInterval(() => {
+        let nextVal = Number(slider4dChronology.value) + 1;
+        if (nextVal > maxDays) {
+          stopChronologyPlay();
+          return;
+        }
+        slider4dChronology.value = nextVal;
+        updateChronologyFrame(minSim, maxSim, nextVal);
+      }, 600);
+    });
+  }
+
+  // Export LibreOffice Calc .ODS Spreadsheet
+  function exportScheduleToOds() {
+    if (schedules4D.length === 0) {
+      alert("No schedule tasks to export.");
+      return;
+    }
+
+    function crc32(bytes) {
+      let crc = ~0;
+      for (let i = 0; i < bytes.length; i++) {
+        crc ^= bytes[i];
+        for (let j = 0; j < 8; j++) {
+          crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+        }
+      }
+      return (~crc) >>> 0;
+    }
+
+    function createZip(files) {
+      const encoder = new TextEncoder();
+      const parts = [];
+      const centralHeaders = [];
+      let offset = 0;
+
+      for (const file of files) {
+        const nameBytes = encoder.encode(file.name);
+        const dataBytes = typeof file.data === 'string' ? encoder.encode(file.data) : file.data;
+        const crc = crc32(dataBytes);
+        const size = dataBytes.length;
+
+        // Local Header
+        const lh = new Uint8Array(30 + nameBytes.length);
+        const lhView = new DataView(lh.buffer);
+        lhView.setUint32(0, 0x04034b50, true);
+        lhView.setUint16(4, 20, true);
+        lhView.setUint16(6, 0, true);
+        lhView.setUint16(8, 0, true);
+        lhView.setUint16(10, 0, true);
+        lhView.setUint16(12, 0, true);
+        lhView.setUint32(14, crc, true);
+        lhView.setUint32(18, size, true);
+        lhView.setUint32(22, size, true);
+        lhView.setUint16(26, nameBytes.length, true);
+        lhView.setUint16(28, 0, true);
+        lh.set(nameBytes, 30);
+
+        parts.push(lh, dataBytes);
+
+        // Central Directory Header
+        const ch = new Uint8Array(46 + nameBytes.length);
+        const chView = new DataView(ch.buffer);
+        chView.setUint32(0, 0x02014b50, true);
+        chView.setUint16(4, 20, true);
+        chView.setUint16(6, 20, true);
+        chView.setUint16(8, 0, true);
+        chView.setUint16(10, 0, true);
+        chView.setUint16(12, 0, true);
+        chView.setUint16(14, 0, true);
+        chView.setUint32(16, crc, true);
+        chView.setUint32(20, size, true);
+        chView.setUint32(24, size, true);
+        chView.setUint16(28, nameBytes.length, true);
+        chView.setUint16(30, 0, true);
+        chView.setUint16(32, 0, true);
+        chView.setUint16(34, 0, true);
+        chView.setUint16(36, 0, true);
+        chView.setUint32(38, 0, true);
+        chView.setUint32(42, offset, true);
+        ch.set(nameBytes, 46);
+
+        centralHeaders.push(ch);
+        offset += lh.length + dataBytes.length;
+      }
+
+      const centralOffset = offset;
+      let centralSize = 0;
+      centralHeaders.forEach(ch => centralSize += ch.length);
+
+      // End of Central Directory
+      const eocd = new Uint8Array(22);
+      const eocdView = new DataView(eocd.buffer);
+      eocdView.setUint32(0, 0x06054b50, true);
+      eocdView.setUint16(4, 0, true);
+      eocdView.setUint16(6, 0, true);
+      eocdView.setUint16(8, files.length, true);
+      eocdView.setUint16(10, files.length, true);
+      eocdView.setUint32(12, centralSize, true);
+      eocdView.setUint32(16, centralOffset, true);
+      eocdView.setUint16(20, 0, true);
+
+      return new Blob([...parts, ...centralHeaders, eocd], { type: 'application/vnd.oasis.opendocument.spreadsheet' });
+    }
+
+    let rowsXml = '';
+    schedules4D.forEach((t, i) => {
+      const isOverdue = new Date(t.endDate + 'T23:59:59') < new Date(today4D + 'T00:00:00') && Number(t.progress) < 100;
+      const statusText = t.progress === 100 ? 'Completed' : (isOverdue ? 'OVERDUE (Delayed)' : 'In Progress');
+      const labor = t.resourceDesc ? `${t.resourceCount} ${t.resourceDesc}` : '-';
+      const gids = (t.elementGlobalIds || []).join(', ') || '-';
+
+      rowsXml += `
+        <table:table-row>
+          <table:table-cell office:value-type="float" office:value="${i + 1}"><text:p>${i + 1}</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${escapeXml(t.workDesc)}</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${t.startDate}</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${t.endDate}</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${escapeXml(labor)}</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${escapeXml(t.predecessor || '-')}</text:p></table:table-cell>
+          <table:table-cell office:value-type="float" office:value="${t.progress}"><text:p>${t.progress}%</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${statusText}</text:p></table:table-cell>
+          <table:table-cell office:value-type="string"><text:p>${escapeXml(gids)}</text:p></table:table-cell>
+        </table:table-row>
+      `;
+    });
+
+    const contentXml = `<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+  xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+  xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+  xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+  xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+  office:version="1.2">
+  <office:body>
+    <office:spreadsheet>
+      <table:table table:name="4D_Schedule">
+        <table:table-column table:number-columns-repeated="9"/>
+        <table:table-header-rows>
+          <table:table-row>
+            <table:table-cell office:value-type="string"><text:p>No</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Work Description</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Start Date</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Ending Date</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Assigned Labor</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Predecessor</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Progress (%)</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Status</text:p></table:table-cell>
+            <table:table-cell office:value-type="string"><text:p>Element GlobalIDs</text:p></table:table-cell>
+          </table:table-row>
+        </table:table-header-rows>
+        ${rowsXml}
+      </table:table>
+    </office:spreadsheet>
+  </office:body>
+</office:document-content>`;
+
+    const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" manifest:version="1.2">
+  <manifest:file-entry manifest:full-path="/" manifest:version="1.2" manifest:media-type="application/vnd.oasis.opendocument.spreadsheet"/>
+  <manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/>
+</manifest:manifest>`;
+
+    const blob = createZip([
+      { name: 'mimetype', data: 'application/vnd.oasis.opendocument.spreadsheet' },
+      { name: 'META-INF/manifest.xml', data: manifestXml },
+      { name: 'content.xml', data: contentXml }
+    ]);
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `BIM_BAM_Schedule_${today4D}.ods`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // Save Schedule Draft as JSON (Includes element GlobalIDs)
+  function saveScheduleDraftJson() {
+    if (schedules4D.length === 0) {
+      alert("No schedule tasks to save as draft.");
+      return;
+    }
+
+    schedules4D.forEach(t => ensureTaskGlobalIds(t));
+
+    const draftData = {
+      app: "BIM BAM",
+      format: "4D_Schedule_Draft",
+      version: "1.0",
+      exportDate: new Date().toISOString(),
+      referenceToday: today4D,
+      tasksCount: schedules4D.length,
+      tasks: schedules4D
+    };
+
+    const blob = new Blob([JSON.stringify(draftData, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `BIM_BAM_Schedule_Draft_${today4D}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  // Import Schedule Draft JSON with element GlobalID matching
+  function handleImportDraftFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const importedTasks = Array.isArray(parsed) ? parsed : (parsed.tasks || parsed.schedules || []);
+        if (!Array.isArray(importedTasks) || importedTasks.length === 0) {
+          alert("Selected JSON file does not contain valid schedule tasks.");
+          return;
+        }
+
+        // Collect all element IDs and GlobalIDs from active viewer scene
+        const viewerGlobalMap = new Map();
+        const viewerAllGids = new Set();
+        if (window.viewer && window.viewer.metaScene && window.viewer.metaScene.metaObjects) {
+          Object.entries(window.viewer.metaScene.metaObjects).forEach(([elemId, meta]) => {
+            const gid = getElementGlobalId(elemId);
+            viewerGlobalMap.set(gid, elemId);
+            viewerGlobalMap.set(elemId, elemId);
+            viewerAllGids.add(gid);
+            viewerAllGids.add(elemId);
+            if (meta.id) {
+              viewerAllGids.add(meta.id);
+              viewerGlobalMap.set(meta.id, elemId);
+            }
+            if (meta.originalSystemId) {
+              viewerAllGids.add(meta.originalSystemId);
+              viewerGlobalMap.set(meta.originalSystemId, elemId);
+            }
+          });
+        }
+        if (window.viewer && window.viewer.scene && window.viewer.scene.objects) {
+          Object.keys(window.viewer.scene.objects).forEach(id => {
+            viewerAllGids.add(id);
+            if (!viewerGlobalMap.has(id)) viewerGlobalMap.set(id, id);
+          });
+        }
+
+        const modelLoaded = viewerAllGids.size > 0;
+        const missingGlobalIds = [];
+        let matchedCount = 0;
+        let totalAssignedElements = 0;
+
+        importedTasks.forEach(task => {
+          const gids = task.elementGlobalIds || task.elementIds || [];
+          gids.forEach(gid => {
+            totalAssignedElements++;
+            if (viewerAllGids.has(gid)) {
+              matchedCount++;
+            } else {
+              missingGlobalIds.push({ task: task.workDesc || 'Untitled Task', globalId: gid });
+            }
+          });
+        });
+
+        if (modelLoaded && missingGlobalIds.length > 0) {
+          const sampleList = missingGlobalIds.slice(0, 5).map(m => `• "${m.globalId}" (${m.task})`).join('\n');
+          const moreText = missingGlobalIds.length > 5 ? `\n...and ${missingGlobalIds.length - 5} more.` : '';
+          const msg = `⚠️ Model Mismatch Notification!\n\nThe schedule draft and currently open IFC model are DIFFERENT!\n\n` +
+            `${missingGlobalIds.length} of ${totalAssignedElements} element GlobalID(s) do not exist in the active IFC model:\n\n${sampleList}${moreText}\n\n` +
+            `Do you still want to import this schedule draft anyway?`;
+
+          const proceed = confirm(msg);
+          if (!proceed) {
+            return;
+          }
+        } else if (modelLoaded && totalAssignedElements > 0) {
+          alert(`✓ Schedule Draft Matched!\n\nAll ${matchedCount} element GlobalIDs match the open IFC model successfully.`);
+        }
+
+        // Remap elementIds to current viewer scene IDs where matched
+        importedTasks.forEach(task => {
+          if (task.elementGlobalIds && task.elementGlobalIds.length > 0) {
+            const remappedIds = [];
+            task.elementGlobalIds.forEach(gid => {
+              const elemId = viewerGlobalMap.get(gid);
+              if (elemId && !remappedIds.includes(elemId)) remappedIds.push(elemId);
+            });
+            if (remappedIds.length > 0) {
+              task.elementIds = remappedIds;
+            }
+          }
+        });
+
+        if (parsed.referenceToday) {
+          today4D = parsed.referenceToday;
+          if (input4dToday) input4dToday.value = today4D;
+        }
+
+        schedules4D = importedTasks;
+        saveSchedules4D();
+        renderGantt();
+      } catch (err) {
+        console.error("Error parsing schedule draft JSON:", err);
+        alert("Failed to parse JSON file: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // Export Open Planner Studio .IFC (Requirement 6)
+  function exportScheduleToOpenPlannerStudioIfc() {
+    if (schedules4D.length === 0) {
+      alert("No schedule tasks to export.");
+      return;
+    }
+
+    function makeIfcGuid() {
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';
+      let res = '';
+      for (let i = 0; i < 22; i++) {
+        res += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return res;
+    }
+
+    const nowIso = new Date().toISOString().slice(0, 19);
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    const allStarts = schedules4D.map(s => s.startDate);
+    const allEnds = schedules4D.map(s => s.endDate);
+    const minStartIso = (allStarts.sort()[0] || today4D) + 'T07:00:00';
+    const maxEndIso = (allEnds.sort().reverse()[0] || today4D) + 'T16:00:00';
+
+    let lineNum = 1;
+    const lines = [];
+    const ref = () => `#${lineNum++}`;
+
+    const personRef = ref(); lines.push(`${personRef}=IFCPERSON($,'Contractor',$,$,$,$,$,$);`);
+    const orgRef = ref(); lines.push(`${orgRef}=IFCORGANIZATION($,'BIM BAM Construction',$,$,$);`);
+    const poRef = ref(); lines.push(`${poRef}=IFCPERSONANDORGANIZATION(${personRef},${orgRef},$);`);
+    const aOrgRef = ref(); lines.push(`${aOrgRef}=IFCORGANIZATION($,'OpenAEC Foundation',$,$,$);`);
+    const appRef = ref(); lines.push(`${appRef}=IFCAPPLICATION(${aOrgRef},'0.2','Open Planner Studio','OPS');`);
+    const ownerRef = ref(); lines.push(`${ownerRef}=IFCOWNERHISTORY(${poRef},${appRef},$,.NOCHANGE.,$,$,$,${timestamp});`);
+    const unitM = ref(); lines.push(`${unitM}=IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.);`);
+    const unitS = ref(); lines.push(`${unitS}=IFCSIUNIT(*,.TIMEUNIT.,$,.SECOND.);`);
+    const unitAssign = ref(); lines.push(`${unitAssign}=IFCUNITASSIGNMENT((${unitM},${unitS}));`);
+    const pt = ref(); lines.push(`${pt}=IFCCARTESIANPOINT((0.,0.,0.));`);
+    const axis = ref(); lines.push(`${axis}=IFCAXIS2PLACEMENT3D(${pt},$,$);`);
+    const ctx = ref(); lines.push(`${ctx}=IFCGEOMETRICREPRESENTATIONCONTEXT($,'Plan',3,1.0E-05,${axis},$);`);
+    const projRef = ref(); lines.push(`${projRef}=IFCPROJECT('${makeIfcGuid()}',${ownerRef},'BIM BAM Schedule','Open Planner Studio 4D Schedule',$,$,$,(${ctx}),${unitAssign});`);
+
+    const timePeriod = ref(); lines.push(`${timePeriod}=IFCTIMEPERIOD('07:00:00','16:00:00');`);
+    const recPat = ref(); lines.push(`${recPat}=IFCRECURRENCEPATTERN(.WEEKLY.,$,(1,2,3,4,5),$,$,$,$,(${timePeriod}));`);
+    const workTime = ref(); lines.push(`${workTime}=IFCWORKTIME('Standard work week',.PREDICTED.,$,${recPat},$,$);`);
+    const calendar = ref(); lines.push(`${calendar}=IFCWORKCALENDAR('${makeIfcGuid()}',${ownerRef},'Standard Construction Calendar','Mon-Fri 07:00-16:00',$,(${workTime}),$,.FIRSTSHIFT.);`);
+    const calPval = ref(); lines.push(`${calPval}=IFCPROPERTYSINGLEVALUE('HoursPerDay',$,IFCREAL(8),$);`);
+    const calPset = ref(); lines.push(`${calPset}=IFCPROPERTYSET('${makeIfcGuid()}',${ownerRef},'OPS_Calendar',$,(${calPval}));`);
+    const relCalProp = ref(); lines.push(`${relCalProp}=IFCRELDEFINESBYPROPERTIES('${makeIfcGuid()}',${ownerRef},$,$,(${calendar}),${calPset});`);
+
+    const workPlan = ref(); lines.push(`${workPlan}=IFCWORKPLAN('${makeIfcGuid()}',${ownerRef},'BIM BAM Plan','4D Master Plan',$,$,'${nowIso}',$,$,$,$,$,'${minStartIso}','${maxEndIso}',.PLANNED.);`);
+    const workSched = ref(); lines.push(`${workSched}=IFCWORKSCHEDULE('${makeIfcGuid()}',${ownerRef},'Construction schedule v1.0',$,$,$,'${nowIso}',$,$,$,$,$,'${minStartIso}','${maxEndIso}',.PLANNED.);`);
+    const relAgg = ref(); lines.push(`${relAgg}=IFCRELAGGREGATES('${makeIfcGuid()}',${ownerRef},$,$,${workPlan},(${workSched}));`);
+
+    const taskMap = new Map();
+    const allTaskRefs = [];
+
+    schedules4D.forEach((task, i) => {
+      const sDate = new Date(task.startDate + 'T07:00:00');
+      const eDate = new Date(task.endDate + 'T16:00:00');
+      const durationDays = Math.max(1, Math.round((eDate.getTime() - sDate.getTime()) / 86400000));
+      const sIso = task.startDate + 'T07:00:00';
+      const eIso = task.endDate + 'T16:00:00';
+
+      const tTime = ref(); lines.push(`${tTime}=IFCTASKTIME('${escapeIfcString(task.workDesc)} Time',.PREDICTED.,$,.WORKTIME.,'P0Y0M${durationDays}D','${sIso}','${sIso}','${sIso}','${eIso}','${sIso}','${eIso}','P0Y0M0D','P0Y0M0D',.F.,$,$,$,$,$,${(task.progress / 100).toFixed(2)});`);
+      const tRef = ref(); lines.push(`${tRef}=IFCTASK('${makeIfcGuid()}',${ownerRef},'${escapeIfcString(task.workDesc)}',$,$,'${i + 1}',$,$,$,.F.,$,${tTime},.CONSTRUCTION.);`);
+      taskMap.set(task.workDesc, tRef);
+      allTaskRefs.push(tRef);
+
+      const pTaskVal = ref(); lines.push(`${pTaskVal}=IFCPROPERTYSINGLEVALUE('InternalTaskId',$,IFCTEXT('${task.id}'),$);`);
+      const pTaskSet = ref(); lines.push(`${pTaskSet}=IFCPROPERTYSET('${makeIfcGuid()}',${ownerRef},'OPS_TaskIdentity',$,(${pTaskVal}));`);
+      const relTaskProp = ref(); lines.push(`${relTaskProp}=IFCRELDEFINESBYPROPERTIES('${makeIfcGuid()}',${ownerRef},$,$,(${tRef}),${pTaskSet});`);
+
+      if (task.resourceDesc) {
+        const resGuid = makeIfcGuid();
+        const laborRef = ref(); lines.push(`${laborRef}=IFCLABORRESOURCE('${resGuid}',${ownerRef},'${escapeIfcString(task.resourceDesc)}',$,$,$,$,$,.USERDEFINED.);`);
+        const pUnits = ref(); lines.push(`${pUnits}=IFCPROPERTYSINGLEVALUE('MaxUnits',$,IFCREAL(${task.resourceCount || 1}),$);`);
+        const pColor = ref(); lines.push(`${pColor}=IFCPROPERTYSINGLEVALUE('Color',$,IFCTEXT('${task.color || "#38bdf8"}'),$);`);
+        const pResSet = ref(); lines.push(`${pResSet}=IFCPROPERTYSET('${makeIfcGuid()}',${ownerRef},'OPS_Resource',$,(${pUnits},${pColor}));`);
+        const relResProp = ref(); lines.push(`${relResProp}=IFCRELDEFINESBYPROPERTIES('${makeIfcGuid()}',${ownerRef},$,$,(${laborRef}),${pResSet});`);
+
+        const relAssign = ref(); lines.push(`${relAssign}=IFCRELASSIGNSTOPROCESS('${makeIfcGuid()}',${ownerRef},$,$,(${laborRef}),$,${tRef},$);`);
+        const pAssignVal = ref(); lines.push(`${pAssignVal}=IFCPROPERTYSINGLEVALUE('${resGuid}#0',$,IFCTEXT('${task.resourceCount || 1}|UNIFORM'),$);`);
+        const pAssignSet = ref(); lines.push(`${pAssignSet}=IFCPROPERTYSET('${makeIfcGuid()}',${ownerRef},'OPS_Assignments',$,(${pAssignVal}));`);
+        const relAssignProp = ref(); lines.push(`${relAssignProp}=IFCRELDEFINESBYPROPERTIES('${makeIfcGuid()}',${ownerRef},$,$,(${tRef}),${pAssignSet});`);
+      }
+    });
+
+    schedules4D.forEach(task => {
+      if (task.predecessor && taskMap.has(task.predecessor)) {
+        const predRef = taskMap.get(task.predecessor);
+        const currRef = taskMap.get(task.workDesc);
+        if (predRef && currRef) {
+          const seqRef = ref(); lines.push(`${seqRef}=IFCRELSEQUENCE('${makeIfcGuid()}',${ownerRef},$,$,${predRef},${currRef},$,.FINISH_START.,$);`);
+        }
+      }
+    });
+
+    if (allTaskRefs.length > 0) {
+      const relControl = ref(); lines.push(`${relControl}=IFCRELASSIGNSTOCONTROL('${makeIfcGuid()}',${ownerRef},$,$,(${allTaskRefs.join(',')}),$,${workSched});`);
+    }
+
+    const pProj1 = ref(); lines.push(`${pProj1}=IFCPROPERTYSINGLEVALUE('InternalProjectId',$,IFCTEXT('proj-bimbam-4d'),$);`);
+    const pProj2 = ref(); lines.push(`${pProj2}=IFCPROPERTYSINGLEVALUE('DefaultTaskDurationUnit',$,IFCLABEL('days'),$);`);
+    const pProj3 = ref(); lines.push(`${pProj3}=IFCPROPERTYSINGLEVALUE('ProjectStartDate',$,IFCDATE('${minStartIso.slice(0, 10)}'),$);`);
+    const pProjSet = ref(); lines.push(`${pProjSet}=IFCPROPERTYSET('${makeIfcGuid()}',${ownerRef},'OPS_ProjectSettings',$,(${pProj1},${pProj2},${pProj3}));`);
+    const relProjProp = ref(); lines.push(`${relProjProp}=IFCRELDEFINESBYPROPERTIES('${makeIfcGuid()}',${ownerRef},$,$,(${projRef}),${pProjSet});`);
+
+    const ifcContent = `ISO-10303-21;
+HEADER;
+FILE_DESCRIPTION(('ViewDefinition [SchedulingView]'),'2;1');
+FILE_NAME('BIM_BAM_Schedule_OpenPlannerStudio.ifc','${nowIso}',('Contractor'),('BIM BAM Construction'),'Open Planner Studio 0.1','Open Planner Studio','');
+FILE_SCHEMA(('IFC4X3'));
+ENDSEC;
+DATA;
+${lines.join('\n')}
+ENDSEC;
+END-ISO-10303-21;
+`;
+
+    const blob = new Blob([ifcContent], { type: 'application/x-step' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `BIM_BAM_Schedule_OpenPlannerStudio_${today4D}.ifc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  }
+
+  function escapeIfcString(str) {
+    if (!str) return '';
+    return str.replace(/\\/g, '\\\\').replace(/'/g, "''");
+  }
+
+  function escapeXml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Draft & Export event bindings
+  if (btn4dSaveDraft) btn4dSaveDraft.addEventListener('click', saveScheduleDraftJson);
+  if (btnRibbonSaveDraft) btnRibbonSaveDraft.addEventListener('click', saveScheduleDraftJson);
+
+  if (input4dImportDraft) {
+    input4dImportDraft.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleImportDraftFile(e.target.files[0]);
+        e.target.value = '';
+      }
+    });
+  }
+
+  if (btn4dImportDraft) {
+    btn4dImportDraft.addEventListener('click', () => {
+      if (input4dImportDraft) input4dImportDraft.click();
+    });
+  }
+  if (btnRibbonImportDraft) {
+    btnRibbonImportDraft.addEventListener('click', () => {
+      if (input4dImportDraft) input4dImportDraft.click();
+    });
+  }
+
+  if (btn4dExportOds) btn4dExportOds.addEventListener('click', exportScheduleToOds);
+  if (btnRibbonExportOds) btnRibbonExportOds.addEventListener('click', exportScheduleToOds);
+  if (btn4dExportIfc) btn4dExportIfc.addEventListener('click', exportScheduleToOpenPlannerStudioIfc);
+  if (btnRibbonExportIfc) btnRibbonExportIfc.addEventListener('click', exportScheduleToOpenPlannerStudioIfc);
+
+  // Register 4D Scheduling onto bimBamApi
+  if (window.bimBamApi) {
+    window.bimBamApi.getScheduleTasks = () => ({
+      success: true,
+      today: today4D,
+      count: schedules4D.length,
+      tasks: schedules4D
+    });
+    window.bimBamApi.createScheduleTask = (taskData) => {
+      if (!taskData || !taskData.workDesc) return { success: false, error: "Work description required." };
+      const newTask = {
+        id: 'task-' + Date.now(),
+        workDesc: taskData.workDesc,
+        startDate: taskData.startDate || today4D,
+        endDate: taskData.endDate || today4D,
+        resourceId: taskData.resourceId || '',
+        resourceDesc: taskData.resourceDesc || '',
+        resourceCount: Number(taskData.resourceCount) || 1,
+        color: taskData.color || '#38bdf8',
+        predecessor: taskData.predecessor || '',
+        progress: Number(taskData.progress) || 0,
+        elementIds: taskData.elementIds || [],
+        elementGlobalIds: (taskData.elementIds || []).map(id => getElementGlobalId(id))
+      };
+      schedules4D.push(newTask);
+      saveSchedules4D();
+      renderGantt();
+      return { success: true, task: newTask, message: `Created task "${newTask.workDesc}".` };
+    };
+    window.bimBamApi.updateScheduleTask = (taskId, updates) => {
+      const task = schedules4D.find(t => t.id === taskId);
+      if (!task) return { success: false, error: `Task ${taskId} not found.` };
+      Object.assign(task, updates);
+      if (updates.elementIds) {
+        task.elementGlobalIds = task.elementIds.map(id => getElementGlobalId(id));
+      }
+      saveSchedules4D();
+      renderGantt();
+      return { success: true, task, message: `Updated task "${task.workDesc}".` };
+    };
+    window.bimBamApi.deleteScheduleTask = (taskId) => {
+      const idx = schedules4D.findIndex(t => t.id === taskId);
+      if (idx === -1) return { success: false, error: `Task ${taskId} not found.` };
+      const removed = schedules4D.splice(idx, 1);
+      saveSchedules4D();
+      renderGantt();
+      return { success: true, message: `Deleted task "${removed[0].workDesc}".` };
+    };
+    window.bimBamApi.setScheduleToday = (todayDate) => {
+      if (!todayDate) return { success: false, error: "Date string required (YYYY-MM-DD)." };
+      today4D = todayDate;
+      if (input4dToday) input4dToday.value = today4D;
+      renderGantt();
+      return { success: true, today: today4D, message: `Set reference Today date to ${today4D}.` };
+    };
+    window.bimBamApi.toggleChronologySimulation = (enabled) => {
+      chronologyActive = (enabled !== undefined) ? !!enabled : !chronologyActive;
+      if (btn4dToggleChronology) {
+        btn4dToggleChronology.innerHTML = chronologyActive ? '<i class="fa-solid fa-eye"></i> Chronology: On' : '<i class="fa-solid fa-eye-slash"></i> Chronology: Off';
+      }
+      if (chronologyControlsWrap) {
+        chronologyControlsWrap.style.display = chronologyActive ? 'flex' : 'none';
+      }
+      if (!chronologyActive) {
+        stopChronologyPlay();
+        restoreChronologyModelColors();
+      }
+      return { success: true, chronologyActive, message: `Chronology simulation is now ${chronologyActive ? 'ON' : 'OFF'}.` };
+    };
+    window.bimBamApi.setChronologySimulationDate = (date) => {
+      currentSimDate = date;
+      applyChronologyColorsForDate(date);
+      if (lbl4dChronologyDate) lbl4dChronologyDate.textContent = date;
+      renderGantt();
+      return { success: true, simDate: date, message: `Set simulation date to ${date}.` };
+    };
+    window.bimBamApi.saveScheduleDraftJson = saveScheduleDraftJson;
+    window.bimBamApi.exportScheduleToOds = exportScheduleToOds;
+    window.bimBamApi.exportScheduleToOpenPlannerStudioIfc = exportScheduleToOpenPlannerStudioIfc;
+  }
+
+  // Initialize data
+  loadLaborResources();
+  loadSchedules4D();
+}
+
+// --- FastMCP Poller & Dispatcher ---
+function setupMcpPolling() {
+  let isPolling = false;
+  async function pollMcp() {
+    if (isPolling) return;
+    isPolling = true;
+    try {
+      const res = await fetch('/api/mcp/poll');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.call) {
+          const { callId, tool, args } = data.call;
+          console.log(`[FastMCP] Dispatching tool "${tool}" with:`, args);
+          let result = { success: false, error: `Tool "${tool}" is not registered in bimBamApi.` };
+          if (window.bimBamApi && typeof window.bimBamApi[tool] === 'function') {
+            try {
+              const out = await window.bimBamApi[tool](args || {});
+              result = (out !== undefined) ? out : { success: true };
+            } catch (err) {
+              result = { success: false, error: err.message || String(err) };
+            }
+          }
+          await fetch('/api/mcp/result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ callId, result })
+          });
+        }
+      }
+    } catch (e) {
+      // Ignore background poll errors
+    } finally {
+      isPolling = false;
+      setTimeout(pollMcp, 400);
+    }
+  }
+  pollMcp();
 }
 
 startApp();

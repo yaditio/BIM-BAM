@@ -1,0 +1,62 @@
+{
+  "name": "@datadrivenconstruction/cad2data",
+  "version": "1.1.0",
+  "description": "CAD/BIM converter pipeline — Revit, IFC, DWG, DGN to Excel/DAE/PDF with validation and quantity takeoff",
+  "main": "lib/index.js",
+  "bin": {
+    "cad2data": "bin/cad2data.js"
+  },
+  "scripts": {
+    "test": "node lib/test.js",
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "keywords": [
+    "cad",
+    "bim",
+    "revit",
+    "ifc",
+    "dwg",
+    "dgn",
+    "converter",
+    "construction",
+    "aec",
+    "quantity-takeoff",
+    "excel",
+    "collada",
+    "dae",
+    "building",
+    "architecture",
+    "engineering",
+    "data-driven-construction",
+    "cad2data",
+    "rvt",
+    "autodesk",
+    "openBIM"
+  ],
+  "author": "Artem Boiko <info@datadrivenconstruction.io>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datadrivenconstruction/cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto.git"
+  },
+  "homepage": "https://datadrivenconstruction.io",
+  "bugs": {
+    "url": "https://github.com/datadrivenconstruction/cad2data-Revit-IFC-DWG-DGN-pipeline-with-conversion-validation-qto/issues"
+  },
+  "os": [
+    "win32",
+    "linux"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "converters/",
+    "workflows/",
+    "scripts/",
+    "README.md",
+    "LICENSE"
+  ]
+}

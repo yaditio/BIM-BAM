@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const { exec } = require('child_process');
+const { exec, execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const db = require('./db.cjs');
@@ -371,264 +371,200 @@ app.post('/api/python/ifcconvert', cpUpload, (req, res) => {
   });
 });
 
-// 6. RVT to IFC converter using Creoox Xeokit Data Engine API
-app.post('/api/convert-rvt', upload.single('file'), async (req, res) => {
+// 6. RVT to IFC converter using DataDrivenConstruction cad2data pipeline (DDC_CONVERTER_Revit2IFC)
+function resolveDdcRevit2IfcExe(inputPath) {
+  if (!inputPath || typeof inputPath !== 'string') return null;
+  const cleanPath = inputPath.trim().replace(/^["']|["']$/g, '');
+  if (!cleanPath) return null;
+
+  try {
+    if (!fs.existsSync(cleanPath)) return null;
+    const stat = fs.statSync(cleanPath);
+
+    if (stat.isFile()) {
+      if (path.extname(cleanPath).toLowerCase() === '.exe') {
+        return cleanPath;
+      }
+      return null;
+    }
+
+    if (stat.isDirectory()) {
+      // 1. Direct or known relative paths from GitHub / npm distribution
+      const directCandidates = [
+        path.join(cleanPath, 'RVT2IFCconverter.exe'),
+        path.join(cleanPath, 'DDC_REVIT2IFC_CONVERTER', 'RVT2IFCconverter.exe'),
+        path.join(cleanPath, 'DDC_CONVERTER_Revit2IFC', 'DDC_REVIT2IFC_CONVERTER', 'RVT2IFCconverter.exe'),
+        path.join(cleanPath, 'DDC_WINDOWS_Converters', 'DDC_CONVERTER_Revit2IFC', 'DDC_REVIT2IFC_CONVERTER', 'RVT2IFCconverter.exe'),
+        path.join(cleanPath, 'DDC_CONVERTER_Revit2IFC.exe'),
+        path.join(cleanPath, 'rvt2ifc.exe')
+      ];
+
+      for (const cand of directCandidates) {
+        if (fs.existsSync(cand) && fs.statSync(cand).isFile()) {
+          return cand;
+        }
+      }
+
+      // 2. Search up to 3 levels deep for RVT2IFCconverter.exe
+      const findExeInDir = (dir, depth = 0) => {
+        if (depth > 3) return null;
+        try {
+          const entries = fs.readdirSync(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const full = path.join(dir, entry.name);
+            if (entry.isFile() && /rvt2ifc|revit2ifc/i.test(entry.name) && entry.name.toLowerCase().endsWith('.exe')) {
+              return full;
+            }
+          }
+          for (const entry of entries) {
+            if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+              const found = findExeInDir(path.join(dir, entry.name), depth + 1);
+              if (found) return found;
+            }
+          }
+        } catch (e) {}
+        return null;
+      };
+
+      const found = findExeInDir(cleanPath);
+      if (found) return found;
+    }
+  } catch (err) {
+    console.error('[Server] Error resolving DDC converter exe:', err);
+  }
+  return null;
+}
+
+// Check / validate DDC Converter path
+app.post('/api/check-ddc-path', (req, res) => {
+  const inputPath = req.body && req.body.path;
+  if (!inputPath) {
+    return res.status(400).json({ valid: false, error: 'Path is required' });
+  }
+
+  const exePath = resolveDdcRevit2IfcExe(inputPath);
+  if (!exePath) {
+    return res.status(404).json({
+      valid: false,
+      error: 'RVT2IFC converter executable not found in specified directory or path.'
+    });
+  }
+
+  res.json({
+    valid: true,
+    exePath: exePath,
+    exeName: path.basename(exePath)
+  });
+});
+
+// Convert RVT to IFC using DDC pipeline (DDC_CONVERTER_Revit2IFC)
+app.post('/api/convert-rvt', upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
-  const clientId = req.body.clientId;
-  const clientSecret = req.body.clientSecret;
-  let apiUrl = req.body.apiUrl || 'https://jobs.xeo.vision';
-
-  if (!clientId || !clientSecret) {
-    return res.status(400).json({ error: 'XDES Client ID and Client Secret are required' });
-  }
-
-  // Ensure apiUrl starts with http or https
-  if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
-    apiUrl = 'https://' + apiUrl;
-  }
-
-  const filePath = req.file.path;
+  const converterPath = req.body.converterPath;
+  const ifcVersion = req.body.ifcVersion;
+  const originalInputPath = req.file.path;
   const originalName = req.file.originalname;
 
-  try {
-    // 1. Upload to tmpfiles.org to get a public URL for the engine to import from
-    const uploadForm = new FormData();
-    const fileBlob = new Blob([fs.readFileSync(filePath)], { type: 'application/octet-stream' });
-    uploadForm.append('file', fileBlob, originalName);
-
-    console.log(`[Server] Uploading ${originalName} to tmpfiles.org...`);
-    const uploadRes = await fetch('https://tmpfiles.org/api/v1/upload', {
-      method: 'POST',
-      body: uploadForm
+  const resolvedExe = resolveDdcRevit2IfcExe(converterPath);
+  if (!resolvedExe) {
+    try { fs.unlinkSync(originalInputPath); } catch (e) {}
+    return res.status(400).json({
+      error: 'DDC RVT2IFC converter executable not found. Please set a valid directory or .exe path in the ribbon card.'
     });
-
-    if (!uploadRes.ok) {
-      const errText = await uploadRes.text();
-      throw new Error(`Failed to upload to tmpfiles.org: ${uploadRes.status} ${errText}`);
-    }
-
-    const uploadJson = await uploadRes.json();
-    if (!uploadJson.data || !uploadJson.data.url) {
-      throw new Error('Upload succeeded but no URL returned from tmpfiles.org');
-    }
-
-    // Fetch the view page to parse the actual direct download link (with security timestamp hash)
-    const viewUrl = uploadJson.data.url;
-    console.log(`[Server] Fetching view page to parse direct link: ${viewUrl}`);
-    const pageRes = await fetch(viewUrl);
-    if (!pageRes.ok) {
-      throw new Error(`Failed to fetch view page from tmpfiles.org: ${pageRes.status}`);
-    }
-    const html = await pageRes.text();
-    let downloadMatch = html.match(/class="download"\s+href="([^"]+)"/);
-    if (!downloadMatch) {
-      downloadMatch = html.match(/href="([^"]+)"\s+class="download"/);
-    }
-    if (!downloadMatch) {
-      downloadMatch = html.match(/href="([^"]*\/dl\/[^"]*)"/);
-    }
-    if (!downloadMatch) {
-      throw new Error('Could not parse direct download URL from tmpfiles.org page');
-    }
-    const publicUrl = downloadMatch[1];
-    console.log(`[Server] Public direct URL for RVT: ${publicUrl}`);
-
-    // 2. Submit the conversion job to Xeokit Data Engine
-    const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
-    // webhook token as requested: "no need to fill XDES_EXTERNAL_WEBHOOK_SITE_TOKEN, just leave it as comment line so in the furure i can just remove the comment operator to use it"
-    // const XDES_EXTERNAL_WEBHOOK_SITE_TOKEN = "your_webhook_site_token_here";
-
-    const job = {
-      tag: "rvt-xkt",
-      // webhook: {
-      //   url: `https://webhook.site/${XDES_EXTERNAL_WEBHOOK_SITE_TOKEN}`,
-      //   eventTypes: ["job.started", "job.succeeded", "job.failed"]
-      // },
-      tasks: [
-        {
-          id: "import-file",
-          operation: "import/url",
-          fileType: "rvt",
-          url: publicUrl
-        },
-        {
-          id: "convert-step-1",
-          operation: "convert/rvt/glb",
-          input: "import-file",
-          engine: {
-            name: "xeoRvt",
-            version: "0.2.0"
-          }
-        },
-        {
-          id: "convert-step-2",
-          operation: "convert/glb/xkt",
-          input: "convert-step-1",
-          engine: {
-            name: "xeokit-convert",
-            version: "1.3.2",
-            options: {
-              includeMetadata: true
-            }
-          }
-        },
-        {
-          id: "export-step-1",
-          operation: "export/url",
-          input: "convert-step-2"
-        },
-        {
-          id: "export-step-2",
-          operation: "export/url",
-          input: "convert-step-1",
-          archiveMultipleFiles: true
-        }
-      ]
-    };
-
-    console.log(`[Server] Submitting job to ${apiUrl}/api/jobs/async...`);
-    const jobRes = await fetch(`${apiUrl}/api/jobs/async`, {
-      method: 'POST',
-      headers: {
-        'Authorization': authHeader,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(job)
-    });
-
-    if (!jobRes.ok) {
-      const errText = await jobRes.text();
-      throw new Error(`Failed to submit job to Data Engine: ${jobRes.status} ${errText}`);
-    }
-
-    const jobState = await jobRes.json();
-    const jobId = jobState.id;
-    console.log(`[Server] Job submitted successfully. Job ID: ${jobId}`);
-
-    // 3. Poll job status until complete
-    const maxAttempts = 15;
-    let completedState = null;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      console.log(`[Server] Polling job state (Attempt ${attempt}/${maxAttempts})...`);
-      const statusRes = await fetch(`${apiUrl}/api/jobs/${jobId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': authHeader,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!statusRes.ok) {
-        throw new Error(`Failed to get job status: ${statusRes.status}`);
-      }
-
-      const statusData = await statusRes.json();
-      if (statusData.endedAt !== null) {
-        completedState = statusData;
-        break;
-      }
-
-      // Wait 4 seconds
-      await new Promise(resolve => setTimeout(resolve, 4000));
-    }
-    if (!completedState) {
-      throw new Error('Job did not complete within the timeout period.');
-    }
-
-    if (!completedState.success) {
-      let taskErrorMsg = '';
-      if (completedState.tasksWithContext) {
-        const failedTask = completedState.tasksWithContext.find(t => t.context && t.context.error);
-        if (failedTask) {
-          const rawErr = failedTask.context.error;
-          const detail = typeof rawErr === 'object' ? JSON.stringify(rawErr) : String(rawErr);
-          taskErrorMsg = `Task "${failedTask.id}" failed: ${detail}`;
-        } else {
-          const unfinishedTask = completedState.tasksWithContext.find(t => !t.context || !t.context.endedAt);
-          if (unfinishedTask) {
-            taskErrorMsg = `Task "${unfinishedTask.id}" did not finish successfully.`;
-          }
-        }
-      }
-      const finalError = taskErrorMsg || completedState.error || 'Unknown error';
-      throw new Error(`Job execution failed: ${finalError}. Full state: ${JSON.stringify(completedState)}`);
-    }
-
-    console.log('[Server] Job completed successfully. Task context files:');
-    completedState.tasksWithContext.forEach(t => {
-      console.log(`Task: ${t.id}`);
-      if (t.context && t.context.files) {
-        t.context.files.forEach(f => {
-          console.log(`  - File: ${f.path}, size: ${f.fileSize}, type: ${f.fileType}, url: ${f.url}`);
-        });
-      }
-    });
-
-    // 4. Find the exported file URL
-    if (!completedState.tasksWithContext) {
-      throw new Error('No task context returned in job state.');
-    }
-
-    const exportTask = completedState.tasksWithContext.find(t => t.id === 'export-step-1');
-    if (!exportTask || !exportTask.context || !exportTask.context.files || exportTask.context.files.length === 0) {
-      throw new Error('No output files found in export-step-1 task.');
-    }
-
-    const xktFile = exportTask.context.files.find(f => f.fileType === 'xkt' || f.path.endsWith('.xkt'));
-    if (!xktFile || !xktFile.url) {
-      throw new Error('No .xkt output file found in export task.');
-    }
-
-    // Search for metadata JSON across all tasks (xeoRvt metadata comes from convert-step-1 / export-step-2)
-    let metaFile = null;
-    for (const t of completedState.tasksWithContext) {
-      if (t.context && t.context.files) {
-        const found = t.context.files.find(f =>
-          (f.fileType === 'xeokit-metadata' || f.path.endsWith('.json')) && f.url
-        );
-        if (found) {
-          metaFile = found;
-          console.log(`[Server] Found metadata file in task '${t.id}': ${found.path} (type: ${found.fileType})`);
-          break;
-        }
-      }
-    }
-
-    // 5. Download the converted XKT file and metadata in parallel
-    console.log(`[Server] Downloading XKT from ${xktFile.url}`);
-    const downloads = [
-      fetch(xktFile.url).then(r => { if (!r.ok) throw new Error(`XKT download failed: ${r.status}`); return r.arrayBuffer(); })
-    ];
-    if (metaFile && metaFile.url) {
-      console.log(`[Server] Downloading metadata from ${metaFile.url}`);
-      downloads.push(
-        fetch(metaFile.url).then(r => { if (!r.ok) throw new Error(`Metadata download failed: ${r.status}`); return r.json(); })
-      );
-    }
-
-    const [xktBuffer, metadataJson] = await Promise.all(downloads);
-
-    // Clean up local temp RVT file
-    try { fs.unlinkSync(filePath); } catch (e) {}
-
-    // Send both XKT (base64) and metadata as JSON
-    console.log(`[Server] Sending XKT (${xktBuffer.byteLength} bytes) + metadata to client`);
-    res.json({
-      xkt: Buffer.from(xktBuffer).toString('base64'),
-      metadata: metadataJson || null,
-      filename: `${path.parse(originalName).name}.xkt`
-    });
-
-  } catch (error) {
-    console.error('[Server] RVT conversion failed:', error);
-    try { fs.unlinkSync(filePath); } catch (e) {}
-    res.status(500).json({ error: 'RVT to XKT conversion failed', details: error.message });
   }
+
+  // Use C:/temp if available to guarantee zero spaces in paths for CLI parsers
+  let tempDir = uploadDir;
+  try {
+    if (!fs.existsSync('C:/temp')) {
+      fs.mkdirSync('C:/temp', { recursive: true });
+    }
+    tempDir = 'C:/temp';
+  } catch (e) {}
+
+  const uniqueId = 'conv_' + Date.now() + '_' + Math.round(Math.random() * 1e6);
+  const stagedRvtPath = path.join(tempDir, `${uniqueId}.rvt`);
+  const stagedIfcPath = path.join(tempDir, `${uniqueId}.ifc`);
+
+  try {
+    fs.copyFileSync(originalInputPath, stagedRvtPath);
+    try { fs.unlinkSync(originalInputPath); } catch (e) {}
+  } catch (err) {
+    console.warn('[Server] Could not stage to C:/temp, fallback to uploadDir');
+  }
+
+  const inputFilePath = fs.existsSync(stagedRvtPath) ? stagedRvtPath : originalInputPath;
+  const outputFilePath = fs.existsSync(stagedRvtPath) ? stagedIfcPath : path.join(uploadDir, `${uniqueId}.ifc`);
+  const exeDir = path.dirname(resolvedExe);
+
+  // Command syntax according to DDC documentation:
+  // RVT2IFCconverter.exe <input.rvt> [<output.ifc>] [config="..."]
+  const args = [inputFilePath, outputFilePath];
+  if (ifcVersion && ifcVersion !== 'default') {
+    if (ifcVersion === '4x3') {
+      args.push('config="FileVersion=ifc4x3"');
+    } else if (ifcVersion === '2x3') {
+      args.push('config="FileVersion=ifc2x3"');
+    } else if (ifcVersion === '4') {
+      args.push('config="FileVersion=ifc4"');
+    }
+  }
+
+  const env = {
+    ...process.env,
+    PATH: `${exeDir};${path.join(exeDir, 'datadrivenlibs')};${process.env.PATH || ''}`
+  };
+
+  console.log(`[Server] Running DDC RVT2IFC converter: "${resolvedExe}" ${args.join(' ')}`);
+
+  execFile(resolvedExe, args, { cwd: exeDir, env, maxBuffer: 100 * 1024 * 1024, timeout: 600000 }, (error, stdout, stderr) => {
+    console.log('[DDC stdout]:', stdout);
+    if (stderr) console.warn('[DDC stderr]:', stderr);
+
+    // Clean up temporary input file
+    try { fs.unlinkSync(inputFilePath); } catch (e) {}
+
+    let finalIfcPath = outputFilePath;
+    if (!fs.existsSync(finalIfcPath) || fs.statSync(finalIfcPath).size === 0) {
+      // Fallback check: check if it output next to input or with .ifc extension
+      const sideIfc = inputFilePath.replace(/\.[^/.]+$/, '.ifc');
+      if (fs.existsSync(sideIfc) && fs.statSync(sideIfc).size > 0) {
+        finalIfcPath = sideIfc;
+      }
+    }
+
+    if (!fs.existsSync(finalIfcPath) || fs.statSync(finalIfcPath).size === 0) {
+      console.error('[Server] DDC conversion failed or output IFC empty:', error || 'No output file');
+      return res.status(500).json({
+        error: 'RVT to IFC conversion failed',
+        details: (error ? error.message : 'Output IFC file not generated'),
+        stdout,
+        stderr
+      });
+    }
+
+    const ifcFilename = path.parse(originalName).name + '.ifc';
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${ifcFilename}"`);
+    res.setHeader('X-Filename', ifcFilename);
+
+    const fileStream = fs.createReadStream(finalIfcPath);
+    fileStream.pipe(res);
+
+    fileStream.on('close', () => {
+      try {
+        fs.unlinkSync(finalIfcPath);
+        console.log('[Server] Cleaned up temporary converted IFC file.');
+      } catch (e) {}
+    });
+
+    fileStream.on('error', (streamErr) => {
+      console.error('[Server] Stream error:', streamErr);
+    });
+  });
 });
 
 // Serve static frontend assets in production desktop mode if dist folder exists
@@ -1205,6 +1141,43 @@ app.get('/api/classifications', (req, res) => {
   try {
     const list = db.query("SELECT * FROM classifications");
     res.json(list);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Labor resources for 4D scheduling
+app.get('/api/labor', (req, res) => {
+  try {
+    const labor = db.query("SELECT * FROM resources WHERE category = 'Labor' ORDER BY description ASC");
+    res.json(labor);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// 4D Schedules persistence
+app.get('/api/4d/schedules', (req, res) => {
+  try {
+    const projectId = req.query.projectId || 'default';
+    const row = db.get("SELECT data FROM schedules_4d WHERE project_id = ? ORDER BY updated_at DESC LIMIT 1", [projectId]);
+    if (row && row.data) {
+      return res.json(JSON.parse(row.data));
+    }
+    res.json([]);
+  } catch (e) {
+    res.json([]);
+  }
+});
+
+app.post('/api/4d/schedules', (req, res) => {
+  try {
+    const { projectId = 'default', schedules = [] } = req.body;
+    db.run(
+      "INSERT INTO schedules_4d (id, project_id, data, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(id) DO UPDATE SET data=excluded.data, updated_at=CURRENT_TIMESTAMP",
+      [projectId, projectId, JSON.stringify(schedules)]
+    );
+    res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -2624,6 +2597,86 @@ app.post('/api/validation/import', (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+// --- FastMCP Bridge Endpoints ---
+const pendingMcpCalls = [];
+const mcpCallResults = new Map();
+
+app.post('/api/mcp/call', async (req, res) => {
+  const { tool, args = {} } = req.body;
+  if (!tool) {
+    return res.status(400).json({ success: false, error: "Missing tool name." });
+  }
+
+  // Handle server-side direct tools immediately if possible
+  try {
+    if (tool === 'get_schedule_tasks_backend') {
+      const rows = db.query("SELECT * FROM schedules_4d ORDER BY created_at ASC");
+      return res.json({ success: true, tasks: rows });
+    }
+    if (tool === 'search_ahsp_catalog_backend') {
+      const q = args.query ? `%${args.query}%` : '%';
+      const rows = db.query("SELECT * FROM ahsp_master WHERE kode_ahsp LIKE ? OR deskripsi LIKE ? LIMIT 50", [q, q]);
+      return res.json({ success: true, items: rows });
+    }
+    if (tool === 'get_boq_items_backend') {
+      const rows = db.query("SELECT * FROM boq_5d");
+      return res.json({ success: true, items: rows });
+    }
+  } catch (err) {
+    console.error("[MCP] Direct handler error:", err);
+  }
+
+  // Queue for connected frontend viewer
+  const callId = `call_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const item = { callId, tool, args, timestamp: Date.now() };
+  pendingMcpCalls.push(item);
+
+  // Wait up to 6 seconds for frontend viewer response
+  const startTime = Date.now();
+  const checkInterval = 80;
+  const timeoutMs = 6000;
+
+  const waitPromise = new Promise((resolve) => {
+    const timer = setInterval(() => {
+      if (mcpCallResults.has(callId)) {
+        clearInterval(timer);
+        const result = mcpCallResults.get(callId);
+        mcpCallResults.delete(callId);
+        resolve(result);
+      } else if (Date.now() - startTime > timeoutMs) {
+        clearInterval(timer);
+        resolve({
+          success: false,
+          error: "Timeout waiting for BIM BAM viewer response. Ensure BIM BAM is open in your browser."
+        });
+      }
+    }, checkInterval);
+  });
+
+  const responseData = await waitPromise;
+  res.json(responseData);
+});
+
+app.get('/api/mcp/poll', (req, res) => {
+  if (pendingMcpCalls.length > 0) {
+    const nextCall = pendingMcpCalls.shift();
+    return res.json({ call: nextCall });
+  }
+  res.json({ call: null });
+});
+
+app.post('/api/mcp/result', (req, res) => {
+  const { callId, result } = req.body;
+  if (callId) {
+    mcpCallResults.set(callId, result || { success: true });
+    if (mcpCallResults.size > 100) {
+      const keys = Array.from(mcpCallResults.keys());
+      for (let i = 0; i < 20; i++) mcpCallResults.delete(keys[i]);
+    }
+  }
+  res.json({ success: true });
 });
 
 app.listen(PORT, () => {

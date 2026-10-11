@@ -147,6 +147,13 @@ function initSchema() {
       details TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS schedules_4d (
+      id TEXT PRIMARY KEY,
+      project_id TEXT,
+      data TEXT NOT NULL,
+      updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Schema migrations for backward compatibility
