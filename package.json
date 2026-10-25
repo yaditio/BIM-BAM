@@ -41,6 +41,7 @@
       "lib/**/*",
       "public/**/*",
       "electron-main.cjs",
+      "preload.cjs",
       "server.cjs",
       "package.json"
     ],

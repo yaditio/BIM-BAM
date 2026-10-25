@@ -5,6 +5,8 @@ import {
   IFCOpenShellLoaderPlugin, 
   LASLoaderPlugin,
   GLTFLoaderPlugin,
+  OBJLoaderPlugin,
+  Node,
   NavCubePlugin, 
   SectionPlanesPlugin, 
   DistanceMeasurementsPlugin,
@@ -29,7 +31,9 @@ let viewer;
 let xktLoader;
 let lasLoader = null;
 let gltfLoader = null;
+let objLoader = null;
 let pendingGeoreference = null;
+let pendingMtlFile = null;
 let webIfcLoader = null;
 let ifcOpenShellLoader = null;
 let sectionPlanes = null;
@@ -69,6 +73,9 @@ const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const fileInfoBar = document.getElementById('fileInfoBar');
 const fileNameSpan = document.getElementById('fileName');
+const btnLoadCompanionMtl = document.getElementById('btnLoadCompanionMtl');
+const companionMtlInput = document.getElementById('companionMtlInput');
+let lastLoadedObjData = null;
 const loaderRadios = document.getElementsByName('ifcEngine');
 const convertToXktOpt = document.getElementById('convertToXktOpt');
 const btnDownloadXkt = document.getElementById('btnDownloadXkt');
@@ -219,6 +226,7 @@ function initViewer() {
     }
   });
   gltfLoader = new GLTFLoaderPlugin(viewer);
+  objLoader = new OBJLoaderPlugin(viewer);
   sectionPlanes = new SectionPlanesPlugin(viewer);
 
   // Bind click listener for single-click selection
@@ -580,8 +588,175 @@ async function loadModel(file, convertToXkt = false) {
       hideLoader();
       updateStatus(`Failed to load glTF model: ${err.message}`, true);
     }
+  } else if (fileExt === 'obj') {
+    showLoader("Loading OBJ Model", "Reading OBJ file into memory...", 15);
+    let mtlToUse = pendingMtlFile;
+    if (!mtlToUse && fileInput && fileInput.files) {
+      mtlToUse = Array.from(fileInput.files).find(f => f.name.toLowerCase().endsWith('.mtl')) || null;
+    }
+    pendingMtlFile = null;
+
+    try {
+      const objReader = new FileReader();
+      objReader.onload = async (e) => {
+        const objText = e.target.result;
+        updateLoaderProgress(40, "Checking companion materials...");
+
+        let mtlText = null;
+
+        // 1. From companion MTL file object if selected or dropped together
+        if (mtlToUse) {
+          try {
+            mtlText = await mtlToUse.text();
+            updateStatus(`Loaded companion materials from ${mtlToUse.name}`);
+          } catch (err) {
+            console.warn("Could not read companion mtl file:", err);
+          }
+        }
+
+        // 2. Auto-load from local disk in Electron / desktop (via preload webUtils.getPathForFile)
+        const realFilePath = (window.electronAPI && typeof window.electronAPI.getPathForFile === 'function')
+          ? window.electronAPI.getPathForFile(file)
+          : (file.path || null);
+
+        if (!mtlText && realFilePath) {
+          const dir = realFilePath.replace(/[/\\][^/\\]+$/, '');
+          const mtllibMatch = objText.match(/^mtllib\s+([^\r\n]+)/m);
+          const candidateMtls = [];
+          if (mtllibMatch) candidateMtls.push(`${dir}/${mtllibMatch[1].trim()}`);
+          candidateMtls.push(realFilePath.replace(/\.[^.]+$/, '.mtl'));
+
+          for (const mtlPath of candidateMtls) {
+            try {
+              const res = await fetch(`/api/local-file?path=${encodeURIComponent(mtlPath)}`);
+              if (res.ok) {
+                mtlText = await res.text();
+                updateStatus(`Auto-loaded companion materials from ${mtlPath.split(/[/\\]/).pop()}`);
+                break;
+              }
+            } catch (err) {
+              // Non-blocking
+            }
+          }
+        }
+
+        // 3. Fallback Shading: if no MTL loaded, generate shaded Phong materials for all usemtl
+        const mtllibMatch = objText.match(/^mtllib\s+([^\r\n]+)/m);
+        const refMtlName = mtllibMatch ? mtllibMatch[1].trim() : null;
+
+        let effectiveMtlText = mtlText;
+        if (!effectiveMtlText) {
+          const useMtls = Array.from(new Set(Array.from(objText.matchAll(/^usemtl\s+([^\r\n]+)/gm)).map(m => m[1].trim())));
+          if (useMtls.length > 0) {
+            effectiveMtlText = useMtls.map((m, idx) => {
+              const base = 0.55 + ((idx % 7) * 0.05);
+              return `newmtl ${m}\nKa 0.25 0.25 0.25\nKd ${base.toFixed(2)} ${base.toFixed(2)} ${base.toFixed(2)}\nKs 0.15 0.15 0.15\nNs 25.0\nd 1.0\n`;
+            }).join('\n');
+          }
+        }
+
+        // Cache for dynamic .mtl application
+        lastLoadedObjData = { file, objText, modelId, hasMtl: !!mtlText };
+
+        // Update UI companion MTL button
+        if (btnLoadCompanionMtl) {
+          if (!mtlText && refMtlName) {
+            btnLoadCompanionMtl.style.display = "inline-flex";
+            btnLoadCompanionMtl.title = `Companion material "${refMtlName}" missing. Click to select .mtl file`;
+            updateStatus(`Note: "${refMtlName}" not found. (Click ".MTL" button in ribbon or drop .mtl to apply materials)`);
+          } else {
+            btnLoadCompanionMtl.style.display = "none";
+          }
+        }
+
+        updateLoaderProgress(70, "Rendering 3D model...");
+
+        // 4. Fast, native xeokit OBJ loader (< 500ms, direct scene graph parse)
+        try {
+          activeModel = new Node(viewer.scene, {
+            id: modelId,
+            isModel: true
+          });
+          activeModel.once("destroyed", () => {
+            if (viewer.metaScene) {
+              viewer.metaScene.destroyMetaModel(modelId);
+            }
+          });
+          setupModelLoadedListener(modelId, file);
+          objLoader._sceneGraphLoader.parse(activeModel, objText, effectiveMtlText || null, "");
+        } catch (parseErr) {
+          hideLoader();
+          updateStatus(`Failed to parse OBJ model: ${parseErr.message}`, true);
+        }
+      };
+      objReader.onerror = (err) => {
+        hideLoader();
+        updateStatus(`Failed to read OBJ file: ${err.message}`, true);
+      };
+      objReader.readAsText(file);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Failed to load OBJ model: ${err.message}`, true);
+    }
+  } else if (fileExt === 'dae') {
+    showLoader("Loading Collada DAE", "Reading DAE file into memory...", 10);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          updateLoaderProgress(30, "Parsing Collada DAE structure...");
+          const daeText = e.target.result;
+
+          const [{ ColladaLoader }, { GLTFExporter }] = await Promise.all([
+            import('https://esm.sh/three@0.160.0/examples/jsm/loaders/ColladaLoader.js'),
+            import('https://esm.sh/three@0.160.0/examples/jsm/exporters/GLTFExporter.js')
+          ]);
+
+          const loader = new ColladaLoader();
+          const collada = loader.parse(daeText, "");
+
+          updateLoaderProgress(60, "Converting Collada to glTF representation...");
+          const exporter = new GLTFExporter();
+          exporter.parse(
+            collada.scene,
+            (glbBuffer) => {
+              updateLoaderProgress(85, "Rendering 3D model...");
+              try {
+                const blob = new Blob([glbBuffer], { type: "model/gltf-binary" });
+                const blobUrl = URL.createObjectURL(blob);
+                activeModel = gltfLoader.load({
+                  id: modelId,
+                  src: blobUrl + "#" + file.name.replace(/\.dae$/i, ".glb")
+                });
+                setupModelLoadedListener(modelId, file);
+              } catch (loadErr) {
+                hideLoader();
+                updateStatus(`Failed to display converted DAE model: ${loadErr.message}`, true);
+              }
+            },
+            (error) => {
+              hideLoader();
+              updateStatus(`Failed to export Collada to glTF: ${error.message || error}`, true);
+            },
+            { binary: true }
+          );
+        } catch (parseErr) {
+          hideLoader();
+          updateStatus(`Failed to parse DAE file: ${parseErr.message}`, true);
+        }
+      };
+      reader.onerror = (err) => {
+        hideLoader();
+        updateStatus(`Failed to read DAE file: ${err.message}`, true);
+      };
+      reader.readAsText(file);
+    } catch (err) {
+      hideLoader();
+      updateStatus(`Failed to load DAE model: ${err.message}`, true);
+    }
   }
 }
+
 
 // --- Georeference Extractor Heuristics ---
 function extractGeoreference(modelId) {
@@ -1001,7 +1176,10 @@ function setupModelLoadedListener(modelId, file) {
     
     console.log("Debug: metaModels keys = ", Object.keys(viewer.metaScene.metaModels));
     console.log("Debug: metaObjects size = ", Object.keys(viewer.metaScene.metaObjects).length);
-    updateStatus(`Model loaded successfully. Objects: ${activeModel.numEntities}`);
+    const objectCount = activeModel.numEntities !== undefined 
+      ? activeModel.numEntities
+      : (activeModel.children ? activeModel.children.length : Object.keys(viewer.scene.objects).length);
+    updateStatus(`Model loaded successfully. Objects: ${objectCount}`);
     
     // Clear search filter when a new model is loaded
     propertySearch.value = "";
@@ -1017,7 +1195,7 @@ function setupModelLoadedListener(modelId, file) {
     
     // Gather all model object IDs (both IFC and Revit models populate viewer.scene.objects)
     const modelObjectIds = Object.values(viewer.scene.objects)
-      .filter(obj => obj.model && obj.model.id === modelId)
+      .filter(obj => (obj.model && obj.model.id === modelId) || (obj.id && obj.id.startsWith(modelId + '#')))
       .map(obj => obj.id);
 
     modelObjectIds.forEach((id) => {
@@ -2507,14 +2685,23 @@ dropZone.addEventListener('drop', (e) => {
 function handleMultipleFiles(files) {
   // Find if there is a json file containing georeference data
   const jsonFile = files.find(f => f.name.toLowerCase().endsWith('.json'));
+  const mtlFile = files.find(f => f.name.toLowerCase().endsWith('.mtl'));
   const modelFile = files.find(f => {
     const ext = f.name.split('.').pop().toLowerCase();
-    return ext === 'ifc' || ext === 'xkt' || ext === 'las' || ext === 'laz' || ext === 'gltf' || ext === 'glb';
+    return ext === 'ifc' || ext === 'xkt' || ext === 'las' || ext === 'laz' || ext === 'gltf' || ext === 'glb' || ext === 'obj' || ext === 'dae';
   });
 
   if (!modelFile) {
-    updateStatus("No valid model file selected! Please select a .ifc, .xkt, .las, .laz, .gltf, or .glb file.", true);
+    if (mtlFile && lastLoadedObjData) {
+      applyCompanionMtlFile(mtlFile);
+      return;
+    }
+    updateStatus("No valid model file selected! Please select a .ifc, .xkt, .las, .laz, .gltf, .glb, .obj, or .dae file.", true);
     return;
+  }
+
+  if (mtlFile) {
+    pendingMtlFile = mtlFile;
   }
 
   if (jsonFile) {
@@ -2578,15 +2765,15 @@ function handleFileSelected(file) {
     
     // Auto-trigger load
     loadModel(file, false);
-  } else if (fileExt === 'las' || fileExt === 'laz' || fileExt === 'gltf' || fileExt === 'glb') {
-    // Disable IFC configs since it's point cloud/glTF
+  } else if (fileExt === 'las' || fileExt === 'laz' || fileExt === 'gltf' || fileExt === 'glb' || fileExt === 'obj' || fileExt === 'dae') {
+    // Disable IFC configs since it's point cloud/glTF/OBJ/DAE
     convertToXktOpt.disabled = true;
     document.querySelectorAll('input[name="ifcEngine"]').forEach(r => r.disabled = true);
     
     // Auto-trigger load
     loadModel(file, false);
   } else {
-    updateStatus("Unsupported file type! Only .ifc, .xkt, .las, .laz, .gltf, and .glb files are supported.", true);
+    updateStatus("Unsupported file type! Only .ifc, .xkt, .las, .laz, .gltf, .glb, .obj, and .dae files are supported.", true);
   }
 }
 
@@ -2596,6 +2783,56 @@ convertToXktOpt.addEventListener('change', () => {
     loadModel(fileInput.files[0], convertToXktOpt.checked);
   }
 });
+
+async function applyCompanionMtlFile(mtlFile) {
+  if (!lastLoadedObjData) {
+    updateStatus("No active OBJ model to apply materials to.", true);
+    return;
+  }
+  try {
+    showLoader("Applying Materials", `Reading ${mtlFile.name}...`, 30);
+    const mtlText = await mtlFile.text();
+    updateLoaderProgress(60, "Re-rendering model with materials...");
+
+    if (activeModel) {
+      activeModel.destroy();
+      activeModel = null;
+    }
+
+    const { file, objText, modelId } = lastLoadedObjData;
+    activeModel = new Node(viewer.scene, {
+      id: modelId,
+      isModel: true
+    });
+    activeModel.once("destroyed", () => {
+      if (viewer.metaScene) {
+        viewer.metaScene.destroyMetaModel(modelId);
+      }
+    });
+    setupModelLoadedListener(modelId, file);
+    objLoader._sceneGraphLoader.parse(activeModel, objText, mtlText, "");
+    lastLoadedObjData.hasMtl = true;
+    if (btnLoadCompanionMtl) {
+      btnLoadCompanionMtl.style.display = "none";
+    }
+    updateStatus(`Applied companion materials from: ${mtlFile.name}`);
+  } catch (err) {
+    hideLoader();
+    updateStatus(`Failed to apply companion materials: ${err.message}`, true);
+  }
+}
+
+if (btnLoadCompanionMtl && companionMtlInput) {
+  btnLoadCompanionMtl.addEventListener('click', () => {
+    companionMtlInput.value = '';
+    companionMtlInput.click();
+  });
+  companionMtlInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      applyCompanionMtlFile(e.target.files[0]);
+    }
+  });
+}
 
 document.querySelectorAll('input[name="ifcEngine"]').forEach(radio => {
   radio.addEventListener('change', () => {

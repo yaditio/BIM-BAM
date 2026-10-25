@@ -72,6 +72,19 @@ const upload = multer({
   limits: { fileSize: 100 * 1024 * 1024 } // 100MB limit
 });
 
+// Endpoint to read local companion files (e.g. .mtl) when running locally/desktop
+app.get('/api/local-file', (req, res) => {
+  const filePath = req.query.path;
+  if (!filePath) {
+    return res.status(400).json({ error: 'Missing path parameter' });
+  }
+  const resolved = path.resolve(filePath);
+  if (!fs.existsSync(resolved)) {
+    return res.status(404).json({ error: 'File not found' });
+  }
+  res.sendFile(resolved);
+});
+
 // Endpoint for IFC to XKT conversion
 app.post('/api/convert', upload.single('file'), (req, res) => {
   if (!req.file) {

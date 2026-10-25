@@ -90,10 +90,10 @@
                         <div class="ribbon-group-title"><i class="fa-solid fa-file-arrow-up"></i> Load Model</div>
                         <div class="ribbon-group-content vertical-stack">
                             <div class="ribbon-row">
-                                <div class="upload-area-mini" id="dropZone" title="Click or drop model file">
+                                <div class="upload-area-mini" id="dropZone" title="Click or drop model file (for .obj, select companion .mtl together)">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                     <span>Browse / Drop File</span>
-                                    <input type="file" id="fileInput" accept=".ifc,.xkt,.las,.laz,.gltf,.glb,.json"
+                                    <input type="file" id="fileInput" accept=".ifc,.xkt,.las,.laz,.gltf,.glb,.obj,.mtl,.dae,.json"
                                         multiple>
                                 </div>
                                 <button class="btn btn-secondary btn-sm" id="btnLoadDemo" title="Load Duplex Demo IFC">
@@ -104,6 +104,10 @@
                                 <div class="file-info-bar-mini" id="fileInfoBar" style="display: none;">
                                     <i class="fa-solid fa-file-code file-icon"></i>
                                     <span id="fileName">No file</span>
+                                    <button class="btn btn-warning btn-xs" id="btnLoadCompanionMtl" style="display: none; margin-left: 6px; padding: 1px 6px; font-size: 11px;" title="Select companion .mtl file to apply materials">
+                                        <i class="fa-solid fa-palette"></i> .MTL
+                                    </button>
+                                    <input type="file" id="companionMtlInput" accept=".mtl" style="display: none;">
                                 </div>
                             </div>
                         </div>
